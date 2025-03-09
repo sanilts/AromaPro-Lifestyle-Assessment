@@ -1,0 +1,21 @@
+[09-Mar-2025 04:23:10 UTC] PHP Fatal error:  Uncaught TypeError: preg_match(): Argument #2 ($subject) must be of type string, array given in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/validation.php:444
+Stack trace:
+#0 /home/customer/www/rmpanel.com/public_html/listvalidator/includes/validation.php(444): preg_match('/<([^>]+)>/', Array, NULL)
+#1 /home/customer/www/rmpanel.com/public_html/listvalidator/public/lists/validate.php(81): sync_postmark_events('7', NULL, 7)
+#2 {main}
+  thrown in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/validation.php on line 444
+[09-Mar-2025 06:45:21 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function validate_emails_with_postmark() in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/list_management.php:397
+Stack trace:
+#0 /home/customer/www/rmpanel.com/public_html/listvalidator/public/lists/validate.php(57): validate_list_emails('8')
+#1 {main}
+  thrown in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/list_management.php on line 397
+[09-Mar-2025 06:51:07 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function send_email_with_postmark() in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/functions.php:292
+Stack trace:
+#0 /home/customer/www/rmpanel.com/public_html/listvalidator/public/lists/validate.php(33): send_validation_emails(8)
+#1 {main}
+  thrown in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/functions.php on line 292
+[09-Mar-2025 08:59:33 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function check_email_status() in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/list_management.php:841
+Stack trace:
+#0 /home/customer/www/rmpanel.com/public_html/listvalidator/public/lists/validate.php(45): check_validation_email_status('8')
+#1 {main}
+  thrown in /home/customer/www/rmpanel.com/public_html/listvalidator/includes/list_management.php on line 841

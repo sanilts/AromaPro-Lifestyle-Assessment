@@ -1,0 +1,355 @@
+2025-03-08 17:21:08 - Starting validation for list ID: 1
+2025-03-08 17:21:08 - Found 94 contacts to validate
+2025-03-08 17:21:08 - Starting Postmark validation for 94 emails
+2025-03-08 17:21:08 - API Key: dad...6f1
+2025-03-08 17:21:08 - API URL: https://api.postmarkapp.com/email/batch/validation
+2025-03-08 17:21:09 - Single email validation tsundin12@me.com HTTP Code: 404
+2025-03-08 17:21:09 - API error for tsundin12@me.com. Using fallback validation
+2025-03-08 17:21:09 - Result for tsundin12@me.com: {"Email":"tsundin12@me.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:10 - Single email validation awvlab@awomansview.com HTTP Code: 404
+2025-03-08 17:21:10 - API error for awvlab@awomansview.com. Using fallback validation
+2025-03-08 17:21:10 - Result for awvlab@awomansview.com: {"Email":"awvlab@awomansview.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:11 - Single email validation thmckinley@phhealthcare.org HTTP Code: 404
+2025-03-08 17:21:11 - API error for thmckinley@phhealthcare.org. Using fallback validation
+2025-03-08 17:21:11 - Result for thmckinley@phhealthcare.org: {"Email":"thmckinley@phhealthcare.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:12 - Single email validation heybull@yahoo.com HTTP Code: 404
+2025-03-08 17:21:12 - API error for heybull@yahoo.com. Using fallback validation
+2025-03-08 17:21:12 - Result for heybull@yahoo.com: {"Email":"heybull@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:12 - Single email validation victor@invenio-medical.com HTTP Code: 404
+2025-03-08 17:21:12 - API error for victor@invenio-medical.com. Using fallback validation
+2025-03-08 17:21:12 - Result for victor@invenio-medical.com: {"Email":"victor@invenio-medical.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:13 - Single email validation waltking572@gmail.com HTTP Code: 404
+2025-03-08 17:21:13 - API error for waltking572@gmail.com. Using fallback validation
+2025-03-08 17:21:13 - Result for waltking572@gmail.com: {"Email":"waltking572@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:14 - Single email validation slamier@kensingtonhrc.com HTTP Code: 404
+2025-03-08 17:21:14 - API error for slamier@kensingtonhrc.com. Using fallback validation
+2025-03-08 17:21:14 - Result for slamier@kensingtonhrc.com: {"Email":"slamier@kensingtonhrc.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:15 - Single email validation stearnsjanelle@hotmail.com HTTP Code: 404
+2025-03-08 17:21:15 - API error for stearnsjanelle@hotmail.com. Using fallback validation
+2025-03-08 17:21:15 - Result for stearnsjanelle@hotmail.com: {"Email":"stearnsjanelle@hotmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:15 - Single email validation Dontrellemmett618@gmail.com HTTP Code: 404
+2025-03-08 17:21:15 - API error for Dontrellemmett618@gmail.com. Using fallback validation
+2025-03-08 17:21:15 - Result for Dontrellemmett618@gmail.com: {"Email":"Dontrellemmett618@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:16 - Single email validation stkm_2000@yahoo.com HTTP Code: 404
+2025-03-08 17:21:16 - API error for stkm_2000@yahoo.com. Using fallback validation
+2025-03-08 17:21:16 - Result for stkm_2000@yahoo.com: {"Email":"stkm_2000@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:17 - Single email validation drstevechoi@gmail.com HTTP Code: 404
+2025-03-08 17:21:17 - API error for drstevechoi@gmail.com. Using fallback validation
+2025-03-08 17:21:17 - Result for drstevechoi@gmail.com: {"Email":"drstevechoi@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:18 - Single email validation prunford2@yahoo.com HTTP Code: 404
+2025-03-08 17:21:18 - API error for prunford2@yahoo.com. Using fallback validation
+2025-03-08 17:21:18 - Result for prunford2@yahoo.com: {"Email":"prunford2@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:18 - Single email validation ileriayoadeniyi4@gmail.com HTTP Code: 404
+2025-03-08 17:21:18 - API error for ileriayoadeniyi4@gmail.com. Using fallback validation
+2025-03-08 17:21:18 - Result for ileriayoadeniyi4@gmail.com: {"Email":"ileriayoadeniyi4@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:19 - Single email validation samelessego@gmail.com HTTP Code: 404
+2025-03-08 17:21:19 - API error for samelessego@gmail.com. Using fallback validation
+2025-03-08 17:21:19 - Result for samelessego@gmail.com: {"Email":"samelessego@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:20 - Single email validation sathornton02@gmail.com HTTP Code: 404
+2025-03-08 17:21:20 - API error for sathornton02@gmail.com. Using fallback validation
+2025-03-08 17:21:20 - Result for sathornton02@gmail.com: {"Email":"sathornton02@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:21 - Single email validation saudsrahman@yahoo.com HTTP Code: 404
+2025-03-08 17:21:21 - API error for saudsrahman@yahoo.com. Using fallback validation
+2025-03-08 17:21:21 - Result for saudsrahman@yahoo.com: {"Email":"saudsrahman@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:22 - Single email validation hematech@yahoo.com HTTP Code: 404
+2025-03-08 17:21:22 - API error for hematech@yahoo.com. Using fallback validation
+2025-03-08 17:21:22 - Result for hematech@yahoo.com: {"Email":"hematech@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:22 - Single email validation diering@yahoo.com HTTP Code: 404
+2025-03-08 17:21:22 - API error for diering@yahoo.com. Using fallback validation
+2025-03-08 17:21:22 - Result for diering@yahoo.com: {"Email":"diering@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:23 - Single email validation s.dufour@mail.com HTTP Code: 404
+2025-03-08 17:21:23 - API error for s.dufour@mail.com. Using fallback validation
+2025-03-08 17:21:23 - Result for s.dufour@mail.com: {"Email":"s.dufour@mail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:24 - Single email validation sstinne@jhmi.edu HTTP Code: 404
+2025-03-08 17:21:24 - API error for sstinne@jhmi.edu. Using fallback validation
+2025-03-08 17:21:24 - Result for sstinne@jhmi.edu: {"Email":"sstinne@jhmi.edu","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:25 - Single email validation antoniak@email.unc.edu HTTP Code: 404
+2025-03-08 17:21:25 - API error for antoniak@email.unc.edu. Using fallback validation
+2025-03-08 17:21:25 - Result for antoniak@email.unc.edu: {"Email":"antoniak@email.unc.edu","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:25 - Single email validation 1stethiog@gmail.com HTTP Code: 404
+2025-03-08 17:21:25 - API error for 1stethiog@gmail.com. Using fallback validation
+2025-03-08 17:21:25 - Result for 1stethiog@gmail.com: {"Email":"1stethiog@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:26 - Single email validation RCasalegno@charter.net HTTP Code: 404
+2025-03-08 17:21:26 - API error for RCasalegno@charter.net. Using fallback validation
+2025-03-08 17:21:26 - Result for RCasalegno@charter.net: {"Email":"RCasalegno@charter.net","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:27 - Single email validation dktrbob@aol.com HTTP Code: 404
+2025-03-08 17:21:27 - API error for dktrbob@aol.com. Using fallback validation
+2025-03-08 17:21:27 - Result for dktrbob@aol.com: {"Email":"dktrbob@aol.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:28 - Single email validation jamiealex911@gmail.com HTTP Code: 404
+2025-03-08 17:21:28 - API error for jamiealex911@gmail.com. Using fallback validation
+2025-03-08 17:21:28 - Result for jamiealex911@gmail.com: {"Email":"jamiealex911@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:29 - Single email validation hbrobdawg9@hotmail.com HTTP Code: 404
+2025-03-08 17:21:29 - API error for hbrobdawg9@hotmail.com. Using fallback validation
+2025-03-08 17:21:29 - Result for hbrobdawg9@hotmail.com: {"Email":"hbrobdawg9@hotmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:29 - Single email validation Koon- Roxann.Braun-Koon@crmc.org HTTP Code: 404
+2025-03-08 17:21:29 - API error for Koon- Roxann.Braun-Koon@crmc.org. Using fallback validation
+2025-03-08 17:21:29 - Result for Koon- Roxann.Braun-Koon@crmc.org: {"Email":"Koon- Roxann.Braun-Koon@crmc.org","SyntaxValid":false,"DeliveryStatus":"Invalid","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:30 - Single email validation rich.pers458@outlook.com HTTP Code: 404
+2025-03-08 17:21:30 - API error for rich.pers458@outlook.com. Using fallback validation
+2025-03-08 17:21:30 - Result for rich.pers458@outlook.com: {"Email":"rich.pers458@outlook.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:31 - Single email validation ccjirovec@hotmail.com HTTP Code: 404
+2025-03-08 17:21:31 - API error for ccjirovec@hotmail.com. Using fallback validation
+2025-03-08 17:21:31 - Result for ccjirovec@hotmail.com: {"Email":"ccjirovec@hotmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:32 - Single email validation cassiuscalvin021@gmail.com HTTP Code: 404
+2025-03-08 17:21:32 - API error for cassiuscalvin021@gmail.com. Using fallback validation
+2025-03-08 17:21:32 - Result for cassiuscalvin021@gmail.com: {"Email":"cassiuscalvin021@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:32 - Single email validation vannmd@gmail.com HTTP Code: 404
+2025-03-08 17:21:32 - API error for vannmd@gmail.com. Using fallback validation
+2025-03-08 17:21:32 - Result for vannmd@gmail.com: {"Email":"vannmd@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:33 - Single email validation craigclayton136@gmail.com HTTP Code: 404
+2025-03-08 17:21:33 - API error for craigclayton136@gmail.com. Using fallback validation
+2025-03-08 17:21:33 - Result for craigclayton136@gmail.com: {"Email":"craigclayton136@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:34 - Single email validation rsudmd@gmail.com HTTP Code: 404
+2025-03-08 17:21:34 - API error for rsudmd@gmail.com. Using fallback validation
+2025-03-08 17:21:34 - Result for rsudmd@gmail.com: {"Email":"rsudmd@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:35 - Single email validation quinn.christensen@imail.org HTTP Code: 404
+2025-03-08 17:21:35 - API error for quinn.christensen@imail.org. Using fallback validation
+2025-03-08 17:21:35 - Result for quinn.christensen@imail.org: {"Email":"quinn.christensen@imail.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:36 - Single email validation vetome@yahoo.com HTTP Code: 404
+2025-03-08 17:21:36 - API error for vetome@yahoo.com. Using fallback validation
+2025-03-08 17:21:36 - Result for vetome@yahoo.com: {"Email":"vetome@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:36 - Single email validation SangJewelo@gmail.com HTTP Code: 404
+2025-03-08 17:21:36 - API error for SangJewelo@gmail.com. Using fallback validation
+2025-03-08 17:21:36 - Result for SangJewelo@gmail.com: {"Email":"SangJewelo@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:37 - Single email validation randy.feldman@cshs.org HTTP Code: 404
+2025-03-08 17:21:37 - API error for randy.feldman@cshs.org. Using fallback validation
+2025-03-08 17:21:37 - Result for randy.feldman@cshs.org: {"Email":"randy.feldman@cshs.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:38 - Single email validation recx82@gmail.com HTTP Code: 404
+2025-03-08 17:21:38 - API error for recx82@gmail.com. Using fallback validation
+2025-03-08 17:21:38 - Result for recx82@gmail.com: {"Email":"recx82@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:39 - Single email validation mihealson34@gmail.com HTTP Code: 404
+2025-03-08 17:21:39 - API error for mihealson34@gmail.com. Using fallback validation
+2025-03-08 17:21:39 - Result for mihealson34@gmail.com: {"Email":"mihealson34@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:39 - Single email validation laboratoryit@gmail.com HTTP Code: 404
+2025-03-08 17:21:39 - API error for laboratoryit@gmail.com. Using fallback validation
+2025-03-08 17:21:39 - Result for laboratoryit@gmail.com: {"Email":"laboratoryit@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:40 - Single email validation docmichealcole@gmail.com HTTP Code: 404
+2025-03-08 17:21:40 - API error for docmichealcole@gmail.com. Using fallback validation
+2025-03-08 17:21:40 - Result for docmichealcole@gmail.com: {"Email":"docmichealcole@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:41 - Single email validation mdelelys@mgh.harvard.edu HTTP Code: 404
+2025-03-08 17:21:41 - API error for mdelelys@mgh.harvard.edu. Using fallback validation
+2025-03-08 17:21:41 - Result for mdelelys@mgh.harvard.edu: {"Email":"mdelelys@mgh.harvard.edu","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:42 - Single email validation mrivera@umcelpaso.org HTTP Code: 404
+2025-03-08 17:21:42 - API error for mrivera@umcelpaso.org. Using fallback validation
+2025-03-08 17:21:42 - Result for mrivera@umcelpaso.org: {"Email":"mrivera@umcelpaso.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:43 - Single email validation garrom@missouri.edu HTTP Code: 404
+2025-03-08 17:21:43 - API error for garrom@missouri.edu. Using fallback validation
+2025-03-08 17:21:43 - Result for garrom@missouri.edu: {"Email":"garrom@missouri.edu","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:43 - Single email validation mpatel14@live.com HTTP Code: 404
+2025-03-08 17:21:43 - API error for mpatel14@live.com. Using fallback validation
+2025-03-08 17:21:43 - Result for mpatel14@live.com: {"Email":"mpatel14@live.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:44 - Single email validation bisestifamily@gmail.com HTTP Code: 404
+2025-03-08 17:21:44 - API error for bisestifamily@gmail.com. Using fallback validation
+2025-03-08 17:21:44 - Result for bisestifamily@gmail.com: {"Email":"bisestifamily@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:45 - Single email validation nbbay@hotmail.com HTTP Code: 404
+2025-03-08 17:21:45 - API error for nbbay@hotmail.com. Using fallback validation
+2025-03-08 17:21:45 - Result for nbbay@hotmail.com: {"Email":"nbbay@hotmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:46 - Single email validation nilofar.sanaiha@gmail.com HTTP Code: 404
+2025-03-08 17:21:46 - API error for nilofar.sanaiha@gmail.com. Using fallback validation
+2025-03-08 17:21:46 - Result for nilofar.sanaiha@gmail.com: {"Email":"nilofar.sanaiha@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:46 - Single email validation nvanca@destinysprings.com HTTP Code: 404
+2025-03-08 17:21:46 - API error for nvanca@destinysprings.com. Using fallback validation
+2025-03-08 17:21:46 - Result for nvanca@destinysprings.com: {"Email":"nvanca@destinysprings.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:47 - Single email validation nicolasmarcus13@gmail.com HTTP Code: 404
+2025-03-08 17:21:47 - API error for nicolasmarcus13@gmail.com. Using fallback validation
+2025-03-08 17:21:47 - Result for nicolasmarcus13@gmail.com: {"Email":"nicolasmarcus13@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:48 - Single email validation mattjshore@yahoo.com HTTP Code: 404
+2025-03-08 17:21:48 - API error for mattjshore@yahoo.com. Using fallback validation
+2025-03-08 17:21:48 - Result for mattjshore@yahoo.com: {"Email":"mattjshore@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:49 - Single email validation chantedarrius@gmail.com HTTP Code: 404
+2025-03-08 17:21:49 - API error for chantedarrius@gmail.com. Using fallback validation
+2025-03-08 17:21:49 - Result for chantedarrius@gmail.com: {"Email":"chantedarrius@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:50 - Single email validation mcutright@azacp.com HTTP Code: 404
+2025-03-08 17:21:50 - API error for mcutright@azacp.com. Using fallback validation
+2025-03-08 17:21:50 - Result for mcutright@azacp.com: {"Email":"mcutright@azacp.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:50 - Single email validation kfreedma@conemaugh.org HTTP Code: 404
+2025-03-08 17:21:50 - API error for kfreedma@conemaugh.org. Using fallback validation
+2025-03-08 17:21:50 - Result for kfreedma@conemaugh.org: {"Email":"kfreedma@conemaugh.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:51 - Single email validation katye.conniff@gmail.com HTTP Code: 404
+2025-03-08 17:21:51 - API error for katye.conniff@gmail.com. Using fallback validation
+2025-03-08 17:21:51 - Result for katye.conniff@gmail.com: {"Email":"katye.conniff@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:52 - Single email validation kelley.durden@flaglerhealth.org HTTP Code: 404
+2025-03-08 17:21:52 - API error for kelley.durden@flaglerhealth.org. Using fallback validation
+2025-03-08 17:21:52 - Result for kelley.durden@flaglerhealth.org: {"Email":"kelley.durden@flaglerhealth.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:53 - Single email validation kdijak@comhs.org HTTP Code: 404
+2025-03-08 17:21:53 - API error for kdijak@comhs.org. Using fallback validation
+2025-03-08 17:21:53 - Result for kdijak@comhs.org: {"Email":"kdijak@comhs.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:53 - Single email validation kim.hazelbaker@bsahs.org HTTP Code: 404
+2025-03-08 17:21:53 - API error for kim.hazelbaker@bsahs.org. Using fallback validation
+2025-03-08 17:21:53 - Result for kim.hazelbaker@bsahs.org: {"Email":"kim.hazelbaker@bsahs.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:54 - Single email validation Kstea@aol.com HTTP Code: 404
+2025-03-08 17:21:54 - API error for Kstea@aol.com. Using fallback validation
+2025-03-08 17:21:54 - Result for Kstea@aol.com: {"Email":"Kstea@aol.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:55 - Single email validation kforsyth@colquittregional.com HTTP Code: 404
+2025-03-08 17:21:55 - API error for kforsyth@colquittregional.com. Using fallback validation
+2025-03-08 17:21:55 - Result for kforsyth@colquittregional.com: {"Email":"kforsyth@colquittregional.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:56 - Single email validation kwilems@cbwc.us HTTP Code: 404
+2025-03-08 17:21:56 - API error for kwilems@cbwc.us. Using fallback validation
+2025-03-08 17:21:56 - Result for kwilems@cbwc.us: {"Email":"kwilems@cbwc.us","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:56 - Single email validation kym.lengyel@yahoo.com HTTP Code: 404
+2025-03-08 17:21:56 - API error for kym.lengyel@yahoo.com. Using fallback validation
+2025-03-08 17:21:56 - Result for kym.lengyel@yahoo.com: {"Email":"kym.lengyel@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:57 - Single email validation joelaurenthomas@hotmail.com HTTP Code: 404
+2025-03-08 17:21:57 - API error for joelaurenthomas@hotmail.com. Using fallback validation
+2025-03-08 17:21:57 - Result for joelaurenthomas@hotmail.com: {"Email":"joelaurenthomas@hotmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:58 - Single email validation lequinn6464@gmail.com HTTP Code: 404
+2025-03-08 17:21:58 - API error for lequinn6464@gmail.com. Using fallback validation
+2025-03-08 17:21:58 - Result for lequinn6464@gmail.com: {"Email":"lequinn6464@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:21:59 - Single email validation lewisedmund94@gmail.com HTTP Code: 404
+2025-03-08 17:21:59 - API error for lewisedmund94@gmail.com. Using fallback validation
+2025-03-08 17:21:59 - Result for lewisedmund94@gmail.com: {"Email":"lewisedmund94@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:00 - Single email validation Lindsey.Douglas@sjcd.edu HTTP Code: 404
+2025-03-08 17:22:00 - API error for Lindsey.Douglas@sjcd.edu. Using fallback validation
+2025-03-08 17:22:00 - Result for Lindsey.Douglas@sjcd.edu: {"Email":"Lindsey.Douglas@sjcd.edu","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:00 - Single email validation 7lindsey@gmail.com HTTP Code: 404
+2025-03-08 17:22:00 - API error for 7lindsey@gmail.com. Using fallback validation
+2025-03-08 17:22:00 - Result for 7lindsey@gmail.com: {"Email":"7lindsey@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:01 - Single email validation myputt_2@hotmail.com HTTP Code: 404
+2025-03-08 17:22:01 - API error for myputt_2@hotmail.com. Using fallback validation
+2025-03-08 17:22:01 - Result for myputt_2@hotmail.com: {"Email":"myputt_2@hotmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:02 - Single email validation lisa.long@mercy.net HTTP Code: 404
+2025-03-08 17:22:02 - API error for lisa.long@mercy.net. Using fallback validation
+2025-03-08 17:22:02 - Result for lisa.long@mercy.net: {"Email":"lisa.long@mercy.net","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:03 - Single email validation lori.stevens@hcahealthcare.com HTTP Code: 404
+2025-03-08 17:22:03 - API error for lori.stevens@hcahealthcare.com. Using fallback validation
+2025-03-08 17:22:03 - Result for lori.stevens@hcahealthcare.com: {"Email":"lori.stevens@hcahealthcare.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:03 - Single email validation lleppo@yahoo.com HTTP Code: 404
+2025-03-08 17:22:03 - API error for lleppo@yahoo.com. Using fallback validation
+2025-03-08 17:22:03 - Result for lleppo@yahoo.com: {"Email":"lleppo@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:04 - Single email validation mandydehghan10@gmail.com HTTP Code: 404
+2025-03-08 17:22:04 - API error for mandydehghan10@gmail.com. Using fallback validation
+2025-03-08 17:22:04 - Result for mandydehghan10@gmail.com: {"Email":"mandydehghan10@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:05 - Single email validation Lewie01@aol.com HTTP Code: 404
+2025-03-08 17:22:05 - API error for Lewie01@aol.com. Using fallback validation
+2025-03-08 17:22:05 - Result for Lewie01@aol.com: {"Email":"Lewie01@aol.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:06 - Single email validation marcusramzi@gmail.com HTTP Code: 404
+2025-03-08 17:22:06 - API error for marcusramzi@gmail.com. Using fallback validation
+2025-03-08 17:22:06 - Result for marcusramzi@gmail.com: {"Email":"marcusramzi@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:07 - Single email validation mlaughery@broadlawns.org HTTP Code: 404
+2025-03-08 17:22:07 - API error for mlaughery@broadlawns.org. Using fallback validation
+2025-03-08 17:22:07 - Result for mlaughery@broadlawns.org: {"Email":"mlaughery@broadlawns.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:07 - Single email validation mark.williams@midlandhealth.org HTTP Code: 404
+2025-03-08 17:22:07 - API error for mark.williams@midlandhealth.org. Using fallback validation
+2025-03-08 17:22:07 - Result for mark.williams@midlandhealth.org: {"Email":"mark.williams@midlandhealth.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:08 - Single email validation mcasassa416@gmail.com HTTP Code: 404
+2025-03-08 17:22:08 - API error for mcasassa416@gmail.com. Using fallback validation
+2025-03-08 17:22:08 - Result for mcasassa416@gmail.com: {"Email":"mcasassa416@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:09 - Single email validation mkneedles@yahoo.com HTTP Code: 404
+2025-03-08 17:22:09 - API error for mkneedles@yahoo.com. Using fallback validation
+2025-03-08 17:22:09 - Result for mkneedles@yahoo.com: {"Email":"mkneedles@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:10 - Single email validation marvin.bittner@gmail.com HTTP Code: 404
+2025-03-08 17:22:10 - API error for marvin.bittner@gmail.com. Using fallback validation
+2025-03-08 17:22:10 - Result for marvin.bittner@gmail.com: {"Email":"marvin.bittner@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:10 - Single email validation mawayne2@gmail.com HTTP Code: 404
+2025-03-08 17:22:10 - API error for mawayne2@gmail.com. Using fallback validation
+2025-03-08 17:22:10 - Result for mawayne2@gmail.com: {"Email":"mawayne2@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:11 - Single email validation mlamonaca@stgeorgeslab.com HTTP Code: 404
+2025-03-08 17:22:11 - API error for mlamonaca@stgeorgeslab.com. Using fallback validation
+2025-03-08 17:22:11 - Result for mlamonaca@stgeorgeslab.com: {"Email":"mlamonaca@stgeorgeslab.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:12 - Single email validation livingspringmathias@gmail.com HTTP Code: 404
+2025-03-08 17:22:12 - API error for livingspringmathias@gmail.com. Using fallback validation
+2025-03-08 17:22:12 - Result for livingspringmathias@gmail.com: {"Email":"livingspringmathias@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:13 - Single email validation jdahlstrom7@gmail.com HTTP Code: 404
+2025-03-08 17:22:13 - API error for jdahlstrom7@gmail.com. Using fallback validation
+2025-03-08 17:22:13 - Result for jdahlstrom7@gmail.com: {"Email":"jdahlstrom7@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:14 - Single email validation imhevnbnd4him@aol.com HTTP Code: 404
+2025-03-08 17:22:14 - API error for imhevnbnd4him@aol.com. Using fallback validation
+2025-03-08 17:22:14 - Result for imhevnbnd4him@aol.com: {"Email":"imhevnbnd4him@aol.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:14 - Single email validation joseph.smith@emoryhealthcare.org HTTP Code: 404
+2025-03-08 17:22:14 - API error for joseph.smith@emoryhealthcare.org. Using fallback validation
+2025-03-08 17:22:14 - Result for joseph.smith@emoryhealthcare.org: {"Email":"joseph.smith@emoryhealthcare.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:15 - Single email validation JoslynPribble@mhd.com HTTP Code: 404
+2025-03-08 17:22:15 - API error for JoslynPribble@mhd.com. Using fallback validation
+2025-03-08 17:22:15 - Result for JoslynPribble@mhd.com: {"Email":"JoslynPribble@mhd.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:16 - Single email validation joslynlee@aol.com HTTP Code: 404
+2025-03-08 17:22:16 - API error for joslynlee@aol.com. Using fallback validation
+2025-03-08 17:22:16 - Result for joslynlee@aol.com: {"Email":"joslynlee@aol.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:17 - Single email validation julie_c_bevan@yahoo.com HTTP Code: 404
+2025-03-08 17:22:17 - API error for julie_c_bevan@yahoo.com. Using fallback validation
+2025-03-08 17:22:17 - Result for julie_c_bevan@yahoo.com: {"Email":"julie_c_bevan@yahoo.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:17 - Single email validation jdoyel@memorialcare.org HTTP Code: 404
+2025-03-08 17:22:17 - API error for jdoyel@memorialcare.org. Using fallback validation
+2025-03-08 17:22:17 - Result for jdoyel@memorialcare.org: {"Email":"jdoyel@memorialcare.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:18 - Single email validation bejanpon11@gmail.com HTTP Code: 404
+2025-03-08 17:22:18 - API error for bejanpon11@gmail.com. Using fallback validation
+2025-03-08 17:22:18 - Result for bejanpon11@gmail.com: {"Email":"bejanpon11@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:19 - Single email validation bookerahmod@gmail.com HTTP Code: 404
+2025-03-08 17:22:19 - API error for bookerahmod@gmail.com. Using fallback validation
+2025-03-08 17:22:19 - Result for bookerahmod@gmail.com: {"Email":"bookerahmod@gmail.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:20 - Single email validation karenhar@stny.rr.com HTTP Code: 404
+2025-03-08 17:22:20 - API error for karenhar@stny.rr.com. Using fallback validation
+2025-03-08 17:22:20 - Result for karenhar@stny.rr.com: {"Email":"karenhar@stny.rr.com","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:21 - Single email validation kksmith@broadlawns.org HTTP Code: 404
+2025-03-08 17:22:21 - API error for kksmith@broadlawns.org. Using fallback validation
+2025-03-08 17:22:21 - Result for kksmith@broadlawns.org: {"Email":"kksmith@broadlawns.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:21 - Single email validation karen.swanson@thephysicianalliance.org HTTP Code: 404
+2025-03-08 17:22:21 - API error for karen.swanson@thephysicianalliance.org. Using fallback validation
+2025-03-08 17:22:21 - Result for karen.swanson@thephysicianalliance.org: {"Email":"karen.swanson@thephysicianalliance.org","SyntaxValid":true,"DeliveryStatus":"Unknown","IsDisposable":false,"IsRole":false,"SuggestedCorrection":null}
+2025-03-08 17:22:21 - Processed 94 validation results
+2025-03-08 17:22:21 - Validation completed with 94 results
+2025-03-08 17:22:21 - Validation completed: 0 valid, 94 invalid, 0 pending
+2025-03-08 17:47:24 - Starting validation for list ID: 1
+2025-03-08 17:47:54 - Starting validation for list ID: 2
+2025-03-08 17:47:54 - Found 94 contacts to validate
+2025-03-08 17:47:54 - Starting Postmark validation for 94 emails
+2025-03-08 17:47:54 - Request payload: {"Emails":["tsundin12@me.com","awvlab@awomansview.com","thmckinley@phhealthcare.org","heybull@yahoo.com","victor@invenio-medical.com","waltking572@gmail.com","slamier@kensingtonhrc.com","stearnsjanelle@hotmail.com","Dontrellemmett618@gmail.com","stkm_2000@yahoo.com","drstevechoi@gmail.com","prunford2@yahoo.com","ileriayoadeniyi4@gmail.com","samelessego@gmail.com","sathornton02@gmail.com","saudsrahman@yahoo.com","hematech@yahoo.com","diering@yahoo.com","s.dufour@mail.com","sstinne@jhmi.edu","antoniak@email.unc.edu","1stethiog@gmail.com","RCasalegno@charter.net","dktrbob@aol.com","jamiealex911@gmail.com","hbrobdawg9@hotmail.com","Koon- Roxann.Braun-Koon@crmc.org","rich.pers458@outlook.com","ccjirovec@hotmail.com","cassiuscalvin021@gmail.com","vannmd@gmail.com","craigclayton136@gmail.com","rsudmd@gmail.com","quinn.christensen@imail.org","vetome@yahoo.com","SangJewelo@gmail.com","randy.feldman@cshs.org","recx82@gmail.com","mihealson34@gmail.com","laboratoryit@gmail.com","docmichealcole@gmail.com","mdelelys@mgh.harvard.edu","mrivera@umcelpaso.org","garrom@missouri.edu","mpatel14@live.com","bisestifamily@gmail.com","nbbay@hotmail.com","nilofar.sanaiha@gmail.com","nvanca@destinysprings.com","nicolasmarcus13@gmail.com","mattjshore@yahoo.com","chantedarrius@gmail.com","mcutright@azacp.com","kfreedma@conemaugh.org","katye.conniff@gmail.com","kelley.durden@flaglerhealth.org","kdijak@comhs.org","kim.hazelbaker@bsahs.org","Kstea@aol.com","kforsyth@colquittregional.com","kwilems@cbwc.us","kym.lengyel@yahoo.com","joelaurenthomas@hotmail.com","lequinn6464@gmail.com","lewisedmund94@gmail.com","Lindsey.Douglas@sjcd.edu","7lindsey@gmail.com","myputt_2@hotmail.com","lisa.long@mercy.net","lori.stevens@hcahealthcare.com","lleppo@yahoo.com","mandydehghan10@gmail.com","Lewie01@aol.com","marcusramzi@gmail.com","mlaughery@broadlawns.org","mark.williams@midlandhealth.org","mcasassa416@gmail.com","mkneedles@yahoo.com","marvin.bittner@gmail.com","mawayne2@gmail.com","mlamonaca@stgeorgeslab.com","livingspringmathias@gmail.com","jdahlstrom7@gmail.com","imhevnbnd4him@aol.com","joseph.smith@emoryhealthcare.org","JoslynPribble@mhd.com","joslynlee@aol.com","julie_c_bevan@yahoo.com","jdoyel@memorialcare.org","bejanpon11@gmail.com","bookerahmod@gmail.com","karenhar@stny.rr.com","kksmith@broadlawns.org","karen.swanson@thephysicianalliance.org"]}
+2025-03-08 17:47:56 - HTTP Code: 404
+2025-03-08 17:47:56 - Response: 
+2025-03-08 17:47:56 - Using fallback validation
+2025-03-08 17:47:56 - Validation completed with 94 results
+2025-03-08 17:47:56 - Email validation completed: 93 valid, 1 invalid
+2025-03-08 17:48:05 - Starting validation for list ID: 2
+2025-03-08 17:51:20 - Starting validation for list ID: 2
+2025-03-08 17:56:13 - Starting validation for list ID: 2
+2025-03-08 17:56:36 - Starting validation for list ID: 2
+2025-03-08 17:56:47 - Starting validation for list ID: 2
+2025-03-08 17:57:32 - Starting validation for list ID: 2
+2025-03-08 17:59:03 - Starting validation for list ID: 2
+2025-03-08 18:03:31 - Starting validation for list ID: 2
+2025-03-08 18:03:45 - Starting validation for list ID: 2
+2025-03-08 18:03:45 - Found 94 contacts to validate
+2025-03-08 18:03:45 - Starting Postmark validation for 94 emails
+2025-03-08 18:03:45 - Request payload: {"Emails":["tsundin12@me.com","awvlab@awomansview.com","thmckinley@phhealthcare.org","heybull@yahoo.com","victor@invenio-medical.com","waltking572@gmail.com","slamier@kensingtonhrc.com","stearnsjanelle@hotmail.com","Dontrellemmett618@gmail.com","stkm_2000@yahoo.com","drstevechoi@gmail.com","prunford2@yahoo.com","ileriayoadeniyi4@gmail.com","samelessego@gmail.com","sathornton02@gmail.com","saudsrahman@yahoo.com","hematech@yahoo.com","diering@yahoo.com","s.dufour@mail.com","sstinne@jhmi.edu","antoniak@email.unc.edu","1stethiog@gmail.com","RCasalegno@charter.net","dktrbob@aol.com","jamiealex911@gmail.com","hbrobdawg9@hotmail.com","Koon- Roxann.Braun-Koon@crmc.org","rich.pers458@outlook.com","ccjirovec@hotmail.com","cassiuscalvin021@gmail.com","vannmd@gmail.com","craigclayton136@gmail.com","rsudmd@gmail.com","quinn.christensen@imail.org","vetome@yahoo.com","SangJewelo@gmail.com","randy.feldman@cshs.org","recx82@gmail.com","mihealson34@gmail.com","laboratoryit@gmail.com","docmichealcole@gmail.com","mdelelys@mgh.harvard.edu","mrivera@umcelpaso.org","garrom@missouri.edu","mpatel14@live.com","bisestifamily@gmail.com","nbbay@hotmail.com","nilofar.sanaiha@gmail.com","nvanca@destinysprings.com","nicolasmarcus13@gmail.com","mattjshore@yahoo.com","chantedarrius@gmail.com","mcutright@azacp.com","kfreedma@conemaugh.org","katye.conniff@gmail.com","kelley.durden@flaglerhealth.org","kdijak@comhs.org","kim.hazelbaker@bsahs.org","Kstea@aol.com","kforsyth@colquittregional.com","kwilems@cbwc.us","kym.lengyel@yahoo.com","joelaurenthomas@hotmail.com","lequinn6464@gmail.com","lewisedmund94@gmail.com","Lindsey.Douglas@sjcd.edu","7lindsey@gmail.com","myputt_2@hotmail.com","lisa.long@mercy.net","lori.stevens@hcahealthcare.com","lleppo@yahoo.com","mandydehghan10@gmail.com","Lewie01@aol.com","marcusramzi@gmail.com","mlaughery@broadlawns.org","mark.williams@midlandhealth.org","mcasassa416@gmail.com","mkneedles@yahoo.com","marvin.bittner@gmail.com","mawayne2@gmail.com","mlamonaca@stgeorgeslab.com","livingspringmathias@gmail.com","jdahlstrom7@gmail.com","imhevnbnd4him@aol.com","joseph.smith@emoryhealthcare.org","JoslynPribble@mhd.com","joslynlee@aol.com","julie_c_bevan@yahoo.com","jdoyel@memorialcare.org","bejanpon11@gmail.com","bookerahmod@gmail.com","karenhar@stny.rr.com","kksmith@broadlawns.org","karen.swanson@thephysicianalliance.org"]}
+2025-03-08 18:03:46 - HTTP Code: 404
+2025-03-08 18:03:46 - Response: 
+2025-03-08 18:03:46 - Using fallback validation
+2025-03-08 18:03:46 - Validation completed with 94 results
+2025-03-08 18:03:46 - Email validation completed: 93 valid, 1 invalid
+2025-03-08 18:30:21 - Starting validation for list ID: 2
+2025-03-08 18:30:21 - Found 94 contacts to validate
+2025-03-08 18:30:21 - Starting Postmark validation for 94 emails
+2025-03-08 18:30:21 - Request payload: {"Emails":["tsundin12@me.com","awvlab@awomansview.com","thmckinley@phhealthcare.org","heybull@yahoo.com","victor@invenio-medical.com","waltking572@gmail.com","slamier@kensingtonhrc.com","stearnsjanelle@hotmail.com","Dontrellemmett618@gmail.com","stkm_2000@yahoo.com","drstevechoi@gmail.com","prunford2@yahoo.com","ileriayoadeniyi4@gmail.com","samelessego@gmail.com","sathornton02@gmail.com","saudsrahman@yahoo.com","hematech@yahoo.com","diering@yahoo.com","s.dufour@mail.com","sstinne@jhmi.edu","antoniak@email.unc.edu","1stethiog@gmail.com","RCasalegno@charter.net","dktrbob@aol.com","jamiealex911@gmail.com","hbrobdawg9@hotmail.com","Koon- Roxann.Braun-Koon@crmc.org","rich.pers458@outlook.com","ccjirovec@hotmail.com","cassiuscalvin021@gmail.com","vannmd@gmail.com","craigclayton136@gmail.com","rsudmd@gmail.com","quinn.christensen@imail.org","vetome@yahoo.com","SangJewelo@gmail.com","randy.feldman@cshs.org","recx82@gmail.com","mihealson34@gmail.com","laboratoryit@gmail.com","docmichealcole@gmail.com","mdelelys@mgh.harvard.edu","mrivera@umcelpaso.org","garrom@missouri.edu","mpatel14@live.com","bisestifamily@gmail.com","nbbay@hotmail.com","nilofar.sanaiha@gmail.com","nvanca@destinysprings.com","nicolasmarcus13@gmail.com","mattjshore@yahoo.com","chantedarrius@gmail.com","mcutright@azacp.com","kfreedma@conemaugh.org","katye.conniff@gmail.com","kelley.durden@flaglerhealth.org","kdijak@comhs.org","kim.hazelbaker@bsahs.org","Kstea@aol.com","kforsyth@colquittregional.com","kwilems@cbwc.us","kym.lengyel@yahoo.com","joelaurenthomas@hotmail.com","lequinn6464@gmail.com","lewisedmund94@gmail.com","Lindsey.Douglas@sjcd.edu","7lindsey@gmail.com","myputt_2@hotmail.com","lisa.long@mercy.net","lori.stevens@hcahealthcare.com","lleppo@yahoo.com","mandydehghan10@gmail.com","Lewie01@aol.com","marcusramzi@gmail.com","mlaughery@broadlawns.org","mark.williams@midlandhealth.org","mcasassa416@gmail.com","mkneedles@yahoo.com","marvin.bittner@gmail.com","mawayne2@gmail.com","mlamonaca@stgeorgeslab.com","livingspringmathias@gmail.com","jdahlstrom7@gmail.com","imhevnbnd4him@aol.com","joseph.smith@emoryhealthcare.org","JoslynPribble@mhd.com","joslynlee@aol.com","julie_c_bevan@yahoo.com","jdoyel@memorialcare.org","bejanpon11@gmail.com","bookerahmod@gmail.com","karenhar@stny.rr.com","kksmith@broadlawns.org","karen.swanson@thephysicianalliance.org"]}
+2025-03-08 18:30:23 - HTTP Code: 404
+2025-03-08 18:30:23 - Response: 
+2025-03-08 18:30:23 - Using fallback validation
+2025-03-08 18:30:23 - Validation completed with 94 results
+2025-03-08 18:30:23 - Email validation completed: 93 valid, 1 invalid
+2025-03-09 04:34:12 - Starting validation for list ID: 8
+2025-03-09 04:34:12 - Found 10 contacts to validate
+2025-03-09 04:34:12 - Starting Postmark validation for 10 emails
+2025-03-09 04:34:12 - Request payload: {"Emails":["nadika.tharayil@gmail.com","adhvik.tharayil@gmail.com","sanilts@gmail.com","sanil@researchandmetric.com","rahul@researhandmetric.com","vijay@researchandmetric.com","lewie01@aol.com","nchithran@gmail.com","neethu@astrizon.com","neethu@researchandmetric.com"]}
+2025-03-09 04:34:13 - HTTP Code: 404
+2025-03-09 04:34:13 - Response: 
+2025-03-09 04:34:13 - Using fallback validation
+2025-03-09 04:34:13 - Validation completed with 10 results
+2025-03-09 04:34:13 - Email validation completed: 10 valid, 0 invalid
+2025-03-09 05:18:37 - Starting validation for list ID: 8
+2025-03-09 05:18:37 - Found 10 contacts to validate
+2025-03-09 05:18:37 - Starting Postmark validation for 10 emails
+2025-03-09 05:18:37 - Request payload: {"Emails":["nadika.tharayil@gmail.com","adhvik.tharayil@gmail.com","sanilts@gmail.com","sanil@researchandmetric.com","rahul@researhandmetric.com","vijay@researchandmetric.com","lewie01@aol.com","nchithran@gmail.com","neethu@astrizon.com","neethu@researchandmetric.com"]}
+2025-03-09 05:18:38 - HTTP Code: 404
+2025-03-09 05:18:38 - Response: 
+2025-03-09 05:18:38 - Using fallback validation
+2025-03-09 05:18:38 - Validation completed with 10 results
+2025-03-09 05:18:38 - Email validation completed: 10 valid, 0 invalid
+2025-03-09 06:45:21 - Starting validation for list ID: 8
+2025-03-09 06:45:21 - Found 10 contacts to validate
+2025-03-09 06:49:14 - Starting validation for list ID: 8
+2025-03-09 06:49:14 - Found 10 contacts to validate
+2025-03-09 06:49:14 - Starting Postmark validation for 10 emails
+2025-03-09 06:49:14 - Request payload: {"Emails":["nadika.tharayil@gmail.com","adhvik.tharayil@gmail.com","sanilts@gmail.com","sanil@researchandmetric.com","rahul@researhandmetric.com","vijay@researchandmetric.com","lewie01@aol.com","nchithran@gmail.com","neethu@astrizon.com","neethu@researchandmetric.com"]}
+2025-03-09 06:49:14 - HTTP Code: 404
+2025-03-09 06:49:14 - Response: 
+2025-03-09 06:49:14 - Using fallback validation
+2025-03-09 06:49:14 - Validation completed with 10 results
+2025-03-09 06:49:14 - Email validation completed: 10 valid, 0 invalid

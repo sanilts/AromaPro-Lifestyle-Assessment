@@ -1,0 +1,220 @@
+2025-03-08 16:20:04 - Starting Postmark API test...
+2025-03-08 16:20:04 - Testing email: test@example.com
+2025-03-08 16:20:04 - API Key: dad...6f1
+2025-03-08 16:20:04 - Testing validation endpoint: https://api.postmarkapp.com/email/batch/validate
+2025-03-08 16:20:04 - Request payload: ["test@example.com"]
+2025-03-08 16:20:05 - HTTP Response Code: 404
+2025-03-08 16:20:05 - Verbose: *   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\Users\sanil\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date: Jun 12 23:59:59 2025 GMT
+*  subjectAltName: host "api.postmarkapp.com" matched cert's "*.postmarkapp.com"
+*  issuer: C=US; O=Amazon; CN=Amazon RSA 2048 M02
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.postmarkapp.com/email/batch/validate
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.postmarkapp.com]
+* [HTTP/2] [1] [:path: /email/batch/validate]
+* [HTTP/2] [1] [accept: application/json]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [x-postmark-server-token: dadd6ace-0836-47eb-85c8-494e26b9b6f1]
+* [HTTP/2] [1] [content-length: 20]
+> POST /email/batch/validate HTTP/2
+Host: api.postmarkapp.com
+Accept: application/json
+Content-Type: application/json
+X-Postmark-Server-Token: dadd6ace-0836-47eb-85c8-494e26b9b6f1
+Content-Length: 20
+
+< HTTP/2 404 
+< date: Sat, 08 Mar 2025 16:20:05 GMT
+< content-length: 0
+< x-ratelimit-remaining-second: 4999
+< x-ratelimit-limit-second: 5000
+< ratelimit-limit: 5000
+< ratelimit-remaining: 4999
+< ratelimit-reset: 1
+< vary: Origin
+< strict-transport-security: max-age=16000000;
+< 
+* Connection #0 to host api.postmarkapp.com left intact
+
+2025-03-08 16:20:05 - API Connection Failed! Check your API key and make sure you have access to the Email Validation API.
+2025-03-08 16:20:05 - Response body: 
+2025-03-08 16:20:05 - Test complete. Check logs at: C:\Users\sanil\xampp\htdocs\listvalidator\public/../logs/postmark_test.log
+2025-03-08 16:21:36 - Starting Postmark API test...
+2025-03-08 16:21:36 - Testing email: sanilts@gmail.com
+2025-03-08 16:21:36 - API Key: dad...6f1
+2025-03-08 16:21:36 - Testing validation endpoint: https://api.postmarkapp.com/email/batch/validate
+2025-03-08 16:21:36 - Request payload: ["sanilts@gmail.com"]
+2025-03-08 16:21:37 - HTTP Response Code: 404
+2025-03-08 16:21:37 - Verbose: *   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\Users\sanil\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date: Jun 12 23:59:59 2025 GMT
+*  subjectAltName: host "api.postmarkapp.com" matched cert's "*.postmarkapp.com"
+*  issuer: C=US; O=Amazon; CN=Amazon RSA 2048 M02
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.postmarkapp.com/email/batch/validate
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.postmarkapp.com]
+* [HTTP/2] [1] [:path: /email/batch/validate]
+* [HTTP/2] [1] [accept: application/json]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [x-postmark-server-token: dadd6ace-0836-47eb-85c8-494e26b9b6f1]
+* [HTTP/2] [1] [content-length: 21]
+> POST /email/batch/validate HTTP/2
+Host: api.postmarkapp.com
+Accept: application/json
+Content-Type: application/json
+X-Postmark-Server-Token: dadd6ace-0836-47eb-85c8-494e26b9b6f1
+Content-Length: 21
+
+< HTTP/2 404 
+< date: Sat, 08 Mar 2025 16:21:37 GMT
+< content-length: 0
+< ratelimit-limit: 5000
+< ratelimit-remaining: 4999
+< ratelimit-reset: 1
+< x-ratelimit-remaining-second: 4999
+< x-ratelimit-limit-second: 5000
+< vary: Origin
+< strict-transport-security: max-age=16000000;
+< 
+* Connection #0 to host api.postmarkapp.com left intact
+
+2025-03-08 16:21:37 - API Connection Failed! Check your API key and make sure you have access to the Email Validation API.
+2025-03-08 16:21:37 - Response body: 
+2025-03-08 16:21:37 - Test complete. Check logs at: C:\Users\sanil\xampp\htdocs\listvalidator\public/../logs/postmark_test.log
+2025-03-08 16:21:51 - Starting Postmark API test...
+2025-03-08 16:21:51 - Testing email: sanilts@gmail.com
+2025-03-08 16:21:51 - API Key: dad...6f1
+2025-03-08 16:21:51 - Testing validation endpoint: https://api.postmarkapp.com/email/batch/validate
+2025-03-08 16:21:51 - Request payload: ["sanilts@gmail.com"]
+2025-03-08 16:21:52 - HTTP Response Code: 404
+2025-03-08 16:21:52 - Verbose: *   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\Users\sanil\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date: Jun 12 23:59:59 2025 GMT
+*  subjectAltName: host "api.postmarkapp.com" matched cert's "*.postmarkapp.com"
+*  issuer: C=US; O=Amazon; CN=Amazon RSA 2048 M02
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.postmarkapp.com/email/batch/validate
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.postmarkapp.com]
+* [HTTP/2] [1] [:path: /email/batch/validate]
+* [HTTP/2] [1] [accept: application/json]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [x-postmark-server-token: dadd6ace-0836-47eb-85c8-494e26b9b6f1]
+* [HTTP/2] [1] [content-length: 21]
+> POST /email/batch/validate HTTP/2
+Host: api.postmarkapp.com
+Accept: application/json
+Content-Type: application/json
+X-Postmark-Server-Token: dadd6ace-0836-47eb-85c8-494e26b9b6f1
+Content-Length: 21
+
+< HTTP/2 404 
+< date: Sat, 08 Mar 2025 16:21:52 GMT
+< content-length: 0
+< x-ratelimit-limit-second: 5000
+< x-ratelimit-remaining-second: 4999
+< ratelimit-remaining: 4999
+< ratelimit-limit: 5000
+< ratelimit-reset: 1
+< vary: Origin
+< strict-transport-security: max-age=16000000;
+< 
+* Connection #0 to host api.postmarkapp.com left intact
+
+2025-03-08 16:21:52 - API Connection Failed! Check your API key and make sure you have access to the Email Validation API.
+2025-03-08 16:21:52 - Response body: 
+2025-03-08 16:21:52 - Test complete. Check logs at: C:\Users\sanil\xampp\htdocs\listvalidator\public/../logs/postmark_test.log
+2025-03-08 16:24:39 - Starting Postmark API test...
+2025-03-08 16:24:39 - Testing email: sanilts@gmail.com
+2025-03-08 16:24:39 - API Key: dad...6f1
+2025-03-08 16:24:39 - Testing SINGLE validation endpoint: https://api.postmarkapp.com/email/validate
+2025-03-08 16:24:39 - Request payload: {"Email":"sanilts@gmail.com"}
+2025-03-08 16:24:40 - HTTP Response Code: 404
+2025-03-08 16:24:40 - Verbose: *   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\Users\sanil\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date: Jun 12 23:59:59 2025 GMT
+*  subjectAltName: host "api.postmarkapp.com" matched cert's "*.postmarkapp.com"
+*  issuer: C=US; O=Amazon; CN=Amazon RSA 2048 M02
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://api.postmarkapp.com/email/validate
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: api.postmarkapp.com]
+* [HTTP/2] [1] [:path: /email/validate]
+* [HTTP/2] [1] [accept: application/json]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [x-postmark-server-token: dadd6ace-0836-47eb-85c8-494e26b9b6f1]
+* [HTTP/2] [1] [content-length: 29]
+> POST /email/validate HTTP/2
+Host: api.postmarkapp.com
+Accept: application/json
+Content-Type: application/json
+X-Postmark-Server-Token: dadd6ace-0836-47eb-85c8-494e26b9b6f1
+Content-Length: 29
+
+< HTTP/2 404 
+< date: Sat, 08 Mar 2025 16:24:40 GMT
+< content-length: 0
+< x-ratelimit-remaining-second: 4999
+< x-ratelimit-limit-second: 5000
+< ratelimit-limit: 5000
+< ratelimit-remaining: 4999
+< ratelimit-reset: 1
+< vary: Origin
+< strict-transport-security: max-age=16000000;
+< 
+* Connection #0 to host api.postmarkapp.com left intact
+
+2025-03-08 16:24:40 - API Connection Failed! Check your API key and make sure you have access to the Email Validation API.
+2025-03-08 16:24:40 - Response body: 
+2025-03-08 16:24:40 - <h3>Testing Email Sending API as an alternative...</h3>
+2025-03-08 16:24:41 - Email Send Test HTTP Response Code: 200
+2025-03-08 16:24:41 - Email Send API Connection Successful! Your Postmark account can send emails.
+2025-03-08 16:24:41 - Response: {"ErrorCode":0,"Message":"OK","MessageID":"e1ecc54d-6b7f-4479-928b-ca23198ecf12","SubmittedAt":"2025-03-08T16:24:41.3262051Z","To":"sanilts@gmail.com"}
+2025-03-08 16:24:41 - <h3>Recommendations:</h3>
+2025-03-08 16:24:41 - 1. Check if your Postmark account subscription includes email validation API access
+2025-03-08 16:24:41 - 2. Verify your API key has permission to use the email validation API
+2025-03-08 16:24:41 - 3. Consider using a different email validation method if Postmark validation is not available
+2025-03-08 16:24:41 - Test complete. Check logs at: C:\Users\sanil\xampp\htdocs\listvalidator\public/../logs/postmark_test.log

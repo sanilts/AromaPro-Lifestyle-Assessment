@@ -1,0 +1,471 @@
+2025-03-09 06:57:54 - Attempting to send email to: nadika.tharayil@gmail.com
+2025-03-09 06:57:54 - Using API key: your-...i-key
+2025-03-09 06:57:54 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:54 - Using message stream: outbound
+2025-03-09 06:57:54 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"nadika.tharayil@gmail.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Nandika,<\/...","TrackOpens":true,"TextBody":"Hello Nandika,\n\nThis email is being sent to validate your email address for our list: Test Personal....","MessageStream":"outbound"}
+2025-03-09 06:57:54 - HTTP Code: 401
+2025-03-09 06:57:54 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.17.90.244, 3.13.44.26
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 06:57:54 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:54 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:54 - End of email sending attempt to nadika.tharayil@gmail.com
+2025-03-09 06:57:54 -----------------------------
+2025-03-09 06:57:55 - Attempting to send email to: adhvik.tharayil@gmail.com
+2025-03-09 06:57:55 - Using API key: your-...i-key
+2025-03-09 06:57:55 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:55 - Using message stream: outbound
+2025-03-09 06:57:55 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"adhvik.tharayil@gmail.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Adhvik,<\/p...","TrackOpens":true,"TextBody":"Hello Adhvik,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 06:57:55 - HTTP Code: 401
+2025-03-09 06:57:55 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.17.90.244, 3.13.44.26, 52.14.209.117
+*   Trying 3.17.90.244:443...
+* Connected to api.postmarkapp.com (3.17.90.244) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire dat
+2025-03-09 06:57:55 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:55 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:55 - End of email sending attempt to adhvik.tharayil@gmail.com
+2025-03-09 06:57:55 -----------------------------
+2025-03-09 06:57:55 - Attempting to send email to: sanilts@gmail.com
+2025-03-09 06:57:55 - Using API key: your-...i-key
+2025-03-09 06:57:55 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:55 - Using message stream: outbound
+2025-03-09 06:57:55 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"sanilts@gmail.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Sanil,<\/p>...","TrackOpens":true,"TextBody":"Hello Sanil,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\n...","MessageStream":"outbound"}
+2025-03-09 06:57:55 - HTTP Code: 401
+2025-03-09 06:57:55 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.13.44.26, 3.17.90.244, 52.14.209.117
+*   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date:
+2025-03-09 06:57:55 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:55 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:55 - End of email sending attempt to sanilts@gmail.com
+2025-03-09 06:57:55 -----------------------------
+2025-03-09 06:57:56 - Attempting to send email to: sanil@researchandmetric.com
+2025-03-09 06:57:56 - Using API key: your-...i-key
+2025-03-09 06:57:56 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:56 - Using message stream: outbound
+2025-03-09 06:57:56 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"sanil@researchandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Sanil,<\/p>...","TrackOpens":true,"TextBody":"Hello Sanil,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\n...","MessageStream":"outbound"}
+2025-03-09 06:57:56 - HTTP Code: 401
+2025-03-09 06:57:56 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.13.44.26, 52.14.209.117, 3.17.90.244
+*   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date:
+2025-03-09 06:57:56 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:56 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:56 - End of email sending attempt to sanil@researchandmetric.com
+2025-03-09 06:57:56 -----------------------------
+2025-03-09 06:57:56 - Attempting to send email to: rahul@researhandmetric.com
+2025-03-09 06:57:56 - Using API key: your-...i-key
+2025-03-09 06:57:56 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:56 - Using message stream: outbound
+2025-03-09 06:57:56 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"rahul@researhandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Rahul,<\/p>...","TrackOpens":true,"TextBody":"Hello Rahul,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\n...","MessageStream":"outbound"}
+2025-03-09 06:57:56 - HTTP Code: 401
+2025-03-09 06:57:56 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.13.44.26, 3.17.90.244
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 06:57:56 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:56 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:56 - End of email sending attempt to rahul@researhandmetric.com
+2025-03-09 06:57:56 -----------------------------
+2025-03-09 06:57:57 - Attempting to send email to: vijay@researchandmetric.com
+2025-03-09 06:57:57 - Using API key: your-...i-key
+2025-03-09 06:57:57 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:57 - Using message stream: outbound
+2025-03-09 06:57:57 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"vijay@researchandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Vijay,<\/p>...","TrackOpens":true,"TextBody":"Hello Vijay,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\n...","MessageStream":"outbound"}
+2025-03-09 06:57:57 - HTTP Code: 401
+2025-03-09 06:57:57 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.17.90.244, 3.13.44.26
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 06:57:57 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:57 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:57 - End of email sending attempt to vijay@researchandmetric.com
+2025-03-09 06:57:57 -----------------------------
+2025-03-09 06:57:57 - Attempting to send email to: lewie01@aol.com
+2025-03-09 06:57:57 - Using API key: your-...i-key
+2025-03-09 06:57:57 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:57 - Using message stream: outbound
+2025-03-09 06:57:57 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"lewie01@aol.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Lewi,<\/p>\n...","TrackOpens":true,"TextBody":"Hello Lewi,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\nI...","MessageStream":"outbound"}
+2025-03-09 06:57:57 - HTTP Code: 401
+2025-03-09 06:57:57 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.17.90.244, 3.13.44.26
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 06:57:57 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:57 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:57 - End of email sending attempt to lewie01@aol.com
+2025-03-09 06:57:57 -----------------------------
+2025-03-09 06:57:58 - Attempting to send email to: nchithran@gmail.com
+2025-03-09 06:57:58 - Using API key: your-...i-key
+2025-03-09 06:57:58 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:58 - Using message stream: outbound
+2025-03-09 06:57:58 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"nchithran@gmail.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Neethu,<\/p...","TrackOpens":true,"TextBody":"Hello Neethu,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 06:57:58 - HTTP Code: 401
+2025-03-09 06:57:58 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.17.90.244, 3.13.44.26
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 06:57:58 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:58 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:58 - End of email sending attempt to nchithran@gmail.com
+2025-03-09 06:57:58 -----------------------------
+2025-03-09 06:57:58 - Attempting to send email to: neethu@astrizon.com
+2025-03-09 06:57:58 - Using API key: your-...i-key
+2025-03-09 06:57:58 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:58 - Using message stream: outbound
+2025-03-09 06:57:58 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"neethu@astrizon.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Neethu,<\/p...","TrackOpens":true,"TextBody":"Hello Neethu,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 06:57:58 - HTTP Code: 401
+2025-03-09 06:57:58 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.17.90.244, 3.13.44.26
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 06:57:58 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:58 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:58 - End of email sending attempt to neethu@astrizon.com
+2025-03-09 06:57:58 -----------------------------
+2025-03-09 06:57:59 - Attempting to send email to: neethu@researchandmetric.com
+2025-03-09 06:57:59 - Using API key: your-...i-key
+2025-03-09 06:57:59 - From: Email Validator <noreply@yourdomain.com>
+2025-03-09 06:57:59 - Using message stream: outbound
+2025-03-09 06:57:59 - Payload: {"From":"Email Validator <noreply@yourdomain.com>","To":"neethu@researchandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Neethu,<\/p...","TrackOpens":true,"TextBody":"Hello Neethu,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 06:57:59 - HTTP Code: 401
+2025-03-09 06:57:59 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.17.90.244, 3.13.44.26
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 06:57:59 - Response: {"ErrorCode":10,"Message":"Request does not contain a valid Server token."}
+2025-03-09 06:57:59 - Error: API error: HTTP code 401 - Request does not contain a valid Server token.
+2025-03-09 06:57:59 - End of email sending attempt to neethu@researchandmetric.com
+2025-03-09 06:57:59 -----------------------------
+2025-03-09 07:27:49 - Attempting to send email to: sanilts@gmail.com
+2025-03-09 07:27:49 - Using API key: b1929...71e88
+2025-03-09 07:27:49 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:27:49 - Using message stream: outbound
+2025-03-09 07:27:49 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"sanilts@gmail.com","Subject":"Postmark API Test - 2025-03-09 07:27:49","HtmlBody":"\n    <html>\n    <body>\n        <h2>Postmark API Test<\/h2>\n        <p>This is a test email sent from ...","TrackOpens":true,"TextBody":"Postmark API Test\n\nThis is a test email sent from your List Validator application to verify the Post...","MessageStream":"outbound"}
+2025-03-09 07:27:49 - HTTP Code: 200
+2025-03-09 07:27:49 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.13.44.26, 3.17.90.244
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 07:27:49 - Success: Email sent with MessageID afc0f5e4-52b3-484c-8234-7272d310a86c
+2025-03-09 07:27:49 - End of email sending attempt to sanilts@gmail.com
+2025-03-09 07:27:49 -----------------------------
+2025-03-09 07:31:13 - Attempting to send email to: nadika.tharayil@gmail.com
+2025-03-09 07:31:13 - Using API key: b1929...71e88
+2025-03-09 07:31:13 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:13 - Using message stream: outbound
+2025-03-09 07:31:13 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"nadika.tharayil@gmail.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Nandika,<\/...","TrackOpens":true,"TextBody":"Hello Nandika,\n\nThis email is being sent to validate your email address for our list: Test Personal....","MessageStream":"outbound"}
+2025-03-09 07:31:13 - HTTP Code: 200
+2025-03-09 07:31:13 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.13.44.26, 3.17.90.244, 52.14.209.117
+*   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date:
+2025-03-09 07:31:13 - Success: Email sent with MessageID ef3f8860-1218-464a-a02e-5bc97c8c8d24
+2025-03-09 07:31:13 - End of email sending attempt to nadika.tharayil@gmail.com
+2025-03-09 07:31:13 -----------------------------
+2025-03-09 07:31:13 - Attempting to send email to: adhvik.tharayil@gmail.com
+2025-03-09 07:31:13 - Using API key: b1929...71e88
+2025-03-09 07:31:13 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:13 - Using message stream: outbound
+2025-03-09 07:31:13 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"adhvik.tharayil@gmail.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Adhvik,<\/p...","TrackOpens":true,"TextBody":"Hello Adhvik,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 07:31:13 - HTTP Code: 200
+2025-03-09 07:31:13 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.13.44.26, 3.17.90.244
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 07:31:13 - Success: Email sent with MessageID b5fac38c-c764-40a2-a3be-ebc65d8bdfc5
+2025-03-09 07:31:13 - End of email sending attempt to adhvik.tharayil@gmail.com
+2025-03-09 07:31:13 -----------------------------
+2025-03-09 07:31:14 - Attempting to send email to: sanil@researchandmetric.com
+2025-03-09 07:31:14 - Using API key: b1929...71e88
+2025-03-09 07:31:14 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:14 - Using message stream: outbound
+2025-03-09 07:31:14 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"sanil@researchandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Sanil,<\/p>...","TrackOpens":true,"TextBody":"Hello Sanil,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\n...","MessageStream":"outbound"}
+2025-03-09 07:31:14 - HTTP Code: 200
+2025-03-09 07:31:14 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.17.90.244, 52.14.209.117, 3.13.44.26
+*   Trying 3.17.90.244:443...
+* Connected to api.postmarkapp.com (3.17.90.244) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire dat
+2025-03-09 07:31:14 - Success: Email sent with MessageID 6e9fc1d8-609d-46d6-be50-382358bf57cc
+2025-03-09 07:31:14 - End of email sending attempt to sanil@researchandmetric.com
+2025-03-09 07:31:14 -----------------------------
+2025-03-09 07:31:14 - Attempting to send email to: rahul@researhandmetric.com
+2025-03-09 07:31:14 - Using API key: b1929...71e88
+2025-03-09 07:31:14 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:14 - Using message stream: outbound
+2025-03-09 07:31:14 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"rahul@researhandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Rahul,<\/p>...","TrackOpens":true,"TextBody":"Hello Rahul,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\n...","MessageStream":"outbound"}
+2025-03-09 07:31:14 - HTTP Code: 200
+2025-03-09 07:31:14 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.17.90.244, 3.13.44.26, 52.14.209.117
+*   Trying 3.17.90.244:443...
+* Connected to api.postmarkapp.com (3.17.90.244) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire dat
+2025-03-09 07:31:14 - Success: Email sent with MessageID 72163599-ff23-4e6f-a724-5f403d80b043
+2025-03-09 07:31:14 - End of email sending attempt to rahul@researhandmetric.com
+2025-03-09 07:31:14 -----------------------------
+2025-03-09 07:31:15 - Attempting to send email to: vijay@researchandmetric.com
+2025-03-09 07:31:15 - Using API key: b1929...71e88
+2025-03-09 07:31:15 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:15 - Using message stream: outbound
+2025-03-09 07:31:15 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"vijay@researchandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Vijay,<\/p>...","TrackOpens":true,"TextBody":"Hello Vijay,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\n...","MessageStream":"outbound"}
+2025-03-09 07:31:15 - HTTP Code: 200
+2025-03-09 07:31:15 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.13.44.26, 3.17.90.244, 52.14.209.117
+*   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date:
+2025-03-09 07:31:15 - Success: Email sent with MessageID 4a5e59f8-44f0-4b99-b6fc-f2a782f7fc2a
+2025-03-09 07:31:15 - End of email sending attempt to vijay@researchandmetric.com
+2025-03-09 07:31:15 -----------------------------
+2025-03-09 07:31:15 - Attempting to send email to: lewie01@aol.com
+2025-03-09 07:31:15 - Using API key: b1929...71e88
+2025-03-09 07:31:15 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:15 - Using message stream: outbound
+2025-03-09 07:31:15 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"lewie01@aol.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Lewi,<\/p>\n...","TrackOpens":true,"TextBody":"Hello Lewi,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n\nI...","MessageStream":"outbound"}
+2025-03-09 07:31:15 - HTTP Code: 422
+2025-03-09 07:31:15 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.17.90.244, 52.14.209.117, 3.13.44.26
+*   Trying 3.17.90.244:443...
+* Connected to api.postmarkapp.com (3.17.90.244) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire dat
+2025-03-09 07:31:15 - Response: {"ErrorCode":406,"Message":"You tried to send to recipient(s) that have been marked as inactive. Found inactive addresses: Lewie01@aol.com. Inactive recipients are ones that have generated a hard bounce, a spam complaint, or a manual suppression."}
+2025-03-09 07:31:15 - Error: API error: HTTP code 422 - You tried to send to recipient(s) that have been marked as inactive. Found inactive addresses: Lewie01@aol.com. Inactive recipients are ones that have generated a hard bounce, a spam complaint, or a manual suppression.
+2025-03-09 07:31:15 - End of email sending attempt to lewie01@aol.com
+2025-03-09 07:31:15 -----------------------------
+2025-03-09 07:31:16 - Attempting to send email to: nchithran@gmail.com
+2025-03-09 07:31:16 - Using API key: b1929...71e88
+2025-03-09 07:31:16 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:16 - Using message stream: outbound
+2025-03-09 07:31:16 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"nchithran@gmail.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Neethu,<\/p...","TrackOpens":true,"TextBody":"Hello Neethu,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 07:31:16 - HTTP Code: 200
+2025-03-09 07:31:16 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.13.44.26, 3.17.90.244, 52.14.209.117
+*   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date:
+2025-03-09 07:31:16 - Success: Email sent with MessageID 54f9d26d-8b8d-4134-b68d-a22eaf4a3956
+2025-03-09 07:31:16 - End of email sending attempt to nchithran@gmail.com
+2025-03-09 07:31:16 -----------------------------
+2025-03-09 07:31:16 - Attempting to send email to: neethu@astrizon.com
+2025-03-09 07:31:16 - Using API key: b1929...71e88
+2025-03-09 07:31:16 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:16 - Using message stream: outbound
+2025-03-09 07:31:16 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"neethu@astrizon.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Neethu,<\/p...","TrackOpens":true,"TextBody":"Hello Neethu,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 07:31:17 - HTTP Code: 200
+2025-03-09 07:31:17 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 3.13.44.26, 52.14.209.117, 3.17.90.244
+*   Trying 3.13.44.26:443...
+* Connected to api.postmarkapp.com (3.13.44.26) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire date:
+2025-03-09 07:31:17 - Success: Email sent with MessageID b9083f37-bd83-4110-bb7c-ca50d80b4e99
+2025-03-09 07:31:17 - End of email sending attempt to neethu@astrizon.com
+2025-03-09 07:31:17 -----------------------------
+2025-03-09 07:31:17 - Attempting to send email to: neethu@researchandmetric.com
+2025-03-09 07:31:17 - Using API key: b1929...71e88
+2025-03-09 07:31:17 - From: Email Validator <noreply@wpgle.com>
+2025-03-09 07:31:17 - Using message stream: outbound
+2025-03-09 07:31:17 - Payload: {"From":"Email Validator <noreply@wpgle.com>","To":"neethu@researchandmetric.com","Subject":"Email Validation for Test Personal","HtmlBody":"\n        <html>\n        <body>\n            <h2>Email Validation<\/h2>\n            <p>Hello Neethu,<\/p...","TrackOpens":true,"TextBody":"Hello Neethu,\n\nThis email is being sent to validate your email address for our list: Test Personal.\n...","MessageStream":"outbound"}
+2025-03-09 07:31:17 - HTTP Code: 200
+2025-03-09 07:31:17 - Verbose: * Host api.postmarkapp.com:443 was resolved.
+* IPv6: (none)
+* IPv4: 52.14.209.117, 3.17.90.244, 3.13.44.26
+*   Trying 52.14.209.117:443...
+* Connected to api.postmarkapp.com (52.14.209.117) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: /etc/pki/tls/certs/ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / x25519 / RSASSA-PSS
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=*.postmarkapp.com
+*  start date: May 13 00:00:00 2024 GMT
+*  expire
+2025-03-09 07:31:17 - Success: Email sent with MessageID 5e9d3eed-7d0b-4d73-a2dc-8b3c2d349697
+2025-03-09 07:31:17 - End of email sending attempt to neethu@researchandmetric.com
+2025-03-09 07:31:17 -----------------------------
