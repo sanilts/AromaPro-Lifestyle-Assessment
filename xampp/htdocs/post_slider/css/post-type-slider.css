@@ -1,0 +1,439 @@
+/**
+ * Post Type Slider CSS
+ * 
+ * This file should be placed in /css/post-type-slider.css
+ */
+
+/* Container */
+.pts-slider-container {
+    position: relative;
+    margin: 15px 0;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Slider */
+.pts-post-type-slider {
+    margin: 0 -10px;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+}
+
+/* Slider Item */
+.pts-slider-item {
+    padding: 10px;
+    outline: none !important;
+}
+
+/* Image Wrapper */
+.pts-slider-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Image Styles */
+.pts-slider-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.4s ease-in-out;
+}
+
+.pts-slider-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pts-slider-image.grayscale {
+    filter: grayscale(100%);
+    opacity: 1;
+    z-index: 1;
+}
+
+.pts-slider-image.color {
+    opacity: 0;
+    z-index: 2;
+}
+
+.pts-slider-item:hover .pts-slider-image.grayscale {
+    opacity: 0;
+}
+
+.pts-slider-item:hover .pts-slider-image.color {
+    opacity: 1;
+}
+
+/* Title Base Styles */
+.pts-slider-title-wrapper {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    padding: 15px 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 3;
+    transition: all 0.4s ease-in-out;
+}
+
+.pts-slider-title {
+    margin: 0;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+/* Title Position Styles */
+.pts-title-position-bottom {
+    bottom: 0;
+    transform: translateY(100%);
+}
+
+.pts-slider-item:hover .pts-title-position-bottom.pts-title-hover-slide-up {
+    transform: translateY(0);
+}
+
+.pts-title-position-top {
+    top: 0;
+    bottom: auto;
+    transform: translateY(-100%);
+}
+
+.pts-slider-item:hover .pts-title-position-top {
+    transform: translateY(0);
+}
+
+.pts-title-position-middle {
+    top: 50%;
+    bottom: auto;
+    transform: translate(0, -50%);
+    text-align: center;
+    opacity: 0;
+}
+
+.pts-slider-item:hover .pts-title-position-middle {
+    opacity: 1;
+}
+
+.pts-title-always-visible {
+    transform: translateY(0) !important;
+}
+
+/* Title Style Variations */
+.pts-title-style-boxed {
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    margin: 10px;
+    width: calc(100% - 20px);
+}
+
+.pts-title-style-minimal {
+    background-color: transparent !important;
+}
+
+.pts-title-style-minimal .pts-slider-title {
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.pts-title-style-highlighted {
+    background-color: transparent !important;
+    text-align: center;
+}
+
+.pts-title-style-highlighted .pts-slider-title {
+    display: inline;
+    padding: 5px 10px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    line-height: 1.8;
+}
+
+.pts-title-style-bold .pts-slider-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Hover effects */
+.pts-title-hover-fade-in {
+    opacity: 0;
+    transform: translateY(0);
+}
+
+.pts-slider-item:hover .pts-title-hover-fade-in {
+    opacity: 1;
+}
+
+.pts-title-hover-zoom-in {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+}
+
+.pts-slider-item:hover .pts-title-hover-zoom-in {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.pts-title-hover-none {
+    transform: translateY(0);
+}
+
+/* Placeholder for posts without images */
+.pts-slider-no-image {
+    width: 100%;
+    height: 100%;
+    background-color: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Slick Slider Arrow Base Styling */
+.pts-post-type-slider .slick-prev,
+.pts-post-type-slider .slick-next {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 40px !important;
+    height: 40px !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 50% !important;
+    z-index: 10 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 0.7 !important;
+    transition: opacity 0.3s ease !important;
+    text-align: center !important;
+    line-height: 0 !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    border: none !important;
+    outline: none !important;
+    font-size: 0 !important; /* Hide text content */
+}
+
+.pts-post-type-slider .slick-prev {
+    left: -20px !important;
+}
+
+.pts-post-type-slider .slick-next {
+    right: -20px !important;
+}
+
+.pts-post-type-slider .slick-prev:before,
+.pts-post-type-slider .slick-next:before {
+    display: none !important; /* Hide default arrow */
+}
+
+.pts-post-type-slider .slick-prev i,
+.pts-post-type-slider .slick-next i,
+.pts-post-type-slider .slick-prev svg,
+.pts-post-type-slider .slick-next svg {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    font-size: 20px !important;
+    color: #fff !important;
+}
+
+.pts-post-type-slider:hover .slick-prev,
+.pts-post-type-slider:hover .slick-next {
+    opacity: 1 !important;
+}
+
+/* Arrow Position Controls - Horizontal */
+.pts-arrows-horizontal-inside .pts-post-type-slider .slick-prev {
+    left: 10px !important;
+}
+
+.pts-arrows-horizontal-inside .pts-post-type-slider .slick-next {
+    right: 10px !important;
+}
+
+.pts-arrows-horizontal-outside .pts-post-type-slider .slick-prev {
+    left: -40px !important;
+}
+
+.pts-arrows-horizontal-outside .pts-post-type-slider .slick-next {
+    right: -40px !important;
+}
+
+/* Arrow Position Controls - Vertical */
+.pts-arrows-vertical-top .pts-post-type-slider .slick-prev,
+.pts-arrows-vertical-top .pts-post-type-slider .slick-next {
+    top: 20px !important;
+    transform: translateY(0) !important;
+}
+
+.pts-arrows-vertical-bottom .pts-post-type-slider .slick-prev,
+.pts-arrows-vertical-bottom .pts-post-type-slider .slick-next {
+    top: auto !important;
+    bottom: 20px !important;
+    transform: translateY(0) !important;
+}
+
+/* Custom position rules - these will be overridden by inline styles */
+.pts-arrows-horizontal-custom .pts-post-type-slider .slick-prev,
+.pts-arrows-horizontal-custom .pts-post-type-slider .slick-next,
+.pts-arrows-vertical-custom .pts-post-type-slider .slick-prev,
+.pts-arrows-vertical-custom .pts-post-type-slider .slick-next {
+    /* These will be controlled by inline styles */
+}
+
+/* Combination position rules */
+.pts-arrows-horizontal-inside.pts-arrows-vertical-top .pts-post-type-slider .slick-prev,
+.pts-arrows-horizontal-inside.pts-arrows-vertical-top .pts-post-type-slider .slick-next {
+    top: 10px !important;
+}
+
+.pts-arrows-horizontal-inside.pts-arrows-vertical-bottom .pts-post-type-slider .slick-prev,
+.pts-arrows-horizontal-inside.pts-arrows-vertical-bottom .pts-post-type-slider .slick-next {
+    bottom: 10px !important;
+}
+
+/* Slick Dots */
+.pts-post-type-slider .slick-dots {
+    position: absolute !important;
+    bottom: -25px !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style: none !important;
+    text-align: center !important;
+    display: block !important;
+}
+
+.pts-post-type-slider .slick-dots li {
+    position: relative !important;
+    display: inline-block !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 5px !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+}
+
+.pts-post-type-slider .slick-dots li button {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    display: block !important;
+    width: 20px !important;
+    height: 20px !important;
+    padding: 5px !important;
+    cursor: pointer !important;
+    color: transparent !important;
+    border: 0 !important;
+    outline: none !important;
+    background: transparent !important;
+}
+
+.pts-post-type-slider .slick-dots li button:before {
+    content: '•' !important;
+    font-size: 12px !important;
+    line-height: 20px !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    text-align: center !important;
+    opacity: 0.25 !important;
+    color: black !important;
+}
+
+.pts-post-type-slider .slick-dots li.slick-active button:before {
+    opacity: 0.75 !important;
+    color: black !important;
+}
+
+/* Fix for flickering during initialization */
+.pts-post-type-slider .slick-track,
+.pts-post-type-slider .slick-slide {
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -ms-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Ensure proper visibility for slides */
+.pts-post-type-slider .slick-slide {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+}
+
+/* Fix for inside positioned arrows to ensure they're visible */
+.pts-arrows-horizontal-inside .pts-post-type-slider:hover .slick-prev {
+    left: 10px !important;
+}
+
+.pts-arrows-horizontal-inside .pts-post-type-slider:hover .slick-next {
+    right: 10px !important;
+}
+
+/* Fix for edge case with custom positions */
+.pts-arrows-horizontal-custom .pts-post-type-slider .slick-prev,
+.pts-arrows-horizontal-custom .pts-post-type-slider .slick-next {
+    z-index: 999 !important;
+}
+
+/* Responsive Adjustments */
+@media only screen and (max-width: 1024px) {
+    .pts-arrows-horizontal-outside .pts-post-type-slider .slick-prev {
+        left: -20px !important;
+    }
+    
+    .pts-arrows-horizontal-outside .pts-post-type-slider .slick-next {
+        right: -20px !important;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    /* Force arrows to be visible on mobile */
+    .pts-arrows-horizontal-outside .pts-post-type-slider .slick-prev {
+        left: 5px !important;
+    }
+    
+    .pts-arrows-horizontal-outside .pts-post-type-slider .slick-next {
+        right: 5px !important;
+    }
+    
+    /* Reduce arrow size on mobile */
+    .pts-post-type-slider .slick-prev,
+    .pts-post-type-slider .slick-next {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    
+    .pts-post-type-slider .slick-prev i,
+    .pts-post-type-slider .slick-next i,
+    .pts-post-type-slider .slick-prev svg,
+    .pts-post-type-slider .slick-next svg {
+        font-size: 16px !important;
+    }
+    
+    .pts-slider-title {
+        font-size: 14px;
+    }
+    
+    .pts-slider-image-wrapper {
+        height: 300px;
+    }
+    
+    /* Ensure arrows don't get cut off on small screens */
+    .pts-slider-container {
+        padding: 0 10px;
+    }
+}
