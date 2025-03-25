@@ -578,3 +578,97 @@ function send_email_with_postmark($to, $subject, $html_body, $text_body = '', $f
     
     return $result;
 }
+
+/**
+ * Check the status of an email message using Postmark API
+ * 
+ * @param string $message_id Postmark message ID to check
+ * @return array|false Result with status and event details, or false on failure
+ */
+function check_email_status($message_id) {
+    // Get the API key from settings or constant
+    $api_key = get_setting('postmark_api_key', '');
+    if (empty($api_key) && defined('POSTMARK_API_KEY')) {
+        $api_key = POSTMARK_API_KEY;
+    }
+    
+    if (empty($api_key) || empty($message_id)) {
+        return false;
+    }
+    
+    // Create logs directory if it doesn't exist
+    $logs_dir = __DIR__ . '/../logs';
+    if (!is_dir($logs_dir)) {
+        mkdir($logs_dir, 0755, true);
+    }
+    
+    // Log file for debugging
+    $log_file = __DIR__ . '/../logs/email_status.log';
+    file_put_contents($log_file, date('Y-m-d H:i:s') . " - Checking status for message: $message_id\n", FILE_APPEND);
+    
+    // Get message details from Postmark API
+    $api_url = POSTMARK_API_URL . '/messages/outbound/' . $message_id . '/details';
+    
+    $ch = curl_init($api_url);
+    $headers = [
+        'Accept: application/json',
+        'X-Postmark-Server-Token: ' . $api_key
+    ];
+    
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_error = curl_error($ch);
+    
+    curl_close($ch);
+    
+    // Log the response
+    file_put_contents($log_file, date('Y-m-d H:i:s') . " - API Response Code: $http_code\n", FILE_APPEND);
+    
+    if ($http_code == 200 && $response) {
+        $details = json_decode($response, true);
+        file_put_contents($log_file, date('Y-m-d H:i:s') . " - Got details for message $message_id\n", FILE_APPEND);
+        
+        // Determine status and event
+        $status = 'pending';
+        $event = 'unknown';
+        
+        if (isset($details['Status'])) {
+            $status_code = strtolower($details['Status']);
+            
+            if ($status_code === 'delivered') {
+                $status = 'success';
+                $event = 'delivered';
+            } else if ($status_code === 'sent') {
+                $status = 'success';
+                $event = 'sent';
+            } else if (strpos($status_code, 'bounce') !== false || strpos($status_code, 'failed') !== false) {
+                $status = 'failed';
+                $event = 'bounced';
+            }
+        }
+        
+        // Check for opens
+        if (isset($details['Opens']) && !empty($details['Opens'])) {
+            $event = 'opened';
+        }
+        
+        return [
+            'success' => true,
+            'status' => $status,
+            'event' => $event,
+            'details' => $details
+        ];
+    } else {
+        // Log the error
+        file_put_contents($log_file, date('Y-m-d H:i:s') . " - Error: $curl_error\n", FILE_APPEND);
+        if ($response) {
+            file_put_contents($log_file, date('Y-m-d H:i:s') . " - Response: $response\n", FILE_APPEND);
+        }
+        
+        return false;
+    }
+}

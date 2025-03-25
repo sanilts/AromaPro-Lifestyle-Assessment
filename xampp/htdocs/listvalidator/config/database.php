@@ -6,8 +6,8 @@
 class Database {
     private $host = 'localhost';
     private $db_name = 'dbolaxfygn7bgm';
-    private $username = 'utei7xp26d6k4';  // Change to your MySQL username
-    private $password = '8w3s6r2uzpbj';      // Change to your MySQL password
+    private $username = 'root';  // Change to your MySQL username
+    private $password = '';      // Change to your MySQL password
     private $conn;
 
     /**

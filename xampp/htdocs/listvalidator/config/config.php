@@ -10,7 +10,7 @@ define('VIEW_PATH', BASE_PATH . '/views');
 define('UPLOAD_PATH', BASE_PATH . '/public/uploads');
 
 // URL settings
-define('BASE_URL', 'https://www.rmpanel.com/listvalidator/public'); // Change according to your server setup
+define('BASE_URL', 'https://localhost/listvalidator/public'); // Change according to your server setup
 define('ASSETS_URL', BASE_URL . '/assets');
 
 // Session settings

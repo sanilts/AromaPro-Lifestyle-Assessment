@@ -574,3 +574,6 @@
 2025-03-09 06:39:48 - Starting Postmark sync for list 8 with 10 contacts
 2025-03-09 06:39:48 - Fetching all outbound messages: https://api.postmarkapp.com/messages/outbound?count=500&offset=0&fromdate=2025-03-02&todate=2025-03-09
 2025-03-09 06:39:48 - API error fetching messages: HTTP 401
+2025-03-18 17:38:02 - Starting Postmark sync for list 10 with 10 contacts
+2025-03-18 17:38:02 - Fetching all outbound messages: https://api.postmarkapp.com/messages/outbound?count=500&offset=0&fromdate=2025-03-11&todate=2025-03-18
+2025-03-18 17:38:03 - API error fetching messages: HTTP 401

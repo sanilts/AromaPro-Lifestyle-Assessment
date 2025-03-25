@@ -269,15 +269,45 @@ function send_validation_emails($list_id) {
         }
         
         // Prepare email template
-        $subject = 'Email Validation for ' . $list['list_name'];
+        $subject = 'WPgle JetLite Hosting Plan Confirmation';
         $html_template = '
         <html>
         <body>
-            <h2>Email Validation</h2>
             <p>Hello {first_name},</p>
-            <p>This email is being sent to validate your email address for our list: <strong>{list_name}</strong>.</p>
-            <p>If you received this email, your email address is valid.</p>
-            <p>Thank you!</p>
+            <p>We\'re pleased to confirm that your WPgle JetLite Hosting Plan purchase has been successfully completed. Your hosting account is now active and ready to use!</p>
+            <h3>Hosting Plan Details:</h3>
+            <p><b>Account ID</b>: WPG-HOST-78542196</p>
+            <h3>Transaction Summary:</h3>
+            <table class="min-w-full border-separate border-spacing-0 text-sm">
+            <thead>
+                <tr>
+                <th class="font-normal px-2 border-b">Item</th>
+                <th class="font-normal px-2 border-b border-l">Period</th>
+                <th class="font-normal px-2 border-b border-l">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="odd:bg-gray-50">
+                <td class="px-2 border-t">JetLite Hosting Plan</td>
+                <td class="px-2 border-t border-l">1 Year</td>
+                <td class="px-2 border-t border-l">$49.99</td>
+                </tr>                
+                <tr class="odd:bg-gray-50">
+                <td class="px-2 border-t">SSL Certificate</td>
+                <td class="px-2 border-t border-l">1 Year</td>
+                <td class="px-2 border-t border-l">$0.00 (included)</td>
+                </tr>
+                <tr class="odd:bg-gray-50">
+                <td class="px-2 border-t"><strong>Total Charged:</strong></td>
+                <td class="px-2 border-t border-l"></td>
+                <td class="px-2 border-t border-l"><strong>$49.99</strong></td>
+                </tr>
+            </tbody>
+            </table>
+            <p class="whitespace-pre-wrap break-words">Best regards,</p>
+            <p class="whitespace-pre-wrap break-words"><strong>The WPgle Hosting Team</strong><br><em>Your web presence is our priority</em></p>
+            <hr>
+            <p class="whitespace-pre-wrap break-words">WPgle Inc | 34 Avenue, San Francisco, CA 94107<br>This email confirmation serves as your receipt for this transaction.<br> Please keep it for your records.</p>
         </body>
         </html>';
         
