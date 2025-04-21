@@ -223,7 +223,15 @@ class TM_Tegel_List extends \Elementor\Widget_Base {
     }
 
     private function tegelMetaDataPopup($post_id, $icon, $index) {
-        $tegels_meta = get_post_meta($post_id, 'tegels_meta', true);
+        $mdata = get_post_meta($post_id, 'tegels_meta', true);
+        
+
+        if (empty($mdata)) {
+            return;
+        }
+
+        $tegels_meta = $this->multiplyAndSortArray($mdata);
+        
 
         // First check if tegels_meta exists and is an array
         if (!empty($tegels_meta) && is_array($tegels_meta)) {

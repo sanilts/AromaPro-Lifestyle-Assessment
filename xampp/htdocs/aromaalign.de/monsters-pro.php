@@ -3,7 +3,7 @@
 /**
  * Plugin Name: TegelMonsters Pro
  * Description: An Elementor widget that opens a Google Drive video in a lightbox.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Sanil T S
  */
  
