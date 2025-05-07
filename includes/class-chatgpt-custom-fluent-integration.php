@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+
 class CGPTFC_Fluent_Integration {
     
     /**
@@ -27,9 +28,13 @@ class CGPTFC_Fluent_Integration {
      * @param array $form_data The submitted form data
      * @param object $form The form object
      */
+    // Add this at the beginning of your handle_form_submission method in class-chatgpt-custom-fluent-integration.php
     public function handle_form_submission($entry_id, $form_data, $form) {
+        // Debug log
+        error_log('CGPTFC: Form submission detected - Form ID: ' . $form->id . ', Entry ID: ' . $entry_id);
+
         $form_id = $form->id;
-        
+
         // Find prompts configured for this form
         $args = array(
             'post_type' => 'cgptfc_prompt',
@@ -42,56 +47,70 @@ class CGPTFC_Fluent_Integration {
                 )
             )
         );
-        
+
         $prompts = get_posts($args);
-        
+
+        // Debug log
+        error_log('CGPTFC: Found ' . count($prompts) . ' prompts for form ID ' . $form_id);
+
         if (empty($prompts)) {
+            error_log('CGPTFC: No prompts found for form ID ' . $form_id);
             return; // No prompts found for this form
         }
-        
+
         // Process each prompt
         foreach ($prompts as $prompt) {
+            error_log('CGPTFC: Processing prompt ID ' . $prompt->ID);
             $this->process_prompt($prompt->ID, $form_data, $entry_id, $form);
         }
     }
-    
-    /**
-     * Process a prompt with form data
-     * 
-     * @param int $prompt_id The prompt ID
-     * @param array $form_data The submitted form data
-     * @param int $entry_id The submission entry ID
-     * @param object $form The form object
-     */
+
+    // Then, also modify your process_prompt method to add more logging:
     private function process_prompt($prompt_id, $form_data, $entry_id, $form) {
         // Get the API instance
         $api = cgptfc_main()->api;
-        
+
+        // Debug log
+        error_log('CGPTFC: Starting API request for prompt ID ' . $prompt_id);
+
         // Process the form with the prompt
         $ai_response = $api->process_form_with_prompt($prompt_id, $form_data);
-        
+
         if (is_wp_error($ai_response)) {
             // Log the error
-            error_log('ChatGPT API Error: ' . $ai_response->get_error_message());
+            error_log('CGPTFC Error: ChatGPT API Error: ' . $ai_response->get_error_message());
             return;
         }
-        
+
+        // Debug log
+        error_log('CGPTFC: Received API response for prompt ID ' . $prompt_id);
+
         // Save the response if logging is enabled
         $log_responses = get_post_meta($prompt_id, '_cgptfc_log_responses', true);
         if ($log_responses == '1') {
-            cgptfc_main()->response_logger->log_response(
+            error_log('CGPTFC: Logging response for prompt ID ' . $prompt_id);
+            $result = cgptfc_main()->response_logger->log_response(
                 $prompt_id, 
                 $entry_id, 
                 $form->id, 
                 get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true),
                 $ai_response
             );
+
+            if ($result) {
+                error_log('CGPTFC: Response logged successfully. Log ID: ' . $result);
+            } else {
+                error_log('CGPTFC: Failed to log response.');
+            }
+        } else {
+            error_log('CGPTFC: Logging is disabled for this prompt');
         }
-        
+
         // Handle the response according to settings
         $response_action = get_post_meta($prompt_id, '_cgptfc_response_action', true);
-        
+
         if ($response_action === 'email') {
+            error_log('CGPTFC: Sending email response');
             $this->send_email_response($prompt_id, $entry_id, $form_data, $ai_response);
         }
     }

@@ -24,6 +24,9 @@ class CGPTFC_Prompt_CPT {
         
         // Save post meta
         add_action('save_post', array($this, 'save_post_meta'));
+        
+        // Add admin-ajax action for testing prompts
+        add_action('wp_ajax_cgptfc_test_prompt', array($this, 'ajax_test_prompt'));
     }
     
     /**
@@ -89,6 +92,16 @@ class CGPTFC_Prompt_CPT {
             'cgptfc_response_handling',
             __('Response Handling', 'chatgpt-fluent-connector'),
             array($this, 'render_response_handling_meta_box'),
+            'cgptfc_prompt',
+            'normal',
+            'default'
+        );
+        
+        // Add new test prompt metabox
+        add_meta_box(
+            'cgptfc_test_prompt',
+            __('Test Prompt', 'chatgpt-fluent-connector'),
+            array($this, 'render_test_prompt_meta_box'),
             'cgptfc_prompt',
             'normal',
             'default'
@@ -424,6 +437,162 @@ class CGPTFC_Prompt_CPT {
     }
     
     /**
+     * Render test prompt meta box
+     */
+    public function render_test_prompt_meta_box($post) {
+        // Check if the prompt has been saved first
+        if (empty(get_post_meta($post->ID, '_cgptfc_fluent_form_id', true))) {
+            echo '<div class="notice notice-warning inline"><p>';
+            echo __('Please save the prompt with a selected form before testing.', 'chatgpt-fluent-connector');
+            echo '</p></div>';
+            return;
+        }
+        
+        // Get form ID to show available fields
+        $form_id = get_post_meta($post->ID, '_cgptfc_fluent_form_id', true);
+        $form_fields = $this->get_form_fields($form_id);
+        
+        ?>
+        <div class="cgptfc-test-prompt-wrapper">
+            <p><?php _e('Test your prompt with sample data to see how ChatGPT responds:', 'chatgpt-fluent-connector'); ?></p>
+            
+            <div class="test-form-fields">
+                <h4><?php _e('Sample Form Data:', 'chatgpt-fluent-connector'); ?></h4>
+                
+                <?php if (empty($form_fields)): ?>
+                    <div class="notice notice-warning inline">
+                        <p><?php _e('Could not retrieve form fields. Make sure the selected form exists.', 'chatgpt-fluent-connector'); ?></p>
+                    </div>
+                <?php else: ?>
+                    <table class="form-table">
+                        <?php foreach ($form_fields as $field_key => $field_label): ?>
+                            <tr>
+                                <th><label for="test_<?php echo esc_attr($field_key); ?>"><?php echo esc_html($field_label); ?> (<?php echo esc_html($field_key); ?>):</label></th>
+                                <td>
+                                    <input type="text" id="test_<?php echo esc_attr($field_key); ?>" name="test_fields[<?php echo esc_attr($field_key); ?>]" class="regular-text">
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
+                <?php endif; ?>
+            </div>
+            
+            <div class="submit-test">
+                <input type="hidden" id="cgptfc_prompt_id" value="<?php echo esc_attr($post->ID); ?>">
+                <button type="button" id="cgptfc_test_prompt_button" class="button button-primary"><?php _e('Test Prompt with ChatGPT', 'chatgpt-fluent-connector'); ?></button>
+                <span class="spinner" style="float:none; margin-top:0;"></span>
+            </div>
+            
+            <div id="test-result" style="margin-top: 15px; display: none;">
+                <h4><?php _e('ChatGPT Response:', 'chatgpt-fluent-connector'); ?></h4>
+                <div class="test-response" style="border: 1px solid #ddd; padding: 10px; background: #f9f9f9; max-height: 300px; overflow-y: auto;">
+                    <p id="test-response-content"></p>
+                </div>
+            </div>
+            
+            <script type="text/javascript">
+                jQuery(document).ready(function($) {
+                    $('#cgptfc_test_prompt_button').on('click', function(e) {
+                        e.preventDefault();
+                        
+                        // Show spinner
+                        $(this).next('.spinner').addClass('is-active');
+                        
+                        // Hide previous result
+                        $('#test-result').hide();
+                        
+                        // Collect form field values
+                        var testFields = {};
+                        $('input[name^="test_fields"]').each(function() {
+                            var fieldName = $(this).attr('name').match(/\[(.*?)\]/)[1];
+                            testFields[fieldName] = $(this).val();
+                        });
+                        
+                        // Send AJAX request
+                        $.ajax({
+                            url: ajaxurl,
+                            type: 'POST',
+                            data: {
+                                action: 'cgptfc_test_prompt',
+                                prompt_id: $('#cgptfc_prompt_id').val(),
+                                test_fields: testFields,
+                                nonce: '<?php echo wp_create_nonce('cgptfc_test_prompt'); ?>'
+                            },
+                            success: function(response) {
+                                // Hide spinner
+                                $('.spinner').removeClass('is-active');
+                                
+                                if (response.success) {
+                                    $('#test-response-content').html(response.data.response.replace(/\n/g, '<br>'));
+                                    $('#test-result').show();
+                                } else {
+                                    $('#test-response-content').html('<div class="notice notice-error inline"><p>' + response.data + '</p></div>');
+                                    $('#test-result').show();
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                // Hide spinner
+                                $('.spinner').removeClass('is-active');
+                                
+                                $('#test-response-content').html('<div class="notice notice-error inline"><p>Error: ' + error + '</p></div>');
+                                $('#test-result').show();
+                            }
+                        });
+                    });
+                });
+            </script>
+        </div>
+        <?php
+    }
+    
+    /**
+     * AJAX handler for testing prompts
+     */
+    public function ajax_test_prompt() {
+        // Check nonce for security
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'cgptfc_test_prompt')) {
+            wp_send_json_error(__('Security check failed', 'chatgpt-fluent-connector'));
+            return;
+        }
+        
+        // Check if prompt ID is provided
+        if (!isset($_POST['prompt_id']) || empty($_POST['prompt_id'])) {
+            wp_send_json_error(__('No prompt ID provided', 'chatgpt-fluent-connector'));
+            return;
+        }
+        
+        $prompt_id = intval($_POST['prompt_id']);
+        
+        // Check if test fields are provided
+        if (!isset($_POST['test_fields']) || !is_array($_POST['test_fields'])) {
+            wp_send_json_error(__('No test data provided', 'chatgpt-fluent-connector'));
+            return;
+        }
+        
+        // Get test fields and sanitize
+        $test_fields = array();
+        foreach ($_POST['test_fields'] as $key => $value) {
+            $test_fields[sanitize_text_field($key)] = sanitize_text_field($value);
+        }
+        
+        // Get the API instance
+        $api = cgptfc_main()->api;
+        
+        // Process the test with the prompt
+        $ai_response = $api->process_form_with_prompt($prompt_id, $test_fields);
+        
+        if (is_wp_error($ai_response)) {
+            wp_send_json_error($ai_response->get_error_message());
+            return;
+        }
+        
+        // Return success with response
+        wp_send_json_success(array(
+            'response' => $ai_response
+        ));
+    }
+    
+    /**
      * Save post meta
      */
     public function save_post_meta($post_id) {
@@ -493,5 +662,98 @@ class CGPTFC_Prompt_CPT {
         if (isset($_POST['cgptfc_prompt_type'])) {
             update_post_meta($post_id, '_cgptfc_prompt_type', sanitize_text_field($_POST['cgptfc_prompt_type']));
         }
+    }
+    
+    /**
+     * Get form fields from a form ID
+     * 
+     * @param int $form_id The form ID
+     * @return array Associative array of field keys and labels
+     */
+    private function get_form_fields($form_id) {
+        $field_labels = array();
+        
+        if (empty($form_id) || !function_exists('wpFluent')) {
+            return $field_labels;
+        }
+        
+        // Try multiple methods to get field labels
+        
+        // Method 1: Try formDatenation first (older versions)
+        $formFields = wpFluent()->table('fluentform_form_meta')
+            ->where('form_id', $form_id)
+            ->where('meta_key', 'formDatenation')
+            ->first();
+            
+        if ($formFields && !empty($formFields->value)) {
+            $fields = json_decode($formFields->value, true);
+            if (!empty($fields['fields'])) {
+                foreach ($fields['fields'] as $field) {
+                    if (!empty($field['element']) && !empty($field['attributes']['name'])) {
+                        $field_name = $field['attributes']['name'];
+                        $field_label = !empty($field['settings']['label']) ? $field['settings']['label'] : $field_name;
+                        $field_labels[$field_name] = $field_label;
+                    }
+                }
+                return $field_labels;
+            }
+        }
+        
+        // Method 2: Try form_fields_meta (newer versions)
+        $formFields = wpFluent()->table('fluentform_form_meta')
+            ->where('form_id', $form_id)
+            ->where('meta_key', 'form_fields_meta')
+            ->first();
+            
+        if ($formFields && !empty($formFields->value)) {
+            $fields = json_decode($formFields->value, true);
+            if (!empty($fields)) {
+                foreach ($fields as $field) {
+                    if (!empty($field['element']) && !empty($field['attributes']['name'])) {
+                        $field_name = $field['attributes']['name'];
+                        $field_label = !empty($field['settings']['label']) ? $field['settings']['label'] : $field_name;
+                        $field_labels[$field_name] = $field_label;
+                    }
+                }
+                return $field_labels;
+            }
+        }
+        
+        // Method 3: Try direct form structure (fallback)
+        $form = wpFluent()->table('fluentform_forms')
+            ->where('id', $form_id)
+            ->first();
+        
+        if ($form && !empty($form->form_fields)) {
+            $formFields = json_decode($form->form_fields, true);
+            
+            if (!empty($formFields['fields'])) {
+                foreach ($formFields['fields'] as $field) {
+                    if (!empty($field['element']) && !empty($field['attributes']['name'])) {
+                        $field_name = $field['attributes']['name'];
+                        $field_label = !empty($field['settings']['label']) ? $field['settings']['label'] : $field_name;
+                        $field_labels[$field_name] = $field_label;
+                    }
+                }
+                return $field_labels;
+            }
+        }
+        
+        // Method 4: Use Fluent Forms API if available (most reliable)
+        if (class_exists('\FluentForm\App\Api\FormFields')) {
+            try {
+                $formFields = (new \FluentForm\App\Api\FormFields())->getFormInputs($form_id);
+                if (!empty($formFields)) {
+                    foreach ($formFields as $fieldName => $fieldDetails) {
+                        $field_labels[$fieldName] = $fieldDetails['element'];
+                    }
+                    return $field_labels;
+                }
+            } catch (\Exception $e) {
+                // Silently fail, we'll return an empty array below
+            }
+        }
+        
+        return $field_labels;
     }
 }

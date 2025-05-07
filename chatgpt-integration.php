@@ -4,7 +4,7 @@
  * Plugin URI: https://yourwebsite.com/chatgpt-fluent-connector
  * Description: Connect Fluent Forms with ChatGPT to generate AI responses for form submissions
  * Version: 1.0.0
- * Author: Your Name
+ * Author: Sanil T S
  * Author URI: https://yourwebsite.com
  * License: GPL-2.0+
  * Text Domain: chatgpt-fluent-connector
@@ -93,7 +93,8 @@ class CGPTFC_Main {
         $this->api = new CGPTFC_API();
         $this->prompt_cpt = new CGPTFC_Prompt_CPT();
         $this->response_logger = new CGPTFC_Unique_Response_Logger(); // Use the unique class name
-        $this->fluent_integration = new CGPTFC_FluentForm_CustomIntegration();
+        // Fix: Use the correct class name from your integration file
+        $this->fluent_integration = new CGPTFC_Fluent_Integration();
         
         // Register activation hook
         register_activation_hook(__FILE__, array($this, 'plugin_activation'));
@@ -146,9 +147,3 @@ function cgptfc_main() {
 
 // Get the plugin running
 add_action('plugins_loaded', 'cgptfc_main', 5);
-
-
-
-
-
-
