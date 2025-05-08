@@ -82,10 +82,10 @@ class CGPTFC_Settings {
             'cgptfc_settings_section'
         );
  
-        // Add this to the register_settings() method in class-chatgpt-settings.php
+        // Debug mode setting
         register_setting('cgptfc_settings', 'cgptfc_debug_mode');
 
-        // Add a new settings field
+        // Add the debug mode settings field
         add_settings_field(
             'cgptfc_debug_mode',
             __('Debug Mode', 'chatgpt-fluent-connector'),
@@ -93,29 +93,11 @@ class CGPTFC_Settings {
             'cgptfc_settings',
             'cgptfc_settings_section'
         );
-
-      
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
     }
     
-    // Add this callback method to class-chatgpt-settings.php
+    /**
+     * Debug mode field callback
+     */
     public function debug_mode_field_callback() {
         $debug_mode = get_option('cgptfc_debug_mode', '0');
         ?>
@@ -167,7 +149,10 @@ class CGPTFC_Settings {
         $models = array(
             'gpt-3.5-turbo' => __('GPT-3.5 Turbo (Fastest, most cost-effective)', 'chatgpt-fluent-connector'),
             'gpt-4' => __('GPT-4 (More powerful, more expensive)', 'chatgpt-fluent-connector'),
-            'gpt-4-turbo' => __('GPT-4 Turbo (Latest model)', 'chatgpt-fluent-connector'),
+            'gpt-4-turbo' => __('GPT-4 Turbo (Latest GPT-4 model)', 'chatgpt-fluent-connector'),
+            'gpt-4-1106-preview' => __('GPT-4 Turbo (November 2023 preview)', 'chatgpt-fluent-connector'),
+            'gpt-4-0613' => __('GPT-4 (June 2023 snapshot)', 'chatgpt-fluent-connector'),
+            'gpt-4-1' => __('GPT-4.1 (Latest model with advanced reasoning)', 'chatgpt-fluent-connector'),
         );
         ?>
         <select name="cgptfc_model">

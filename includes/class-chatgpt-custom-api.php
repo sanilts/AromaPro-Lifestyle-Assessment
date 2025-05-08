@@ -53,6 +53,22 @@ class CGPTFC_API {
             'temperature' => floatval($temperature)
         );
 
+        // Add model-specific parameters
+        if ($model === 'gpt-4-1') {
+            // Add specific parameters for GPT-4.1 if they are different
+            // This could include different defaults or capabilities
+            $body['top_p'] = 0.95; // Higher top_p for more diverse outputs with GPT-4.1
+            
+            // You can uncomment this if GPT-4.1 supports additional features
+            // $body['frequency_penalty'] = 0.1; 
+            // $body['presence_penalty'] = 0.1;
+        }
+
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+        if ($debug_mode == '1') {
+            error_log('CGPTFC API Request: ' . wp_json_encode($body));
+        }
+
         $args = array(
             'headers' => $headers,
             'body' => wp_json_encode($body),
@@ -64,14 +80,25 @@ class CGPTFC_API {
         $response = wp_remote_post($api_endpoint, $args);
 
         if (is_wp_error($response)) {
+            if ($debug_mode == '1') {
+                error_log('CGPTFC API Error: ' . $response->get_error_message());
+            }
             return $response;
         }
 
         $response_code = wp_remote_retrieve_response_code($response);
         $response_body = json_decode(wp_remote_retrieve_body($response), true);
 
+        if ($debug_mode == '1') {
+            error_log('CGPTFC API Response: ' . wp_json_encode($response_body));
+        }
+
         if ($response_code !== 200) {
             $error_message = isset($response_body['error']['message']) ? $response_body['error']['message'] : sprintf(__('Unknown error (HTTP %s)', 'chatgpt-fluent-connector'), $response_code);
+
+            if ($debug_mode == '1') {
+                error_log('CGPTFC API Error: ' . $error_message);
+            }
 
             return new WP_Error('api_error', $error_message);
         }
@@ -96,14 +123,6 @@ class CGPTFC_API {
 
         return $response['choices'][0]['message']['content'];
     }
-
-    /**
-     * Process a form submission with a prompt
-     *
-     * @param int $prompt_id The prompt post ID
-     * @param array $form_data The form submission data
-     * @return string|WP_Error The response content or error
-     */
 
     /**
      * Process a form submission with a prompt
@@ -201,10 +220,10 @@ class CGPTFC_API {
 
         // Make the API request
         $response = $this->make_request(
-                $messages,
-                null,
-                !empty($max_tokens) ? intval($max_tokens) : 1000,
-                !empty($temperature) ? floatval($temperature) : 0.7
+            $messages,
+            null,
+            !empty($max_tokens) ? intval($max_tokens) : 1000,
+            !empty($temperature) ? floatval($temperature) : 0.7
         );
 
         if (is_wp_error($response)) {
