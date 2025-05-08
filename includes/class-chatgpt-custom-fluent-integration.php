@@ -1,18 +1,17 @@
 <?php
+
 /**
  * ChatGPT Fluent Forms Integration Class
  * 
  * Handles integration with Fluent Forms
  */
-
 // Exit if accessed directly
 if (!defined('ABSPATH')) {
     exit;
 }
 
-
 class CGPTFC_Fluent_Integration {
-    
+
     /**
      * Constructor
      */
@@ -21,7 +20,15 @@ class CGPTFC_Fluent_Integration {
         add_action('fluentform/submission_inserted', array($this, 'handle_form_submission'), 20, 3);
         add_filter('fluentform/submission_confirmation', array($this, 'maybe_display_response_on_confirmation'), 10, 3);
     }
-    
+
+    /**
+     * Handle form submission
+     * 
+     * @param int $entry_id The submission entry ID
+     * @param array $form_data The submitted form data
+     * @param object $form The form object
+     */
+
     /**
      * Handle form submission
      * 
@@ -30,9 +37,13 @@ class CGPTFC_Fluent_Integration {
      * @param object $form The form object
      */
     public function handle_form_submission($entry_id, $form_data, $form) {
-                
         $form_id = $form->id;
-        
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+
+        if ($debug_mode == '1') {
+            error_log('CGPTFC: Handling form submission for form ID: ' . $form_id . ', entry ID: ' . $entry_id);
+        }
+
         // Find prompts configured for this form
         $args = array(
             'post_type' => 'cgptfc_prompt',
@@ -49,7 +60,14 @@ class CGPTFC_Fluent_Integration {
         $prompts = get_posts($args);
 
         if (empty($prompts)) {
+            if ($debug_mode == '1') {
+                error_log('CGPTFC: No prompts found for form ID: ' . $form_id);
+            }
             return; // No prompts found for this form
+        }
+
+        if ($debug_mode == '1') {
+            error_log('CGPTFC: Found ' . count($prompts) . ' prompts configured for this form');
         }
 
         // Process each prompt
@@ -68,46 +86,70 @@ class CGPTFC_Fluent_Integration {
      * @return void
      */
     private function process_prompt($prompt_id, $form_data, $entry_id, $form) {
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+
+        if ($debug_mode == '1') {
+            error_log('CGPTFC: Processing prompt ID: ' . $prompt_id . ' for form submission');
+        }
+
         // Get the API instance
         $api = cgptfc_main()->api;
 
         // Process the form with the prompt
         $ai_response = $api->process_form_with_prompt($prompt_id, $form_data);
-        
+
+        // Check if we got a valid response or an error
+        if (is_wp_error($ai_response)) {
+            if ($debug_mode == '1') {
+                error_log('CGPTFC: Error processing prompt: ' . $ai_response->get_error_message());
+            }
+            return;
+        }
+
         // Save the response if logging is enabled
         $log_responses = get_post_meta($prompt_id, '_cgptfc_log_responses', true);
         if ($log_responses == '1') {
+            if ($debug_mode == '1') {
+                error_log('CGPTFC: Logging response to database');
+            }
+
             $result = cgptfc_main()->response_logger->log_response(
-                $prompt_id, 
-                $entry_id, 
-                $form->id, 
-                get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true),
-                $ai_response
+                    $prompt_id,
+                    $entry_id,
+                    $form->id,
+                    get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true),
+                    $ai_response
             );
+
+            if ($debug_mode == '1') {
+                if ($result) {
+                    error_log('CGPTFC: Response logged successfully, ID: ' . $result);
+                } else {
+                    error_log('CGPTFC: Failed to log response');
+                }
+            }
         }
 
         // Handle the response according to settings
         $response_action = get_post_meta($prompt_id, '_cgptfc_response_action', true);
 
+        // Send email if configured
         if ($response_action === 'email') {
+            if ($debug_mode == '1') {
+                error_log('CGPTFC: Sending email with the response');
+            }
+
             $email_sent = $this->send_email_response($prompt_id, $entry_id, $form_data, $ai_response);
+
+            if ($debug_mode == '1') {
+                error_log('CGPTFC: Email sending ' . ($email_sent ? 'successful' : 'failed'));
+            }
         }
 
-        // Additional handling for showing response to user if enabled
-        $show_to_user = get_post_meta($prompt_id, '_cgptfc_show_to_user', true);
-        if ($show_to_user == '1') {
-            // Add a filter to modify the confirmation message for this form
-            add_filter('fluentform/submission_confirmation_' . $form->id, function($confirmation) use ($ai_response) {
-                // If the confirmation is a success message type
-                if (isset($confirmation['messageToShow'])) {
-                    // Append the AI response to the confirmation message
-                    $confirmation['messageToShow'] .= '<div class="chatgpt-response" style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #0073aa;"><h3>' . __('AI Response:', 'chatgpt-fluent-connector') . '</h3><div>' . nl2br(esc_html($ai_response)) . '</div></div>';
-                }
-                return $confirmation;
-            });
-        }
+        // The show_to_user setting is now handled in the maybe_display_response_on_confirmation method
+        // We don't need to add a filter here anymore since we check for the setting in that method
     }
-    
+
     /**
      * Send email with the AI response
      * 
@@ -122,25 +164,25 @@ class CGPTFC_Fluent_Integration {
         $email_to = get_post_meta($prompt_id, '_cgptfc_email_to', true);
         $email_subject = get_post_meta($prompt_id, '_cgptfc_email_subject', true);
         $email_to_user = get_post_meta($prompt_id, '_cgptfc_email_to_user', true);
-        
+
         $recipient_email = '';
-        
+
         // First try to find an email field in the form if email_to_user is enabled
         if ($email_to_user == '1') {
-            
+
             // Look for common email field names
             $common_email_fields = array('email', 'your_email', 'user_email', 'email_address', 'customer_email');
-            
+
             foreach ($form_data as $field_key => $field_value) {
-                
+
                 // If the field name contains "email" and the value looks like an email
-                if ((is_string($field_value) && filter_var($field_value, FILTER_VALIDATE_EMAIL)) && 
-                    (strpos(strtolower($field_key), 'email') !== false || in_array(strtolower($field_key), $common_email_fields))) {
+                if ((is_string($field_value) && filter_var($field_value, FILTER_VALIDATE_EMAIL)) &&
+                        (strpos(strtolower($field_key), 'email') !== false || in_array(strtolower($field_key), $common_email_fields))) {
                     $recipient_email = $field_value;
                     break;
                 }
             }
-            
+
             // If no direct match found, try to look for nested arrays or complex field structures
             if (empty($recipient_email)) {
                 error_log('CGPTFC: No direct email field found, checking nested fields');
@@ -155,7 +197,7 @@ class CGPTFC_Fluent_Integration {
                     }
                 }
             }
-            
+
             // Log the found or not found email
             if (!empty($recipient_email)) {
                 error_log('CGPTFC: Will use email from form: ' . $recipient_email);
@@ -163,10 +205,10 @@ class CGPTFC_Fluent_Integration {
                 error_log('CGPTFC: No valid email found in form data');
             }
         }
-        
+
         // If no email found in form or email_to_user not enabled, use email_to setting
         if (empty($recipient_email)) {
-            
+
             // If email_to contains a placeholder, replace it with the form value
             if (!empty($email_to) && strpos($email_to, '{') !== false) {
                 foreach ($form_data as $field_key => $field_value) {
@@ -175,27 +217,27 @@ class CGPTFC_Fluent_Integration {
                     }
                 }
             }
-            
+
             $recipient_email = $email_to;
         }
-        
+
         // If recipient_email is still empty, use admin email
         if (empty($recipient_email)) {
             $recipient_email = get_option('admin_email');
             error_log('CGPTFC: No recipient email found, using admin email: ' . $recipient_email);
         }
-        
+
         // Validate the email address
         if (!filter_var($recipient_email, FILTER_VALIDATE_EMAIL)) {
             error_log('CGPTFC: Invalid email address: ' . $recipient_email);
             return false;
         }
-        
+
         // Set default subject if empty
         if (empty($email_subject)) {
             $email_subject = __('ChatGPT Response for Your Form Submission', 'chatgpt-fluent-connector');
         }
-        
+
         // Prepare email content
         $email_content = '
         <html>
@@ -255,16 +297,24 @@ class CGPTFC_Fluent_Integration {
             </div>
         </body>
         </html>';
-        
+
         // Set email headers
         $headers = array('Content-Type: text/html; charset=UTF-8');
-        
+
         // Send the email
         $sent = wp_mail($recipient_email, $email_subject, $email_content, $headers);
-        
+
         return $sent;
     }
-    
+
+    /**
+     * Display ChatGPT response to the user
+     * 
+     * @param int $form_id The form ID
+     * @param array $response_data The response data array from Fluent Forms
+     * @return string The HTML to display
+     */
+
     /**
      * Display ChatGPT response to the user
      * 
@@ -291,8 +341,8 @@ class CGPTFC_Fluent_Integration {
 
         // Get the most recent response for this form entry
         $response = $wpdb->get_var($wpdb->prepare(
-            "SELECT ai_response FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
-            $form_id, $entry_id
+                        "SELECT ai_response FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
+                        $form_id, $entry_id
         ));
 
         if (empty($response)) {
@@ -307,28 +357,33 @@ class CGPTFC_Fluent_Integration {
         $html .= '</div>';
         $html .= '</div>';
 
-        // Add some basic styling
+        // Add some enhanced styling
         $html .= '<style>
-            .cgptfc-response {
-                margin: 20px 0;
-                padding: 20px;
-                background-color: #f9f9f9;
-                border-left: 5px solid #0073aa;
-                border-radius: 3px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            }
-            .cgptfc-response h3 {
-                margin-top: 0;
-                color: #0073aa;
-            }
-            .cgptfc-response-content {
-                line-height: 1.6;
-            }
-        </style>';
+        .cgptfc-response {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-left: 5px solid #0073aa;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .cgptfc-response h3 {
+            margin-top: 0;
+            color: #0073aa;
+            font-size: 1.3em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .cgptfc-response-content {
+            line-height: 1.6;
+            font-size: 1.1em;
+            padding: 10px 0;
+        }
+    </style>';
 
         return $html;
     }
-    
+
     /**
      * Possibly display response on confirmation page
      * 
@@ -338,11 +393,35 @@ class CGPTFC_Fluent_Integration {
      * @return array Modified confirmation data
      */
     public function maybe_display_response_on_confirmation($confirmation, $form_data, $form) {
-        // If we have entry ID and this is a success message type
+        // If this is a success message type and we have the entry ID
         if (!empty($form_data['entry_id']) && isset($confirmation['messageToShow'])) {
-            $html = $this->display_response_to_user($form->id, ['entry_id' => $form_data['entry_id']]);
-            if (!empty($html)) {
-                $confirmation['messageToShow'] .= $html;
+            // Find prompts configured for this form that have "show to user" enabled
+            $args = array(
+                'post_type' => 'cgptfc_prompt',
+                'posts_per_page' => -1,
+                'meta_query' => array(
+                    'relation' => 'AND',
+                    array(
+                        'key' => '_cgptfc_fluent_form_id',
+                        'value' => $form->id,
+                        'compare' => '='
+                    ),
+                    array(
+                        'key' => '_cgptfc_show_to_user',
+                        'value' => '1',
+                        'compare' => '='
+                    )
+                )
+            );
+
+            $show_prompts = get_posts($args);
+
+            // If there are configured prompts that should show responses
+            if (!empty($show_prompts)) {
+                $html = $this->display_response_to_user($form->id, ['entry_id' => $form_data['entry_id']]);
+                if (!empty($html)) {
+                    $confirmation['messageToShow'] .= $html;
+                }
             }
         }
         return $confirmation;
