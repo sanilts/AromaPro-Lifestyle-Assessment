@@ -1,6 +1,6 @@
 <?php
 /**
- * ChatGPT Response Logger Class - With Unique Name
+ * ChatGPT Response Logger Class
  * 
  * Handles logging and retrieval of ChatGPT responses
  */
@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class CGPTFC_Unique_Response_Logger {
+class CGPTFC_Response_Logger {
     
     /**
      * Table name
@@ -80,9 +80,6 @@ class CGPTFC_Unique_Response_Logger {
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
-        
-        // Log table creation for debugging
-        error_log('ChatGPT Response Logger: Table creation attempted. Result: ' . ($wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") === $this->table_name ? 'Success' : 'Failed - ' . $wpdb->last_error));
     }
     
     /**
@@ -101,9 +98,6 @@ class CGPTFC_Unique_Response_Logger {
         // Ensure table exists before trying to insert
         $this->ensure_table_exists();
         
-        // Debug log
-        error_log("ChatGPT Logger: Attempting to log response for prompt ID: $prompt_id, entry ID: $entry_id");
-        
         // Insert the log
         $result = $wpdb->insert(
             $this->table_name,
@@ -118,13 +112,10 @@ class CGPTFC_Unique_Response_Logger {
             array('%d', '%d', '%d', '%s', '%s', '%s')
         );
         
-        // Log any errors for debugging
         if ($result === false) {
-            error_log('ChatGPT Logger Error: Failed to insert response log - ' . $wpdb->last_error);
             return false;
         }
         
-        error_log('ChatGPT Logger: Response logged successfully. ID: ' . $wpdb->insert_id);
         return $wpdb->insert_id;
     }
     
@@ -217,7 +208,7 @@ class CGPTFC_Unique_Response_Logger {
     }
     
     /**
-     * Render logs page - Fixed version with debugging info
+     * Render logs page
      */
     public function render_logs_page() {
         // Check user capability
@@ -227,45 +218,8 @@ class CGPTFC_Unique_Response_Logger {
         
         global $wpdb;
         
-        // Show debug information
-        echo '<div class="notice notice-info is-dismissible"><p>';
-        echo '<strong>Debug Info:</strong><br>';
-        echo 'Table name: ' . esc_html($this->table_name) . '<br>';
-        
         // Check if table exists
         $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") === $this->table_name;
-        echo 'Table exists: ' . ($table_exists ? 'Yes' : 'No') . '<br>';
-        
-        // If table exists, show column info
-        if ($table_exists) {
-            $columns = $wpdb->get_results("DESCRIBE {$this->table_name}");
-            echo 'Table columns: ';
-            foreach ($columns as $column) {
-                echo esc_html($column->Field) . ' (' . esc_html($column->Type) . '), ';
-            }
-            echo '<br>';
-            
-            // Count records
-            $count = $this->count_all_logs();
-            echo 'Total records: ' . esc_html($count) . '<br>';
-            
-            // Show last query for debugging
-            echo 'Last SQL query: ' . esc_html($wpdb->last_query) . '<br>';
-            
-            // Show any SQL errors
-            if (!empty($wpdb->last_error)) {
-                echo 'Last SQL error: ' . esc_html($wpdb->last_error) . '<br>';
-            }
-        } else {
-            // Try to create the table
-            echo 'Attempting to create table...<br>';
-            $this->create_logs_table();
-            
-            // Check again if table exists
-            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") === $this->table_name;
-            echo 'Table creation result: ' . ($table_exists ? 'Success' : 'Failed - ' . esc_html($wpdb->last_error)) . '<br>';
-        }
-        echo '</p></div>';
         
         // Get current page and items per page
         $page = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
@@ -439,42 +393,6 @@ class CGPTFC_Unique_Response_Logger {
                     <?php endif; ?>
                 </tbody>
             </table>
-            
-            <!-- Insert Test Record -->
-            <?php if (current_user_can('manage_options')): ?>
-                <div class="card" style="max-width: 600px; margin-top: 20px; padding: 10px 20px;">
-                    <h3><?php _e('Insert Test Record', 'chatgpt-fluent-connector'); ?></h3>
-                    <p><?php _e('You can insert a test record to verify that the logging system is working properly.', 'chatgpt-fluent-connector'); ?></p>
-                    
-                    <form method="post" action="">
-                        <?php wp_nonce_field('cgptfc_insert_test_log', 'cgptfc_test_log_nonce'); ?>
-                        <input type="hidden" name="cgptfc_insert_test_log" value="1">
-                        <p>
-                            <input type="submit" class="button button-primary" value="<?php _e('Insert Test Record', 'chatgpt-fluent-connector'); ?>">
-                        </p>
-                    </form>
-                    
-                    <?php
-                    // Process test record insertion
-                    if (isset($_POST['cgptfc_insert_test_log']) && check_admin_referer('cgptfc_insert_test_log', 'cgptfc_test_log_nonce')) {
-                        $result = $this->log_response(
-                            1, // prompt_id
-                            1, // entry_id
-                            1, // form_id
-                            'Test prompt for diagnostics',
-                            'This is a test response for diagnostic purposes. Generated at: ' . current_time('mysql')
-                        );
-                        
-                        if ($result) {
-                            echo '<div class="notice notice-success is-dismissible"><p>' . __('Test record inserted successfully. ID: ', 'chatgpt-fluent-connector') . $result . '</p></div>';
-                        } else {
-                            echo '<div class="notice notice-error is-dismissible"><p>' . __('Failed to insert test record. Please check the debug information.', 'chatgpt-fluent-connector') . '</p></div>';
-                        }
-                    }
-                    ?>
-                </div>
-            <?php endif; ?>
-            
         </div>
         
         <!-- Response Modal -->

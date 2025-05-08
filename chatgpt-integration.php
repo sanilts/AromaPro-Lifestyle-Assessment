@@ -79,21 +79,16 @@ class CGPTFC_Main {
      * Include the required files
      */
     public function include_files() {
-        // Inside your include_files() method in the main plugin file:
-
-        // Update the require statements to use the uniquely named files
         require_once __DIR__ . '/includes/class-chatgpt-settings.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-api.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-prompt-cpt.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-fluent-integration.php';
-        require_once __DIR__ . '/includes/class-chatgpt-custom-response-logger.php'; // Use the uniquely named file
+        require_once __DIR__ . '/includes/class-chatgpt-custom-response-logger.php';
         
-        // Then update the component initialization:
         $this->settings = new CGPTFC_Settings();
         $this->api = new CGPTFC_API();
         $this->prompt_cpt = new CGPTFC_Prompt_CPT();
-        $this->response_logger = new CGPTFC_Unique_Response_Logger(); // Use the unique class name
-        // Fix: Use the correct class name from your integration file
+        $this->response_logger = new CGPTFC_Response_Logger();
         $this->fluent_integration = new CGPTFC_Fluent_Integration();
         
         // Register activation hook
@@ -147,3 +142,14 @@ function cgptfc_main() {
 
 // Get the plugin running
 add_action('plugins_loaded', 'cgptfc_main', 5);
+
+
+
+
+
+add_action('fluentform/submission_inserted', 'log_fluent_form_submission', 20, 3);
+
+function log_fluent_form_submission($entryId, $formData, $form) {
+    // Log basic submission info
+    error_log('Sanil: New Fluent Form submission - Entry ID: ' . $entryId . ' | Form ID: ' . $form->id . ' | Form Title: ' . $form->title);
+}
