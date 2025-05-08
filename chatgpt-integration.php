@@ -85,11 +85,15 @@ class CGPTFC_Main {
         require_once __DIR__ . '/includes/class-chatgpt-custom-fluent-integration.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-response-logger.php';
         
+        // Instantiate classes
         $this->settings = new CGPTFC_Settings();
         $this->api = new CGPTFC_API();
         $this->prompt_cpt = new CGPTFC_Prompt_CPT();
         $this->response_logger = new CGPTFC_Response_Logger();
+        
+        // Create the Fluent integration and ALSO explicitly register the hook outside the class
         $this->fluent_integration = new CGPTFC_Fluent_Integration();
+        add_action('fluentform/submission_inserted', array($this->fluent_integration, 'handle_form_submission'), 20, 3);
         
         // Register activation hook
         register_activation_hook(__FILE__, array($this, 'plugin_activation'));
@@ -142,14 +146,3 @@ function cgptfc_main() {
 
 // Get the plugin running
 add_action('plugins_loaded', 'cgptfc_main', 5);
-
-
-
-
-
-add_action('fluentform/submission_inserted', 'log_fluent_form_submission', 20, 3);
-
-function log_fluent_form_submission($entryId, $formData, $form) {
-    // Log basic submission info
-    error_log('Sanil: New Fluent Form submission - Entry ID: ' . $entryId . ' | Form ID: ' . $form->id . ' | Form Title: ' . $form->title);
-}

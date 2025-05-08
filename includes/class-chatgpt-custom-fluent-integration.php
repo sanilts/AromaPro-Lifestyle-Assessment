@@ -30,9 +30,7 @@ class CGPTFC_Fluent_Integration {
      * @param object $form The form object
      */
     public function handle_form_submission($entry_id, $form_data, $form) {
-        
-        error_log('Sanil 1: New Fluent Form submission - Entry ID: ' . $entry_id . ' | Form ID: ' . $form->id . ' | Form Title: ' . $form->title);
-        
+                
         $form_id = $form->id;
         
         // Find prompts configured for this form
