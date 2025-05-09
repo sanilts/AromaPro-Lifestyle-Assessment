@@ -38,11 +38,6 @@ class CGPTFC_Fluent_Integration {
      */
     public function handle_form_submission($entry_id, $form_data, $form) {
         $form_id = $form->id;
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
-
-        if ($debug_mode == '1') {
-            error_log('CGPTFC: Handling form submission for form ID: ' . $form_id . ', entry ID: ' . $entry_id);
-        }
 
         // Find prompts configured for this form
         $args = array(
@@ -60,14 +55,7 @@ class CGPTFC_Fluent_Integration {
         $prompts = get_posts($args);
 
         if (empty($prompts)) {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: No prompts found for form ID: ' . $form_id);
-            }
             return; // No prompts found for this form
-        }
-
-        if ($debug_mode == '1') {
-            error_log('CGPTFC: Found ' . count($prompts) . ' prompts configured for this form');
         }
 
         // Process each prompt
@@ -86,11 +74,6 @@ class CGPTFC_Fluent_Integration {
      * @return void
      */
     private function process_prompt($prompt_id, $form_data, $entry_id, $form) {
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
-
-        if ($debug_mode == '1') {
-            error_log('CGPTFC: Processing prompt ID: ' . $prompt_id . ' for form submission');
-        }
 
         // Get the API instance
         $api = cgptfc_main()->api;
@@ -100,18 +83,12 @@ class CGPTFC_Fluent_Integration {
 
         // Check if we got a valid response or an error
         if (is_wp_error($ai_response)) {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Error processing prompt: ' . $ai_response->get_error_message());
-            }
             return;
         }
 
         // Save the response if logging is enabled
         $log_responses = get_post_meta($prompt_id, '_cgptfc_log_responses', true);
         if ($log_responses == '1') {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Logging response to database');
-            }
 
             $result = cgptfc_main()->response_logger->log_response(
                     $prompt_id,
@@ -120,14 +97,6 @@ class CGPTFC_Fluent_Integration {
                     get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true),
                     $ai_response
             );
-
-            if ($debug_mode == '1') {
-                if ($result) {
-                    error_log('CGPTFC: Response logged successfully, ID: ' . $result);
-                } else {
-                    error_log('CGPTFC: Failed to log response');
-                }
-            }
         }
 
         // Handle the response according to settings
@@ -135,15 +104,7 @@ class CGPTFC_Fluent_Integration {
 
         // Send email if configured
         if ($response_action === 'email') {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Sending email with the response');
-            }
-
             $email_sent = $this->send_email_response($prompt_id, $entry_id, $form_data, $ai_response);
-
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Email sending ' . ($email_sent ? 'successful' : 'failed'));
-            }
         }
 
         // The show_to_user setting is now handled in the maybe_display_response_on_confirmation method
@@ -185,7 +146,6 @@ class CGPTFC_Fluent_Integration {
 
             // If no direct match found, try to look for nested arrays or complex field structures
             if (empty($recipient_email)) {
-                error_log('CGPTFC: No direct email field found, checking nested fields');
                 foreach ($form_data as $field_key => $field_value) {
                     if (is_array($field_value)) {
                         foreach ($field_value as $sub_key => $sub_value) {
@@ -196,13 +156,6 @@ class CGPTFC_Fluent_Integration {
                         }
                     }
                 }
-            }
-
-            // Log the found or not found email
-            if (!empty($recipient_email)) {
-                error_log('CGPTFC: Will use email from form: ' . $recipient_email);
-            } else {
-                error_log('CGPTFC: No valid email found in form data');
             }
         }
 
@@ -224,12 +177,10 @@ class CGPTFC_Fluent_Integration {
         // If recipient_email is still empty, use admin email
         if (empty($recipient_email)) {
             $recipient_email = get_option('admin_email');
-            error_log('CGPTFC: No recipient email found, using admin email: ' . $recipient_email);
         }
 
         // Validate the email address
         if (!filter_var($recipient_email, FILTER_VALIDATE_EMAIL)) {
-            error_log('CGPTFC: Invalid email address: ' . $recipient_email);
             return false;
         }
 
@@ -393,6 +344,15 @@ class CGPTFC_Fluent_Integration {
      * @return array Modified confirmation data
      */
     public function maybe_display_response_on_confirmation($confirmation, $form_data, $form) {
+        // Enable debug mode  custom_code_before_confirmation_msg_function($returnData, $form, $confirmation, $insertId, $formData)
+
+        error_log('$confirmation: maybe_display_response_on_confirmation called');
+        error_log(print_r($confirmation, true));
+        error_log('$form_data: maybe_display_response_on_confirmation called');
+        error_log(print_r($form_data, true));
+        error_log('$form: maybe_display_response_on_confirmation called');
+        error_log(print_r($form, true));
+
         // If this is a success message type and we have the entry ID
         if (!empty($form_data['entry_id']) && isset($confirmation['messageToShow'])) {
             // Find prompts configured for this form that have "show to user" enabled

@@ -905,16 +905,6 @@ class CGPTFC_Prompt_CPT {
         $selected_email_field = get_post_meta($prompt_id, '_cgptfc_email_field', true);
 
         $recipient_email = '';
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
-
-        // Log what we're doing if debug mode is enabled
-        if ($debug_mode == '1') {
-            error_log('CGPTFC: Starting email response process for prompt #' . $prompt_id);
-            error_log('CGPTFC: Email to user setting: ' . ($email_to_user == '1' ? 'Yes' : 'No'));
-            if (!empty($selected_email_field)) {
-                error_log('CGPTFC: Selected email field: ' . $selected_email_field);
-            }
-        }
 
         // First try to find an email field in the form if email_to_user is enabled
         if ($email_to_user == '1') {
@@ -926,9 +916,6 @@ class CGPTFC_Prompt_CPT {
                 // Make sure it's a valid email
                 if (is_string($field_value) && filter_var($field_value, FILTER_VALIDATE_EMAIL)) {
                     $recipient_email = $field_value;
-                    if ($debug_mode == '1') {
-                        error_log('CGPTFC: Found email in selected field: ' . $recipient_email);
-                    }
                 }
             }
 
@@ -942,39 +929,21 @@ class CGPTFC_Prompt_CPT {
                     if ((is_string($field_value) && filter_var($field_value, FILTER_VALIDATE_EMAIL)) &&
                             (strpos(strtolower($field_key), 'email') !== false || in_array(strtolower($field_key), $common_email_fields))) {
                         $recipient_email = $field_value;
-                        if ($debug_mode == '1') {
-                            error_log('CGPTFC: Auto-detected email field: ' . $field_key . ' with value: ' . $recipient_email);
-                        }
                         break;
                     }
                 }
 
                 // If no direct match found, try to look for nested arrays or complex field structures
                 if (empty($recipient_email)) {
-                    if ($debug_mode == '1') {
-                        error_log('CGPTFC: No direct email field found, checking nested fields');
-                    }
                     foreach ($form_data as $field_key => $field_value) {
                         if (is_array($field_value)) {
                             foreach ($field_value as $sub_key => $sub_value) {
                                 if (is_string($sub_value) && filter_var($sub_value, FILTER_VALIDATE_EMAIL)) {
                                     $recipient_email = $sub_value;
-                                    if ($debug_mode == '1') {
-                                        error_log('CGPTFC: Found email in nested field: ' . $field_key . '.' . $sub_key . ' with value: ' . $recipient_email);
-                                    }
                                     break 2;
                                 }
                             }
                         }
-                    }
-                }
-
-                // Log the found or not found email
-                if ($debug_mode == '1') {
-                    if (!empty($recipient_email)) {
-                        error_log('CGPTFC: Will use email from form: ' . $recipient_email);
-                    } else {
-                        error_log('CGPTFC: No valid email found in form data');
                     }
                 }
             }
@@ -1017,17 +986,10 @@ class CGPTFC_Prompt_CPT {
         // If no recipients found, use admin email as fallback
         if (empty($all_recipients)) {
             $all_recipients[] = get_option('admin_email');
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: No recipient email found, using admin email: ' . get_option('admin_email'));
-            }
         }
 
         // Make recipients unique
         $all_recipients = array_unique($all_recipients);
-
-        if ($debug_mode == '1') {
-            error_log('CGPTFC: Final recipient list: ' . implode(', ', $all_recipients));
-        }
 
         // Set default subject if empty
         if (empty($email_subject)) {
@@ -1104,10 +1066,6 @@ class CGPTFC_Prompt_CPT {
         foreach ($all_recipients as $to_email) {
             $sent = wp_mail($to_email, $email_subject, $email_content, $headers);
 
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Sending email to ' . $to_email . ': ' . ($sent ? 'Success' : 'Failed'));
-            }
-
             // If any send fails, mark as unsuccessful
             if (!$sent) {
                 $success = false;
@@ -1129,13 +1087,7 @@ class CGPTFC_Prompt_CPT {
      * @return void
      */
     private function process_prompt($prompt_id, $form_data, $entry_id, $form) {
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
-
-        if ($debug_mode == '1') {
-            error_log('CGPTFC: Processing prompt ID: ' . $prompt_id . ' for form submission');
-        }
-
-        // Get the API instance
+       // Get the API instance
         $api = cgptfc_main()->api;
 
         // Process the form with the prompt
@@ -1143,19 +1095,12 @@ class CGPTFC_Prompt_CPT {
 
         // Check if we got a valid response or an error
         if (is_wp_error($ai_response)) {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Error processing prompt: ' . $ai_response->get_error_message());
-            }
             return;
         }
 
         // Save the response if logging is enabled
         $log_responses = get_post_meta($prompt_id, '_cgptfc_log_responses', true);
         if ($log_responses == '1') {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Logging response to database');
-            }
-
             $result = cgptfc_main()->response_logger->log_response(
                     $prompt_id,
                     $entry_id,
@@ -1163,14 +1108,6 @@ class CGPTFC_Prompt_CPT {
                     get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true),
                     $ai_response
             );
-
-            if ($debug_mode == '1') {
-                if ($result) {
-                    error_log('CGPTFC: Response logged successfully, ID: ' . $result);
-                } else {
-                    error_log('CGPTFC: Failed to log response');
-                }
-            }
         }
 
         // Handle the response according to settings
@@ -1178,15 +1115,7 @@ class CGPTFC_Prompt_CPT {
 
         // Send email if configured
         if ($response_action === 'email') {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Sending email with the response');
-            }
-
             $email_sent = $this->send_email_response($prompt_id, $entry_id, $form_data, $ai_response);
-
-            if ($debug_mode == '1') {
-                error_log('CGPTFC: Email sending ' . ($email_sent ? 'successful' : 'failed'));
-            }
         }
 
         // The show_to_user setting is now handled in the maybe_display_response_on_confirmation method

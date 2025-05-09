@@ -65,9 +65,6 @@ class CGPTFC_API {
         }
 
         $debug_mode = get_option('cgptfc_debug_mode', '0');
-        if ($debug_mode == '1') {
-            error_log('CGPTFC API Request: ' . wp_json_encode($body));
-        }
 
         $args = array(
             'headers' => $headers,
@@ -80,26 +77,14 @@ class CGPTFC_API {
         $response = wp_remote_post($api_endpoint, $args);
 
         if (is_wp_error($response)) {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC API Error: ' . $response->get_error_message());
-            }
             return $response;
         }
 
         $response_code = wp_remote_retrieve_response_code($response);
         $response_body = json_decode(wp_remote_retrieve_body($response), true);
 
-        if ($debug_mode == '1') {
-            error_log('CGPTFC API Response: ' . wp_json_encode($response_body));
-        }
-
         if ($response_code !== 200) {
             $error_message = isset($response_body['error']['message']) ? $response_body['error']['message'] : sprintf(__('Unknown error (HTTP %s)', 'chatgpt-fluent-connector'), $response_code);
-
-            if ($debug_mode == '1') {
-                error_log('CGPTFC API Error: ' . $error_message);
-            }
-
             return new WP_Error('api_error', $error_message);
         }
 
@@ -134,10 +119,6 @@ class CGPTFC_API {
     public function process_form_with_prompt($prompt_id, $form_data) {
         $debug_mode = get_option('cgptfc_debug_mode', '0');
 
-        if ($debug_mode == '1') {
-            error_log('CGPTFC API: Processing form with prompt ID: ' . $prompt_id);
-        }
-
         // Get prompt settings
         $system_prompt = get_post_meta($prompt_id, '_cgptfc_system_prompt', true);
         $user_prompt_template = get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true);
@@ -150,28 +131,14 @@ class CGPTFC_API {
             $prompt_type = 'template';
         }
 
-        if ($debug_mode == '1') {
-            error_log('CGPTFC API: Prompt type: ' . $prompt_type);
-        }
-
         // Prepare the user prompt based on prompt type
         if ($prompt_type === 'all_form_data') {
             // Use all form data
-            if ($debug_mode == '1') {
-                error_log('CGPTFC API: Using all form data format');
-            }
             $user_prompt = $this->format_all_form_data($form_data, $prompt_id);
         } else {
             // Use custom template
             if (empty($user_prompt_template)) {
-                if ($debug_mode == '1') {
-                    error_log('CGPTFC API: No user prompt template configured');
-                }
                 return new WP_Error('no_prompt_template', __('No user prompt template configured', 'chatgpt-fluent-connector'));
-            }
-
-            if ($debug_mode == '1') {
-                error_log('CGPTFC API: Using custom template: ' . $user_prompt_template);
             }
 
             // Replace placeholders in user prompt
@@ -199,10 +166,6 @@ class CGPTFC_API {
             $user_prompt = preg_replace('/\{[^}]+\}/', '', $user_prompt);
         }
 
-        if ($debug_mode == '1') {
-            error_log('CGPTFC API: Final user prompt: ' . $user_prompt);
-        }
-
         // Prepare the messages
         $messages = array();
 
@@ -227,22 +190,10 @@ class CGPTFC_API {
         );
 
         if (is_wp_error($response)) {
-            if ($debug_mode == '1') {
-                error_log('CGPTFC API: Error making API request: ' . $response->get_error_message());
-            }
             return $response;
         }
 
         $content = $this->get_response_content($response);
-
-        if ($debug_mode == '1') {
-            if (is_wp_error($content)) {
-                error_log('CGPTFC API: Error getting response content: ' . $content->get_error_message());
-            } else {
-                error_log('CGPTFC API: Received response successfully (' . strlen($content) . ' chars)');
-            }
-        }
-
         return $content;
     }
 

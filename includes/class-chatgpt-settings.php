@@ -81,32 +81,6 @@ class CGPTFC_Settings {
             'cgptfc_settings',
             'cgptfc_settings_section'
         );
- 
-        // Debug mode setting
-        register_setting('cgptfc_settings', 'cgptfc_debug_mode');
-
-        // Add the debug mode settings field
-        add_settings_field(
-            'cgptfc_debug_mode',
-            __('Debug Mode', 'chatgpt-fluent-connector'),
-            array($this, 'debug_mode_field_callback'),
-            'cgptfc_settings',
-            'cgptfc_settings_section'
-        );
-    }
-    
-    /**
-     * Debug mode field callback
-     */
-    public function debug_mode_field_callback() {
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
-        ?>
-        <label>
-            <input type="checkbox" name="cgptfc_debug_mode" value="1" <?php checked($debug_mode, '1'); ?>>
-            <?php _e('Enable debug logging', 'chatgpt-fluent-connector'); ?>
-        </label>
-        <p class="description"><?php _e('Enables detailed debug logs in the WordPress error log for troubleshooting', 'chatgpt-fluent-connector'); ?></p>
-        <?php
     }     
     
     /**

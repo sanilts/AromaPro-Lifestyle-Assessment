@@ -80,9 +80,6 @@ class CGPTFC_Response_Logger {
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
-        
-        // Log table creation for debugging
-        error_log('ChatGPT Response Logger: Table creation attempted. Result: ' . ($wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") === $this->table_name ? 'Success' : 'Failed - ' . $wpdb->last_error));
     }
     
     /**
@@ -101,9 +98,6 @@ class CGPTFC_Response_Logger {
         // Ensure table exists before trying to insert
         $this->ensure_table_exists();
         
-        // Debug log
-        error_log("ChatGPT Logger: Attempting to log response for prompt ID: $prompt_id, entry ID: $entry_id");
-        
         // Insert the log
         $result = $wpdb->insert(
             $this->table_name,
@@ -120,11 +114,9 @@ class CGPTFC_Response_Logger {
         
         // Log any errors for debugging
         if ($result === false) {
-            error_log('ChatGPT Logger Error: Failed to insert response log - ' . $wpdb->last_error);
             return false;
         }
         
-        error_log('ChatGPT Logger: Response logged successfully. ID: ' . $wpdb->insert_id);
         return $wpdb->insert_id;
     }
     
