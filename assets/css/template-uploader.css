@@ -1,0 +1,47 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : 13 May 2025, 11:16:37 am
+    Author     : sanil
+*/
+
+/* 
+ * CSS for the HTML template uploader
+ */
+
+.cgptfc-template-uploader-wrapper {
+    margin-bottom: 10px;
+}
+
+.cgptfc-template-upload-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.cgptfc-template-filename {
+    margin: 0 10px;
+    color: #666;
+}
+
+.cgptfc-template-preview {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.cgptfc-preview-container {
+    max-height: 300px;
+    overflow: auto;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #eee;
+}
+
+.cgptfc-remove-template {
+    margin-left: 10px;
+}
