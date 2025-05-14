@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Plugin Name: ChatGPT and Gemini Fluent Forms Connector
  * Plugin URI: https://aromapro.com/
@@ -41,7 +40,7 @@ class CGPTFC_Main {
      * OpenAI API class instance
      */
     public $api;
-    
+
     /**
      * Gemini API class instance
      */
@@ -61,7 +60,7 @@ class CGPTFC_Main {
      * Response logger class instance
      */
     public $response_logger;
-    
+
     /**
      * HTML Template uploader class instance
      */
@@ -96,7 +95,8 @@ class CGPTFC_Main {
         require_once __DIR__ . '/includes/class-chatgpt-custom-fluent-integration.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-response-logger.php';
         require_once __DIR__ . '/includes/class-chatgpt-html-template-uploader.php';
-        
+        require_once __DIR__ . '/includes/enhanced-logging/enhanced-logging.php';
+
         // Instantiate classes
         $this->settings = new CGPTFC_Settings();
         $this->api = new CGPTFC_API();
@@ -105,7 +105,7 @@ class CGPTFC_Main {
         $this->response_logger = new CGPTFC_Response_Logger();
         $this->fluent_integration = new CGPTFC_Fluent_Integration();
         $this->html_template_uploader = new CGPTFC_HTML_Template_Uploader();
-        
+
         // Register hooks
         add_action('fluentform/submission_inserted', array($this->fluent_integration, 'handle_form_submission'), 20, 3);
 
@@ -114,10 +114,10 @@ class CGPTFC_Main {
 
         // Load text domain
         add_action('init', array($this, 'load_textdomain'));
-        
+
         // Add admin notice for first-time setup
         add_action('admin_notices', array($this, 'admin_setup_notice'));
-        
+
         // Add CSS for admin
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_styles'));
     }
@@ -144,74 +144,80 @@ class CGPTFC_Main {
         if (!get_option('cgptfc_model')) {
             update_option('cgptfc_model', 'gpt-3.5-turbo');
         }
-        
+
         // Set default options for Gemini
         if (!get_option('cgptfc_gemini_api_endpoint')) {
             update_option('cgptfc_gemini_api_endpoint', 'https://generativelanguage.googleapis.com/v1beta/models/');
         }
-        
+
         if (!get_option('cgptfc_gemini_model')) {
             update_option('cgptfc_gemini_model', 'gemini-pro');
         }
-        
+
         // Set default API provider
         if (!get_option('cgptfc_api_provider')) {
             update_option('cgptfc_api_provider', 'openai');
         }
 
+        // In the plugin_activation() method of your main class
+        if (isset($this->response_logger)) {
+            // Force table version check and update
+            $this->response_logger->check_table_version();
+        }
+
         // Flush rewrite rules after creating custom post type
         flush_rewrite_rules();
     }
-    
+
     /**
      * Display admin notice for first-time setup
      */
     public function admin_setup_notice() {
         $screen = get_current_screen();
-        
+
         // Only show on the plugins page or our settings pages
         if (!in_array($screen->id, array('plugins', 'settings_page_cgptfc-settings'))) {
             return;
         }
-        
+
         // Check if API keys are missing for the selected provider
         $provider = get_option('cgptfc_api_provider', 'openai');
         $api_key_option = ($provider === 'openai') ? 'cgptfc_api_key' : 'cgptfc_gemini_api_key';
-        
+
         if (empty(get_option($api_key_option))) {
             ?>
             <div class="notice notice-warning is-dismissible">
                 <p>
-                    <?php 
-                    if ($provider === 'openai') {
-                        _e('<strong>ChatGPT & Gemini Connector:</strong> Please configure your OpenAI API key to start using the plugin.', 'chatgpt-fluent-connector');
-                    } else {
-                        _e('<strong>ChatGPT & Gemini Connector:</strong> Please configure your Gemini API key to start using the plugin.', 'chatgpt-fluent-connector');
-                    }
-                    ?>
+            <?php
+            if ($provider === 'openai') {
+                _e('<strong>ChatGPT & Gemini Connector:</strong> Please configure your OpenAI API key to start using the plugin.', 'chatgpt-fluent-connector');
+            } else {
+                _e('<strong>ChatGPT & Gemini Connector:</strong> Please configure your Gemini API key to start using the plugin.', 'chatgpt-fluent-connector');
+            }
+            ?>
                     <a href="<?php echo admin_url('options-general.php?page=cgptfc-settings'); ?>" class="button button-primary" style="margin-left: 10px;">
-                        <?php _e('Configure Now', 'chatgpt-fluent-connector'); ?>
+                    <?php _e('Configure Now', 'chatgpt-fluent-connector'); ?>
                     </a>
                 </p>
             </div>
             <?php
         }
     }
-    
+
     /**
      * Enqueue admin styles
      */
     public function admin_enqueue_styles($hook) {
         // Only load on our settings page and prompt edit pages
-        if ($hook === 'settings_page_cgptfc-settings' || 
-            ($hook === 'post.php' && isset($_GET['post']) && get_post_type($_GET['post']) === 'cgptfc_prompt') ||
-            $hook === 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] === 'cgptfc_prompt') {
-            
+        if ($hook === 'settings_page_cgptfc-settings' ||
+                ($hook === 'post.php' && isset($_GET['post']) && get_post_type($_GET['post']) === 'cgptfc_prompt') ||
+                $hook === 'post-new.php' && isset($_GET['post_type']) && $_GET['post_type'] === 'cgptfc_prompt') {
+
             wp_enqueue_style(
-                'cgptfc-admin-styles',
-                CGPTFC_URL . 'assets/css/admin-styles.css',
-                array(),
-                CGPTFC_VERSION
+                    'cgptfc-admin-styles',
+                    CGPTFC_URL . 'assets/css/admin-styles.css',
+                    array(),
+                    CGPTFC_VERSION
             );
         }
     }
@@ -222,7 +228,7 @@ class CGPTFC_Main {
     public function load_textdomain() {
         load_plugin_textdomain('chatgpt-fluent-connector', false, dirname(plugin_basename(__FILE__)) . '/languages');
     }
-    
+
     /**
      * Get the active AI API based on settings
      * 
@@ -230,11 +236,11 @@ class CGPTFC_Main {
      */
     public function get_active_api() {
         $provider = get_option('cgptfc_api_provider', 'openai');
-        
+
         if ($provider === 'gemini') {
             return $this->gemini_api;
         }
-        
+
         return $this->api; // Default to OpenAI
     }
 }
