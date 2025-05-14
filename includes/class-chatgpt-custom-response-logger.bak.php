@@ -29,65 +29,6 @@ class CGPTFC_Response_Logger {
         
         // Make sure table exists
         $this->ensure_table_exists();
-        
-        // Check if table needs to be updated
-        add_action('admin_init', array($this, 'check_table_version'));
-    }
-    
-    /**
-     * Check if the table structure needs to be updated
-     */
-    public function check_table_version() {
-        $current_version = get_option('cgptfc_logs_table_version', '1.0');
-        
-        // If the table version is less than 1.1, we need to update it
-        if (version_compare($current_version, '1.1', '<')) {
-            $this->update_table_structure();
-            update_option('cgptfc_logs_table_version', '1.1');
-        }
-    }
-    
-    /**
-     * Update table structure to the latest version
-     */
-    public function update_table_structure() {
-        global $wpdb;
-        
-        // Check if table exists
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") !== $this->table_name) {
-            // If table doesn't exist, create it with the new structure
-            $this->create_logs_table();
-            return;
-        }
-        
-        // Check if columns already exist to avoid errors
-        $columns = $wpdb->get_results("SHOW COLUMNS FROM {$this->table_name}", ARRAY_A);
-        $column_names = array_column($columns, 'Field');
-        
-        // Add new columns if they don't exist
-        if (!in_array('status', $column_names)) {
-            $wpdb->query("ALTER TABLE {$this->table_name} ADD `status` VARCHAR(50) NOT NULL DEFAULT 'success' AFTER `ai_response`");
-        }
-        
-        if (!in_array('provider', $column_names)) {
-            $wpdb->query("ALTER TABLE {$this->table_name} ADD `provider` VARCHAR(50) NOT NULL DEFAULT 'openai' AFTER `status`");
-        }
-        
-        if (!in_array('error_message', $column_names)) {
-            $wpdb->query("ALTER TABLE {$this->table_name} ADD `error_message` TEXT AFTER `provider`");
-        }
-        
-        if (!in_array('prompt_title', $column_names)) {
-            $wpdb->query("ALTER TABLE {$this->table_name} ADD `prompt_title` VARCHAR(255) AFTER `prompt_id`");
-        }
-        
-        if (!in_array('model', $column_names)) {
-            $wpdb->query("ALTER TABLE {$this->table_name} ADD `model` VARCHAR(100) AFTER `provider`");
-        }
-        
-        if (!in_array('execution_time', $column_names)) {
-            $wpdb->query("ALTER TABLE {$this->table_name} ADD `execution_time` FLOAT AFTER `model`");
-        }
     }
     
     /**
@@ -129,30 +70,16 @@ class CGPTFC_Response_Logger {
         $sql = "CREATE TABLE IF NOT EXISTS {$this->table_name} (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             prompt_id bigint(20) NOT NULL,
-            prompt_title varchar(255) DEFAULT NULL,
             form_id bigint(20) NOT NULL,
             entry_id bigint(20) NOT NULL,
             user_prompt longtext NOT NULL,
             ai_response longtext NOT NULL,
-            status varchar(50) NOT NULL DEFAULT 'success',
-            provider varchar(50) NOT NULL DEFAULT 'openai',
-            model varchar(100) DEFAULT NULL,
-            execution_time float DEFAULT NULL,
-            error_message text DEFAULT NULL,
             created_at datetime NOT NULL,
-            PRIMARY KEY  (id),
-            KEY prompt_id (prompt_id),
-            KEY form_id (form_id),
-            KEY entry_id (entry_id),
-            KEY status (status),
-            KEY created_at (created_at)
+            PRIMARY KEY  (id)
         ) $charset_collate;";
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
-        
-        // Set the table version
-        update_option('cgptfc_logs_table_version', '1.1');
     }
     
     /**
@@ -165,73 +92,27 @@ class CGPTFC_Response_Logger {
      * @param string $ai_response The AI response
      * @return bool|int The row ID or false on failure
      */
-    public function log_response($prompt_id, $entry_id, $form_id, $user_prompt, $ai_response, $provider = 'openai', $model = '', $execution_time = null) {
+    public function log_response($prompt_id, $entry_id, $form_id, $user_prompt, $ai_response) {
         global $wpdb;
         
         // Ensure table exists before trying to insert
         $this->ensure_table_exists();
         
-        // Check for WP_Error
-        $status = 'success';
-        $error_message = '';
-        $response_text = '';
-        
-        if (is_wp_error($ai_response)) {
-            $status = 'error';
-            $error_message = $ai_response->get_error_message();
-            $response_text = ''; // Empty response for errors
-        } else {
-            $response_text = $ai_response;
-        }
-        
-        // Get prompt title
-        $prompt_title = get_the_title($prompt_id);
-        
-        // Check if parameters are missing - use default values
-        if (empty($provider)) {
-            $provider = get_option('cgptfc_api_provider', 'openai');
-        }
-        
-        if (empty($model)) {
-            if ($provider === 'gemini') {
-                $model = get_option('cgptfc_gemini_model', 'gemini-pro');
-            } else {
-                $model = get_option('cgptfc_model', 'gpt-3.5-turbo');
-            }
-        }
-        
-        // Prepare data with proper types
-        $data = array(
-            'prompt_id' => $prompt_id,
-            'prompt_title' => $prompt_title,
-            'form_id' => $form_id,
-            'entry_id' => $entry_id,
-            'user_prompt' => $user_prompt,
-            'ai_response' => $response_text,
-            'status' => $status,
-            'provider' => $provider,
-            'model' => $model,
-            'error_message' => $error_message,
-            'created_at' => current_time('mysql')
-        );
-        
-        // Add execution_time only if it's provided
-        if ($execution_time !== null) {
-            $data['execution_time'] = $execution_time;
-        }
-        
         // Insert the log
         $result = $wpdb->insert(
             $this->table_name,
-            $data,
             array(
-                '%d', '%s', '%d', '%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s'
-            )
+                'prompt_id' => $prompt_id,
+                'form_id' => $form_id,
+                'entry_id' => $entry_id,
+                'user_prompt' => $user_prompt,
+                'ai_response' => $ai_response,
+                'created_at' => current_time('mysql')
+            ),
+            array('%d', '%d', '%d', '%s', '%s', '%s')
         );
         
         if ($result === false) {
-            // Log error for debugging
-            error_log('CGPTFC: Failed to log response. WP Database Error: ' . $wpdb->last_error);
             return false;
         }
         
@@ -373,63 +254,9 @@ class CGPTFC_Response_Logger {
         // Calculate pagination
         $total_pages = ceil($total_logs / $per_page);
         
-        // Register and enqueue custom CSS
-        $custom_css = "
-            .cgptfc-badge {
-                display: inline-block;
-                padding: 3px 6px;
-                border-radius: 3px;
-                font-size: 12px;
-                font-weight: 500;
-                text-align: center;
-            }
-            
-            .cgptfc-badge-success {
-                background-color: #d4edda;
-                color: #155724;
-                border: 1px solid #c3e6cb;
-            }
-            
-            .cgptfc-badge-error {
-                background-color: #f8d7da;
-                color: #721c24;
-                border: 1px solid #f5c6cb;
-            }
-            
-            .cgptfc-api-badge {
-                display: inline-block;
-                padding: 3px 8px;
-                border-radius: 10px;
-                font-size: 11px;
-                font-weight: 600;
-                vertical-align: middle;
-            }
-
-            .cgptfc-api-badge.openai {
-                background-color: #10a37f;
-                color: white;
-            }
-
-            .cgptfc-api-badge.gemini {
-                background-color: #4285f4;
-                color: white;
-            }
-            
-            .wp-list-table tr.error {
-                background-color: #fff8f8;
-            }
-            
-            .wp-list-table tr.error:nth-child(odd) {
-                background-color: #fff0f0;
-            }
-        ";
-        
-        // Add inline styles
-        echo '<style>' . $custom_css . '</style>';
-        
         ?>
         <div class="wrap">
-            <h1><?php _e('AI Response Logs', 'chatgpt-fluent-connector'); ?></h1>
+            <h1><?php _e('ChatGPT Response Logs', 'chatgpt-fluent-connector'); ?></h1>
             
             <?php if (!$table_exists): ?>
                 <div class="notice notice-error">
@@ -524,49 +351,28 @@ class CGPTFC_Response_Logger {
                         <th><?php _e('Prompt', 'chatgpt-fluent-connector'); ?></th>
                         <th><?php _e('Form ID', 'chatgpt-fluent-connector'); ?></th>
                         <th><?php _e('Entry ID', 'chatgpt-fluent-connector'); ?></th>
-                        <th><?php _e('Status', 'chatgpt-fluent-connector'); ?></th>
-                        <th><?php _e('Provider', 'chatgpt-fluent-connector'); ?></th>
                         <th><?php _e('Response', 'chatgpt-fluent-connector'); ?></th>
                         <th><?php _e('Date', 'chatgpt-fluent-connector'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($logs)) : ?>
-                        <?php foreach ($logs as $log) : 
-                            // Determine row class based on status
-                            $row_class = '';
-                            $status_badge = '';
-                            
-                            if (isset($log->status)) {
-                                if ($log->status === 'error') {
-                                    $row_class = 'error';
-                                    $status_badge = '<span class="cgptfc-badge cgptfc-badge-error">' . __('Error', 'chatgpt-fluent-connector') . '</span>';
-                                } else {
-                                    $status_badge = '<span class="cgptfc-badge cgptfc-badge-success">' . __('Success', 'chatgpt-fluent-connector') . '</span>';
-                                }
-                            }
-                            
-                            // Prepare provider badge
-                            $provider_badge = '';
-                            if (isset($log->provider)) {
-                                if ($log->provider === 'openai') {
-                                    $provider_badge = '<span class="cgptfc-api-badge openai">ChatGPT</span>';
-                                } elseif ($log->provider === 'gemini') {
-                                    $provider_badge = '<span class="cgptfc-api-badge gemini">Gemini</span>';
-                                }
-                            }
-                        ?>
-                            <tr class="<?php echo esc_attr($row_class); ?>">
+                        <?php foreach ($logs as $log) : ?>
+                            <tr>
                                 <td><?php echo esc_html($log->id); ?></td>
                                 <td>
-                                    <a href="<?php echo esc_url(get_edit_post_link($log->prompt_id)); ?>">
-                                        <?php echo esc_html(get_the_title($log->prompt_id)); ?>
-                                    </a>
+                                    <?php if (isset($log->prompt_title)) : ?>
+                                        <a href="<?php echo esc_url(get_edit_post_link($log->prompt_id)); ?>">
+                                            <?php echo esc_html($log->prompt_title); ?>
+                                        </a>
+                                    <?php else : ?>
+                                        <a href="<?php echo esc_url(get_edit_post_link($log->prompt_id)); ?>">
+                                            <?php echo esc_html(get_the_title($log->prompt_id)); ?>
+                                        </a>
+                                    <?php endif; ?>
                                 </td>
                                 <td><?php echo esc_html($log->form_id); ?></td>
                                 <td><?php echo esc_html($log->entry_id); ?></td>
-                                <td><?php echo $status_badge; ?></td>
-                                <td><?php echo $provider_badge; ?></td>
                                 <td>
                                     <div style="max-height: 100px; overflow-y: auto; font-size: 12px; white-space: pre-line;">
                                         <?php echo wp_kses_post($log->ai_response); ?>
@@ -582,7 +388,7 @@ class CGPTFC_Response_Logger {
                         <?php endforeach; ?>
                     <?php else : ?>
                         <tr>
-                            <td colspan="8"><?php _e('No logs found.', 'chatgpt-fluent-connector'); ?></td>
+                            <td colspan="6"><?php _e('No logs found.', 'chatgpt-fluent-connector'); ?></td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -593,7 +399,7 @@ class CGPTFC_Response_Logger {
         <div id="response-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
             <div style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 800px;">
                 <span style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;" id="close-modal">&times;</span>
-                <h2><?php _e('AI Response', 'chatgpt-fluent-connector'); ?></h2>
+                <h2><?php _e('ChatGPT Response', 'chatgpt-fluent-connector'); ?></h2>
                 <div id="response-content" style="margin-top: 20px; white-space: pre-line;"></div>
             </div>
         </div>
