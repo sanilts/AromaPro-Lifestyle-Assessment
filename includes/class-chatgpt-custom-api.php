@@ -181,13 +181,15 @@ class CGPTFC_API {
         }
 
         // Check max tokens based on model
+        // To this:
         $token_limits = [
             'gpt-3.5-turbo' => 4000,
             'gpt-4' => 8000,
-            'gpt-4-turbo' => 8000,
-            'gpt-4-1106-preview' => 4000,
+            'gpt-4-turbo' => 4096, // Updated to correct limit
+            'gpt-4-turbo-preview' => 4096, // Added for completeness
+            'gpt-4-1106-preview' => 4096, // Updated to correct limit
             'gpt-4-0613' => 8000,
-            'gpt-4-0125-preview' => 4000
+            'gpt-4-0125-preview' => 4096  // Updated to correct limit
         ];
 
         // Set default max token limit
