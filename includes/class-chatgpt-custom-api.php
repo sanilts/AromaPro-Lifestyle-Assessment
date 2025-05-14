@@ -54,12 +54,12 @@ class CGPTFC_API {
         );
 
         // Add model-specific parameters
-        if ($model === 'gpt-4-1') {
-            // Add specific parameters for GPT-4.1 if they are different
+        if ($model === 'gpt-4-0125-preview') {
+            // Add specific parameters for GPT-4 Preview if they are different
             // This could include different defaults or capabilities
-            $body['top_p'] = 0.95; // Higher top_p for more diverse outputs with GPT-4.1
+            $body['top_p'] = 0.95; // Higher top_p for more diverse outputs with advanced models
             
-            // You can uncomment this if GPT-4.1 supports additional features
+            // You can uncomment this if needed for the model
             // $body['frequency_penalty'] = 0.1; 
             // $body['presence_penalty'] = 0.1;
         }

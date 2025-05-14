@@ -126,7 +126,7 @@ class CGPTFC_Settings {
             'gpt-4-turbo' => __('GPT-4 Turbo (Latest GPT-4 model)', 'chatgpt-fluent-connector'),
             'gpt-4-1106-preview' => __('GPT-4 Turbo (November 2023 preview)', 'chatgpt-fluent-connector'),
             'gpt-4-0613' => __('GPT-4 (June 2023 snapshot)', 'chatgpt-fluent-connector'),
-            'gpt-4-1' => __('GPT-4.1 (Latest model with advanced reasoning)', 'chatgpt-fluent-connector'),
+            'gpt-4-0125-preview' => __('GPT-4 Preview (Latest version with advanced reasoning)', 'chatgpt-fluent-connector'),
         );
         ?>
         <select name="cgptfc_model">
