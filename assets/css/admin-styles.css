@@ -1,0 +1,120 @@
+/**
+ * Admin styles for ChatGPT & Gemini Fluent Forms Connector
+ */
+
+/* Settings page styles */
+.cgptfc-settings-section {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 3px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+
+.cgptfc-provider-settings {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: 3px;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+
+.cgptfc-provider-settings h2 {
+    margin-top: 0;
+}
+
+/* Provider selector */
+#cgptfc_api_provider {
+    padding: 5px 10px;
+    min-width: 200px;
+}
+
+/* API Key fields */
+input[name="cgptfc_api_key"],
+input[name="cgptfc_gemini_api_key"] {
+    padding: 5px 10px;
+    width: 100%;
+    max-width: 500px;
+}
+
+/* Connection test results */
+#connection-result {
+    background-color: #f9f9f9;
+    border-left: 4px solid #ccc;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+#connection-result.notice-success {
+    border-left-color: #46b450;
+}
+
+#connection-result.notice-error {
+    border-left-color: #dc3232;
+}
+
+#connection-result pre {
+    background: #fff;
+    padding: 10px;
+    border: 1px solid #eee;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Provider badges */
+.cgptfc-api-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.cgptfc-api-badge.openai {
+    background-color: #10a37f;
+    color: white;
+}
+
+.cgptfc-api-badge.gemini {
+    background-color: #4285f4;
+    color: white;
+}
+
+/* Admin notices */
+.cgptfc-notice {
+    padding: 12px;
+    margin: 15px 0;
+    border-left: 4px solid #00a0d2;
+    background-color: #fff;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+}
+
+.cgptfc-notice-warning {
+    border-left-color: #ffb900;
+}
+
+.cgptfc-notice-error {
+    border-left-color: #dc3232;
+}
+
+.cgptfc-notice-success {
+    border-left-color: #46b450;
+}
+
+/* Prompt editor styles */
+.post-type-cgptfc_prompt .form-table th {
+    width: 200px;
+}
+
+/* Responsive fixes */
+@media screen and (max-width: 782px) {
+    .post-type-cgptfc_prompt .form-table th {
+        width: auto;
+    }
+}

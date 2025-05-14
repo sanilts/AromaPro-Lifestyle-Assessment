@@ -1,507 +1,771 @@
 <?php
 /**
- * ChatGPT Response Logger Class - With Fixed Logs Display
+ * ChatGPT Fluent Forms Integration Class - Updated for multiple AI providers
  * 
- * Handles logging and retrieval of ChatGPT responses
+ * Handles integration with Fluent Forms
  */
-
 // Exit if accessed directly
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class CGPTFC_Response_Logger {
-    
-    /**
-     * Table name
-     */
-    private $table_name;
-    
+class CGPTFC_Fluent_Integration {
+
     /**
      * Constructor
      */
     public function __construct() {
-        global $wpdb;
-        $this->table_name = $wpdb->prefix . 'cgptfc_response_logs';
+        // Hook into Fluent Forms submission
+        add_action('fluentform/submission_inserted', array($this, 'handle_form_submission'), 20, 3);
         
-        // Add admin submenu for logs
-        add_action('admin_menu', array($this, 'add_logs_submenu'));
-        
-        // Make sure table exists
-        $this->ensure_table_exists();
+        // Use the correct filter with the proper parameters
+        add_filter('fluentform/submission_confirmation', array($this, 'modify_confirmation_message'), 10, 5);
     }
-    
+
     /**
-     * Make sure the response logs table exists
+     * Handle form submission
+     * 
+     * @param int $entry_id The submission entry ID
+     * @param array $form_data The submitted form data
+     * @param object $form The form object
      */
-    private function ensure_table_exists() {
-        global $wpdb;
+    public function handle_form_submission($entry_id, $form_data, $form) {
+        $form_id = $form->id;
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
         
-        // Check if table exists
-        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") === $this->table_name;
-        
-        if (!$table_exists) {
-            $this->create_logs_table();
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: handle_form_submission called for form ' . $form_id . ', entry ' . $entry_id);
+        }
+
+        // Find prompts configured for this form
+        $args = array(
+            'post_type' => 'cgptfc_prompt',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                array(
+                    'key' => '_cgptfc_fluent_form_id',
+                    'value' => $form_id,
+                    'compare' => '='
+                )
+            )
+        );
+
+        $prompts = get_posts($args);
+
+        if (empty($prompts)) {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: No prompts found for form ' . $form_id);
+            }
+            return;
+        }
+
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Found ' . count($prompts) . ' prompts for form ' . $form_id);
+        }
+
+        // Process each prompt
+        foreach ($prompts as $prompt) {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: Processing prompt: ' . $prompt->ID . ' - ' . $prompt->post_title);
+            }
+            $this->process_prompt($prompt->ID, $form_data, $entry_id, $form);
         }
     }
-    
+
     /**
-     * Add logs submenu
+     * Modify the confirmation message to include AI response
+     * 
+     * @param array $returnData The return data array
+     * @param object $form The form object
+     * @param array $confirmation The confirmation settings
+     * @param int $insertId The submission ID
+     * @param array $formData The form data
+     * @return array Modified return data
      */
-    public function add_logs_submenu() {
-        add_submenu_page(
-            'edit.php?post_type=cgptfc_prompt', 
-            __('Response Logs', 'chatgpt-fluent-connector'),
-            __('Response Logs', 'chatgpt-fluent-connector'),
-            'manage_options',
-            'cgptfc-response-logs',
-            array($this, 'render_logs_page')
+    public function modify_confirmation_message($returnData, $form, $confirmation, $insertId, $formData) {
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+        
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: modify_confirmation_message called');
+            error_log('CGPTFC: Form ID: ' . $form->id);
+            error_log('CGPTFC: Entry ID: ' . $insertId);
+        }
+        
+        // Check if we should show the response for this form
+        $args = array(
+            'post_type' => 'cgptfc_prompt',
+            'posts_per_page' => -1,
+            'meta_query' => array(
+                'relation' => 'AND',
+                array(
+                    'key' => '_cgptfc_fluent_form_id',
+                    'value' => $form->id,
+                    'compare' => '='
+                ),
+                array(
+                    'key' => '_cgptfc_show_to_user',
+                    'value' => '1',
+                    'compare' => '='
+                )
+            )
         );
+
+        $show_prompts = get_posts($args);
+        
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Found ' . count($show_prompts) . ' prompts configured to show response');
+        }
+
+        if (!empty($show_prompts)) {
+            // Get the AI response from the database
+            $ai_response_html = $this->get_ai_response_html($form->id, $insertId);
+            
+            if (!empty($ai_response_html)) {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: Adding AI response to confirmation message');
+                }
+                
+                // Modify the message based on the return type
+                if (isset($returnData['message'])) {
+                    $returnData['message'] .= $ai_response_html;
+                } elseif (isset($returnData['messageToShow'])) {
+                    $returnData['messageToShow'] .= $ai_response_html;
+                }
+            } else {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: No AI response found for entry ID: ' . $insertId);
+                }
+            }
+        }
+        
+        return $returnData;
     }
-    
+
     /**
-     * Create logs table
+     * Get the AI response HTML - Modified to properly render HTML
+     * 
+     * @param int $form_id The form ID
+     * @param int $entry_id The entry ID
+     * @return string The HTML to display
      */
-    public function create_logs_table() {
+    private function get_ai_response_html($form_id, $entry_id) {
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+        
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Looking for AI response for form_id: ' . $form_id . ', entry_id: ' . $entry_id);
+        }
+
         global $wpdb;
+        $table_name = $wpdb->prefix . 'cgptfc_response_logs';
+
+        // Check if table exists
+        if ($wpdb->get_var("SHOW TABLES LIKE '{$table_name}'") !== $table_name) {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: Response logs table does not exist');
+            }
+            return '';
+        }
+
+        // Get the most recent response for this form entry, including the prompt
+        $result = $wpdb->get_row($wpdb->prepare(
+            "SELECT user_prompt, ai_response FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
+            $form_id, $entry_id
+        ));
         
-        $charset_collate = $wpdb->get_charset_collate();
+        if (empty($result)) {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: No response found in database');
+            }
+            
+            // Wait a bit for the response to be generated
+            usleep(500000); // Wait 0.5 seconds
+            
+            // Try again
+            $result = $wpdb->get_row($wpdb->prepare(
+                "SELECT user_prompt, ai_response FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
+                $form_id, $entry_id
+            ));
+            
+            if (empty($result)) {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: Still no response after waiting');
+                }
+                return '';
+            }
+        }
+
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Found response: ' . substr($result->ai_response, 0, 50) . '...');
+        }
+
+        // Get the active AI provider for display
+        $provider = get_option('cgptfc_api_provider', 'openai');
+        $provider_name = ($provider === 'gemini') ? 'Google Gemini' : 'ChatGPT';
+
+        // Build the HTML to show both prompt and response
+        $html = '<div class="cgptfc-response-wrapper">';
         
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->table_name} (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
-            prompt_id bigint(20) NOT NULL,
-            form_id bigint(20) NOT NULL,
-            entry_id bigint(20) NOT NULL,
-            user_prompt longtext NOT NULL,
-            ai_response longtext NOT NULL,
-            created_at datetime NOT NULL,
-            PRIMARY KEY  (id)
-        ) $charset_collate;";
+        // Display the response - IMPORTANT: Allow HTML to render properly by using wp_kses_post instead of esc_html
+        $html .= '<div class="cgptfc-response">';
+        $html .= '<div class="cgptfc-response-header">' . sprintf(__('%s Response', 'chatgpt-fluent-connector'), $provider_name) . '</div>';
+        $html .= '<div class="cgptfc-response-content">';
+        $html .= wp_kses_post(nl2br($result->ai_response)); // Allow HTML but still sanitize with wp_kses_post
+        $html .= '</div>';
+        $html .= '</div>';
         
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        // Format the full form data to include at the bottom
+        $html .= $this->get_formatted_form_data_html($form_id, $entry_id);
+        
+        $html .= '</div>';
+
+        // Add enhanced styling
+        $html .= '<style>
+        .cgptfc-response-wrapper {
+            margin: 20px 0;
+        }
+        .cgptfc-prompt,
+        .cgptfc-response {
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .cgptfc-prompt {
+            background-color: #f3f4f6;
+            border-left: 5px solid #6b7280;
+        }
+        .cgptfc-response {
+            background-color: #f9f9f9;
+            border-left: 5px solid #0073aa;
+        }
+        .cgptfc-response-header {
+            margin-top: 0;
+            font-size: 1.3em;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            color: #0073aa;
+        }
+        .cgptfc-prompt h3 {
+            color: #374151;
+        }
+        .cgptfc-prompt-content,
+        .cgptfc-response-content {
+            line-height: 1.6;
+            font-size: 1em;
+            padding: 10px 0;
+        }
+        .cgptfc-form-data {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            border-left: 5px solid #444;
+        }
+        .cgptfc-form-data-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .cgptfc-form-data-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .cgptfc-form-data-label {
+            font-weight: bold;
+        }
+        .cgptfc-prompt-content {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 3px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .cgptfc-response-content {
+            font-size: 1.1em;
+        }
+        </style>';
+
+        return $html;
     }
-    
+
     /**
-     * Log a response
+     * Get formatted HTML for form data
+     * 
+     * @param int $form_id The form ID
+     * @param int $entry_id The entry ID
+     * @return string The HTML showing form data
+     */
+    private function get_formatted_form_data_html($form_id, $entry_id) {
+        // Get form data from entry
+        if (!function_exists('wpFluent')) {
+            return '';
+        }
+        
+        $entry = wpFluent()->table('fluentform_submissions')
+                ->where('form_id', $form_id)
+                ->where('id', $entry_id)
+                ->first();
+                
+        if (!$entry || empty($entry->response)) {
+            return '';
+        }
+        
+        $form_data = json_decode($entry->response, true);
+        if (empty($form_data) || !is_array($form_data)) {
+            return '';
+        }
+        
+        // Get field labels
+        $field_labels = $this->get_form_field_labels($form_id);
+        
+        // Create the HTML
+        $html = '<div class="cgptfc-form-data">';
+        $html .= '<div class="cgptfc-form-data-title">' . __('Submitted Form Data', 'chatgpt-fluent-connector') . '</div>';
+        
+        foreach ($form_data as $field_key => $field_value) {
+            // Skip if field_key is not a scalar or starts with '_'
+            if (!is_scalar($field_key) || strpos($field_key, '_') === 0) {
+                continue;
+            }
+            
+            // Get label if available, otherwise use field key
+            $label = isset($field_labels[$field_key]) ? $field_labels[$field_key] : $field_key;
+            
+            // Format value
+            if (is_array($field_value)) {
+                $field_value = implode(', ', $field_value);
+            } elseif (!is_scalar($field_value)) {
+                // Skip non-scalar values
+                continue;
+            }
+            
+            $html .= '<div class="cgptfc-form-data-item">';
+            $html .= '<span class="cgptfc-form-data-label">' . esc_html($label) . ':</span> ';
+            $html .= '<span class="cgptfc-form-data-value">' . esc_html($field_value) . '</span>';
+            $html .= '</div>';
+        }
+        
+        $html .= '</div>';
+        
+        return $html;
+    }
+
+    /**
+     * Process a prompt with form data - Updated to support multiple AI providers
+     * 
+     * @param int $prompt_id The prompt ID
+     * @param array $form_data The form data
+     * @param int $entry_id The entry ID
+     * @param object $form The form object
+     * @return void
+     */
+    private function process_prompt($prompt_id, $form_data, $entry_id, $form) {
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+        
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Inside process_prompt for prompt_id ' . $prompt_id);
+        }
+
+        // Get the API instance based on selected provider
+        $api = cgptfc_main()->get_active_api();
+        
+        if (!$api) {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: API instance not available');
+            }
+            return;
+        }
+        
+        // Get current API provider
+        $provider = get_option('cgptfc_api_provider', 'openai');
+        
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Using ' . $provider . ' API for processing prompt');
+        }
+
+        // Build the complete prompt that will be sent
+        $system_prompt = get_post_meta($prompt_id, '_cgptfc_system_prompt', true);
+        $user_prompt_template = get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true);
+        $prompt_type = get_post_meta($prompt_id, '_cgptfc_prompt_type', true);
+
+        // Set default prompt type if not set
+        if (empty($prompt_type)) {
+            $prompt_type = 'template';
+        }
+
+        // Prepare the user prompt based on prompt type
+        $user_prompt = '';
+        if ($prompt_type === 'all_form_data') {
+            // Use all form data - we'll use the API's format_all_form_data method
+            $user_prompt = $this->format_all_form_data($form_data, $prompt_id);
+        } else {
+            // Use custom template
+            if (empty($user_prompt_template)) {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: No user prompt template configured');
+                }
+                return;
+            }
+
+            // Replace placeholders in user prompt
+            $user_prompt = $user_prompt_template;
+
+            // Replace field placeholders with actual values
+            foreach ($form_data as $field_key => $field_value) {
+                // Skip if field_key is not a scalar (string/number)
+                if (!is_scalar($field_key)) {
+                    continue;
+                }
+
+                // Handle array values (like checkboxes)
+                if (is_array($field_value)) {
+                    $field_value = implode(', ', $field_value);
+                } elseif (!is_scalar($field_value)) {
+                    // Skip non-scalar values
+                    continue;
+                }
+
+                $user_prompt = str_replace('{' . $field_key . '}', $field_value, $user_prompt);
+            }
+
+            // Check for any remaining placeholders and replace with empty string
+            $user_prompt = preg_replace('/\{[^}]+\}/', '', $user_prompt);
+        }
+
+        // Build the complete prompt that will be sent
+        $complete_prompt = '';
+        if (!empty($system_prompt)) {
+            $complete_prompt .= $system_prompt . "\n";
+        }
+        $complete_prompt .= $user_prompt;
+
+        // Process the form with the prompt
+        $ai_response = $api->process_form_with_prompt($prompt_id, $form_data);
+
+        // Check if we got a valid response or an error
+        if (is_wp_error($ai_response)) {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: Error processing prompt: ' . $ai_response->get_error_message());
+            }
+            return;
+        }
+
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Got AI response, length: ' . strlen($ai_response));
+        }
+
+        // Save the response if logging is enabled
+        $log_responses = get_post_meta($prompt_id, '_cgptfc_log_responses', true);
+        if ($log_responses == '1') {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: Logging response to database');
+            }
+            // Use the complete prompt instead of just the template
+            $result = cgptfc_main()->response_logger->log_response(
+                $prompt_id,
+                $entry_id,
+                $form->id,
+                $complete_prompt, // Save the actual prompt sent
+                $ai_response
+            );
+            
+            if ($result) {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: Response logged successfully, ID: ' . $result);
+                }
+            } else {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: Failed to log response');
+                }
+            }
+        }
+
+        // Handle the response according to settings
+        $response_action = get_post_meta($prompt_id, '_cgptfc_response_action', true);
+
+        // Send email if configured
+        if ($response_action === 'email') {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: Sending email with response');
+            }
+            $email_sent = $this->send_email_response($prompt_id, $entry_id, $form_data, $ai_response, $provider);
+            if ($email_sent) {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: Email sent successfully');
+                }
+            } else {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: Failed to send email');
+                }
+            }
+        }
+    }
+
+    /**
+     * Format all form data into a structured text for AI
+     *
+     * @param array $form_data The form data
+     * @param int $prompt_id The prompt ID (for getting form field labels)
+     * @return string Formatted form data as text
+     */
+    private function format_all_form_data($form_data, $prompt_id) {
+        $output = __('Here is the submitted form data:', 'chatgpt-fluent-connector') . "\n\n";
+
+        // Get field labels if possible
+        $field_labels = $this->get_form_field_labels($prompt_id);
+
+        // Format each form field
+        foreach ($form_data as $field_key => $field_value) {
+            // Skip if field_key is not a scalar or starts with '_'
+            if (!is_scalar($field_key) || strpos($field_key, '_') === 0) {
+                continue;
+            }
+
+            // Get label if available, otherwise use field key
+            $label = isset($field_labels[$field_key]) ? $field_labels[$field_key] : $field_key;
+
+            // Format value
+            if (is_array($field_value)) {
+                $field_value = implode(', ', $field_value);
+            } elseif (!is_scalar($field_value)) {
+                // Skip non-scalar values
+                continue;
+            }
+
+            // Add to output
+            $output .= $label . ': ' . $field_value . "\n";
+        }
+
+        $output .= "\n" . __('Please analyze this information and provide a response. You can use HTML formatting in your response for better presentation.', 'chatgpt-fluent-connector');
+        return $output;
+    }
+
+    /**
+     * Get form field labels from a selected form
+     *
+     * @param int $prompt_id The prompt ID
+     * @return array Associative array of field keys and labels
+     */
+    private function get_form_field_labels($prompt_id) {
+        $field_labels = array();
+        $form_id = get_post_meta($prompt_id, '_cgptfc_fluent_form_id', true);
+
+        if (empty($form_id) || !function_exists('wpFluent')) {
+            return $field_labels;
+        }
+
+        // Get the form structure
+        $form = wpFluent()->table('fluentform_forms')
+                ->where('id', $form_id)
+                ->first();
+
+        if ($form && !empty($form->form_fields)) {
+            $formFields = json_decode($form->form_fields, true);
+
+            if (!empty($formFields['fields'])) {
+                foreach ($formFields['fields'] as $field) {
+                    if (!empty($field['element']) && !empty($field['attributes']['name'])) {
+                        $field_name = $field['attributes']['name'];
+                        $field_label = !empty($field['settings']['label']) ? $field['settings']['label'] : $field_name;
+                        $field_labels[$field_name] = $field_label;
+                    }
+                }
+            }
+        }
+
+        return $field_labels;
+    }
+
+    /**
+     * Send email with the AI response - Updated to include provider info
      * 
      * @param int $prompt_id The prompt ID
      * @param int $entry_id The submission entry ID
-     * @param int $form_id The form ID
-     * @param string $user_prompt The user prompt (template with placeholders)
+     * @param array $form_data The submitted form data
      * @param string $ai_response The AI response
-     * @return bool|int The row ID or false on failure
+     * @param string $provider The AI provider used
+     * @return bool True if email sent successfully, false otherwise
      */
-    public function log_response($prompt_id, $entry_id, $form_id, $user_prompt, $ai_response) {
-        global $wpdb;
-        
-        // Ensure table exists before trying to insert
-        $this->ensure_table_exists();
-        
-        // Insert the log
-        $result = $wpdb->insert(
-            $this->table_name,
-            array(
-                'prompt_id' => $prompt_id,
-                'form_id' => $form_id,
-                'entry_id' => $entry_id,
-                'user_prompt' => $user_prompt,
-                'ai_response' => $ai_response,
-                'created_at' => current_time('mysql')
-            ),
-            array('%d', '%d', '%d', '%s', '%s', '%s')
-        );
-        
-        // Log any errors for debugging
-        if ($result === false) {
-            return false;
-        }
-        
-        return $wpdb->insert_id;
-    }
-    
-    /**
-     * Get logs by prompt ID
-     * 
-     * @param int $prompt_id The prompt ID
-     * @param int $limit Optional. Number of logs to retrieve.
-     * @param int $offset Optional. Offset for pagination.
-     * @return array The logs
-     */
-    public function get_logs_by_prompt($prompt_id, $limit = 10, $offset = 0) {
-        global $wpdb;
-        
-        $sql = $wpdb->prepare(
-            "SELECT * FROM {$this->table_name} 
-            WHERE prompt_id = %d 
-            ORDER BY created_at DESC 
-            LIMIT %d OFFSET %d",
-            $prompt_id, $limit, $offset
-        );
-        
-        return $wpdb->get_results($sql);
-    }
-    
-    /**
-     * Count logs by prompt ID
-     * 
-     * @param int $prompt_id The prompt ID
-     * @return int The count
-     */
-    public function count_logs_by_prompt($prompt_id) {
-        global $wpdb;
-        
-        $sql = $wpdb->prepare(
-            "SELECT COUNT(*) FROM {$this->table_name} WHERE prompt_id = %d",
-            $prompt_id
-        );
-        
-        return $wpdb->get_var($sql);
-    }
-    
-    /**
-     * Get all logs
-     * 
-     * @param int $limit Optional. Number of logs to retrieve.
-     * @param int $offset Optional. Offset for pagination.
-     * @return array The logs
-     */
-    public function get_all_logs($limit = 20, $offset = 0) {
-        global $wpdb;
-        
-        $sql = $wpdb->prepare(
-            "SELECT l.*, p.post_title as prompt_title 
-            FROM {$this->table_name} l
-            LEFT JOIN {$wpdb->posts} p ON l.prompt_id = p.ID
-            ORDER BY l.created_at DESC 
-            LIMIT %d OFFSET %d",
-            $limit, $offset
-        );
-        
-        return $wpdb->get_results($sql);
-    }
-    
-    /**
-     * Count all logs
-     * 
-     * @return int The count
-     */
-    public function count_all_logs() {
-        global $wpdb;
-        
-        return (int)$wpdb->get_var("SELECT COUNT(*) FROM {$this->table_name}");
-    }
-    
-    /**
-     * Delete logs by prompt ID
-     * 
-     * @param int $prompt_id The prompt ID
-     * @return int|false The number of rows deleted, or false on error
-     */
-    public function delete_logs_by_prompt($prompt_id) {
-        global $wpdb;
-        
-        return $wpdb->delete(
-            $this->table_name,
-            array('prompt_id' => $prompt_id),
-            array('%d')
-        );
-    }
-    
-    /**
-     * Render logs page - Fixed version with debugging info
-     */
-    public function render_logs_page() {
-        // Check user capability
-        if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'chatgpt-fluent-connector'));
-        }
-        
-        global $wpdb;
-        
-        // Show debug information
-        echo '<div class="notice notice-info is-dismissible"><p>';
-        echo '<strong>Debug Info:</strong><br>';
-        echo 'Table name: ' . esc_html($this->table_name) . '<br>';
-        
-        // Check if table exists
-        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") === $this->table_name;
-        echo 'Table exists: ' . ($table_exists ? 'Yes' : 'No') . '<br>';
-        
-        // If table exists, show column info
-        if ($table_exists) {
-            $columns = $wpdb->get_results("DESCRIBE {$this->table_name}");
-            echo 'Table columns: ';
-            foreach ($columns as $column) {
-                echo esc_html($column->Field) . ' (' . esc_html($column->Type) . '), ';
+    private function send_email_response($prompt_id, $entry_id, $form_data, $ai_response, $provider = 'openai') {
+        // Get email settings
+        $email_to = get_post_meta($prompt_id, '_cgptfc_email_to', true);
+        $email_subject = get_post_meta($prompt_id, '_cgptfc_email_subject', true);
+        $email_to_user = get_post_meta($prompt_id, '_cgptfc_email_to_user', true);
+
+        $recipient_email = '';
+
+        // First try to find an email field in the form if email_to_user is enabled
+        if ($email_to_user == '1') {
+            // Look for common email field names
+            $common_email_fields = array('email', 'your_email', 'user_email', 'email_address', 'customer_email');
+
+            foreach ($form_data as $field_key => $field_value) {
+                // If the field name contains "email" and the value looks like an email
+                if ((is_string($field_value) && filter_var($field_value, FILTER_VALIDATE_EMAIL)) &&
+                        (strpos(strtolower($field_key), 'email') !== false || in_array(strtolower($field_key), $common_email_fields))) {
+                    $recipient_email = $field_value;
+                    break;
+                }
             }
-            echo '<br>';
-            
-            // Count records
-            $count = $this->count_all_logs();
-            echo 'Total records: ' . esc_html($count) . '<br>';
-            
-            // Show last query for debugging
-            echo 'Last SQL query: ' . esc_html($wpdb->last_query) . '<br>';
-            
-            // Show any SQL errors
-            if (!empty($wpdb->last_error)) {
-                echo 'Last SQL error: ' . esc_html($wpdb->last_error) . '<br>';
-            }
-        } else {
-            // Try to create the table
-            echo 'Attempting to create table...<br>';
-            $this->create_logs_table();
-            
-            // Check again if table exists
-            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '{$this->table_name}'") === $this->table_name;
-            echo 'Table creation result: ' . ($table_exists ? 'Success' : 'Failed - ' . esc_html($wpdb->last_error)) . '<br>';
-        }
-        echo '</p></div>';
-        
-        // Get current page and items per page
-        $page = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $per_page = 20;
-        $offset = ($page - 1) * $per_page;
-        
-        // Get prompt filter
-        $prompt_filter = isset($_GET['prompt_id']) ? absint($_GET['prompt_id']) : 0;
-        
-        // Get logs
-        $logs = array();
-        $total_logs = 0;
-        
-        if ($table_exists) {
-            if ($prompt_filter) {
-                $logs = $this->get_logs_by_prompt($prompt_filter, $per_page, $offset);
-                $total_logs = $this->count_logs_by_prompt($prompt_filter);
-            } else {
-                $logs = $this->get_all_logs($per_page, $offset);
-                $total_logs = $this->count_all_logs();
-            }
-        }
-        
-        // Get all prompts for the filter dropdown
-        $prompts = get_posts(array(
-            'post_type' => 'cgptfc_prompt',
-            'posts_per_page' => -1,
-            'orderby' => 'title',
-            'order' => 'ASC'
-        ));
-        
-        // Calculate pagination
-        $total_pages = ceil($total_logs / $per_page);
-        
-        ?>
-        <div class="wrap">
-            <h1><?php _e('ChatGPT Response Logs', 'chatgpt-fluent-connector'); ?></h1>
-            
-            <?php if (!$table_exists): ?>
-                <div class="notice notice-error">
-                    <p><?php _e('The logs table does not exist. Please try reactivating the plugin to create it.', 'chatgpt-fluent-connector'); ?></p>
-                </div>
-            <?php elseif (empty($logs)): ?>
-                <div class="notice notice-info">
-                    <p><?php _e('No logs found. This could be because no forms have been submitted yet, or logging is not enabled on your prompts.', 'chatgpt-fluent-connector'); ?></p>
-                    <p><?php _e('To enable logging, edit a prompt and check the "Save responses to the database" option under Response Handling.', 'chatgpt-fluent-connector'); ?></p>
-                </div>
-            <?php endif; ?>
-            
-            <div class="tablenav top">
-                <div class="alignleft actions">
-                    <form method="get">
-                        <input type="hidden" name="post_type" value="cgptfc_prompt">
-                        <input type="hidden" name="page" value="cgptfc-response-logs">
-                        <select name="prompt_id">
-                            <option value="0"><?php _e('All Prompts', 'chatgpt-fluent-connector'); ?></option>
-                            <?php foreach ($prompts as $prompt) : ?>
-                                <option value="<?php echo esc_attr($prompt->ID); ?>" <?php selected($prompt_filter, $prompt->ID); ?>>
-                                    <?php echo esc_html($prompt->post_title); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <input type="submit" class="button" value="<?php _e('Filter', 'chatgpt-fluent-connector'); ?>">
-                    </form>
-                </div>
-                
-                <div class="tablenav-pages">
-                    <?php if ($total_pages > 1) : ?>
-                        <span class="displaying-num">
-                            <?php printf(_n('%s item', '%s items', $total_logs, 'chatgpt-fluent-connector'), number_format_i18n($total_logs)); ?>
-                        </span>
-                        
-                        <span class="pagination-links">
-                            <?php
-                            // First page link
-                            if ($page > 1) {
-                                printf('<a class="first-page button" href="%s"><span class="screen-reader-text">%s</span><span aria-hidden="true">«</span></a>',
-                                    esc_url(add_query_arg(array('paged' => 1, 'prompt_id' => $prompt_filter))),
-                                    __('First page', 'chatgpt-fluent-connector')
-                                );
-                            } else {
-                                echo '<span class="first-page button disabled"><span class="screen-reader-text">' . __('First page', 'chatgpt-fluent-connector') . '</span><span aria-hidden="true">«</span></span>';
+
+            // If no direct match found, try to look for nested arrays or complex field structures
+            if (empty($recipient_email)) {
+                foreach ($form_data as $field_key => $field_value) {
+                    if (is_array($field_value)) {
+                        foreach ($field_value as $sub_key => $sub_value) {
+                            if (is_string($sub_value) && filter_var($sub_value, FILTER_VALIDATE_EMAIL)) {
+                                $recipient_email = $sub_value;
+                                break 2;
                             }
-                            
-                            // Previous page link
-                            if ($page > 1) {
-                                printf('<a class="prev-page button" href="%s"><span class="screen-reader-text">%s</span><span aria-hidden="true">‹</span></a>',
-                                    esc_url(add_query_arg(array('paged' => max(1, $page - 1), 'prompt_id' => $prompt_filter))),
-                                    __('Previous page', 'chatgpt-fluent-connector')
-                                );
-                            } else {
-                                echo '<span class="prev-page button disabled"><span class="screen-reader-text">' . __('Previous page', 'chatgpt-fluent-connector') . '</span><span aria-hidden="true">‹</span></span>';
-                            }
-                            
-                            // Current of total pages
-                            printf('<span class="paging-input"><span class="tablenav-paging-text">%s</span></span>',
-                                sprintf(__('%1$s of %2$s', 'chatgpt-fluent-connector'), number_format_i18n($page), number_format_i18n($total_pages))
-                            );
-                            
-                            // Next page link
-                            if ($page < $total_pages) {
-                                printf('<a class="next-page button" href="%s"><span class="screen-reader-text">%s</span><span aria-hidden="true">›</span></a>',
-                                    esc_url(add_query_arg(array('paged' => min($total_pages, $page + 1), 'prompt_id' => $prompt_filter))),
-                                    __('Next page', 'chatgpt-fluent-connector')
-                                );
-                            } else {
-                                echo '<span class="next-page button disabled"><span class="screen-reader-text">' . __('Next page', 'chatgpt-fluent-connector') . '</span><span aria-hidden="true">›</span></span>';
-                            }
-                            
-                            // Last page link
-                            if ($page < $total_pages) {
-                                printf('<a class="last-page button" href="%s"><span class="screen-reader-text">%s</span><span aria-hidden="true">»</span></a>',
-                                    esc_url(add_query_arg(array('paged' => $total_pages, 'prompt_id' => $prompt_filter))),
-                                    __('Last page', 'chatgpt-fluent-connector')
-                                );
-                            } else {
-                                echo '<span class="last-page button disabled"><span class="screen-reader-text">' . __('Last page', 'chatgpt-fluent-connector') . '</span><span aria-hidden="true">»</span></span>';
-                            }
-                            ?>
-                        </span>
-                    <?php endif; ?>
-                </div>
-            </div>
-            
-            <table class="wp-list-table widefat fixed striped">
-                <thead>
-                    <tr>
-                        <th><?php _e('ID', 'chatgpt-fluent-connector'); ?></th>
-                        <th><?php _e('Prompt', 'chatgpt-fluent-connector'); ?></th>
-                        <th><?php _e('Form ID', 'chatgpt-fluent-connector'); ?></th>
-                        <th><?php _e('Entry ID', 'chatgpt-fluent-connector'); ?></th>
-                        <th><?php _e('Response', 'chatgpt-fluent-connector'); ?></th>
-                        <th><?php _e('Date', 'chatgpt-fluent-connector'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($logs)) : ?>
-                        <?php foreach ($logs as $log) : ?>
-                            <tr>
-                                <td><?php echo esc_html($log->id); ?></td>
-                                <td>
-                                    <?php if (isset($log->prompt_title)) : ?>
-                                        <a href="<?php echo esc_url(get_edit_post_link($log->prompt_id)); ?>">
-                                            <?php echo esc_html($log->prompt_title); ?>
-                                        </a>
-                                    <?php else : ?>
-                                        <a href="<?php echo esc_url(get_edit_post_link($log->prompt_id)); ?>">
-                                            <?php echo esc_html(get_the_title($log->prompt_id)); ?>
-                                        </a>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo esc_html($log->form_id); ?></td>
-                                <td><?php echo esc_html($log->entry_id); ?></td>
-                                <td>
-                                    <div style="max-height: 100px; overflow-y: auto; font-size: 12px; white-space: pre-line;">
-                                        <?php echo esc_html($log->ai_response); ?>
-                                    </div>
-                                    <button type="button" class="button view-response" data-id="<?php echo esc_attr($log->id); ?>">
-                                        <?php _e('View Full Response', 'chatgpt-fluent-connector'); ?>
-                                    </button>
-                                </td>
-                                <td>
-                                    <?php echo esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), strtotime($log->created_at))); ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else : ?>
-                        <tr>
-                            <td colspan="6"><?php _e('No logs found.', 'chatgpt-fluent-connector'); ?></td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-            
-            <!-- Insert Test Record -->
-            <?php if (current_user_can('manage_options')): ?>
-                <div class="card" style="max-width: 600px; margin-top: 20px; padding: 10px 20px;">
-                    <h3><?php _e('Insert Test Record', 'chatgpt-fluent-connector'); ?></h3>
-                    <p><?php _e('You can insert a test record to verify that the logging system is working properly.', 'chatgpt-fluent-connector'); ?></p>
-                    
-                    <form method="post" action="">
-                        <?php wp_nonce_field('cgptfc_insert_test_log', 'cgptfc_test_log_nonce'); ?>
-                        <input type="hidden" name="cgptfc_insert_test_log" value="1">
-                        <p>
-                            <input type="submit" class="button button-primary" value="<?php _e('Insert Test Record', 'chatgpt-fluent-connector'); ?>">
-                        </p>
-                    </form>
-                    
-                    <?php
-                    // Process test record insertion
-                    if (isset($_POST['cgptfc_insert_test_log']) && check_admin_referer('cgptfc_insert_test_log', 'cgptfc_test_log_nonce')) {
-                        $result = $this->log_response(
-                            1, // prompt_id
-                            1, // entry_id
-                            1, // form_id
-                            'Test prompt for diagnostics',
-                            'This is a test response for diagnostic purposes. Generated at: ' . current_time('mysql')
-                        );
-                        
-                        if ($result) {
-                            echo '<div class="notice notice-success is-dismissible"><p>' . __('Test record inserted successfully. ID: ', 'chatgpt-fluent-connector') . $result . '</p></div>';
-                        } else {
-                            echo '<div class="notice notice-error is-dismissible"><p>' . __('Failed to insert test record. Please check the debug information.', 'chatgpt-fluent-connector') . '</p></div>';
                         }
                     }
-                    ?>
-                </div>
-            <?php endif; ?>
-            
-        </div>
-        
-        <!-- Response Modal -->
-        <div id="response-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-            <div style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 800px;">
-                <span style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;" id="close-modal">&times;</span>
-                <h2><?php _e('ChatGPT Response', 'chatgpt-fluent-connector'); ?></h2>
-                <div id="response-content" style="margin-top: 20px; white-space: pre-line;"></div>
-            </div>
-        </div>
-        
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                // View Response Modal
-                $('.view-response').click(function() {
-                    var logId = $(this).data('id');
-                    var responseText = $(this).prev('div').text();
-                    
-                    $('#response-content').text(responseText);
-                    $('#response-modal').show();
-                });
-                
-                // Close Modal
-                $('#close-modal').click(function() {
-                    $('#response-modal').hide();
-                });
-                
-                // Close Modal when clicking outside
-                $(window).click(function(event) {
-                    if (event.target == $('#response-modal')[0]) {
-                        $('#response-modal').hide();
+                }
+            }
+        }
+
+        // If no email found in form or email_to_user not enabled, use email_to setting
+        if (empty($recipient_email)) {
+            // If email_to contains a placeholder, replace it with the form value
+            if (!empty($email_to) && strpos($email_to, '{') !== false) {
+                foreach ($form_data as $field_key => $field_value) {
+                    if (is_string($field_value) && strpos($email_to, '{' . $field_key . '}') !== false) {
+                        $email_to = str_replace('{' . $field_key . '}', $field_value, $email_to);
                     }
-                });
-            });
-        </script>
-        <?php
+                }
+            }
+
+            $recipient_email = $email_to;
+        }
+
+        // If recipient_email is still empty, use admin email
+        if (empty($recipient_email)) {
+            $recipient_email = get_option('admin_email');
+        }
+
+        // Validate the email address
+        if (!filter_var($recipient_email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+
+        // Set default subject if empty
+        if (empty($email_subject)) {
+            $email_subject = __('AI Response for Your Form Submission', 'chatgpt-fluent-connector');
+        }
+
+        // Format all form data for the email
+        $form_data_html = '';
+        $field_labels = $this->get_form_field_labels($prompt_id);
+        
+        foreach ($form_data as $field_key => $field_value) {
+            // Skip if field_key is not a scalar or starts with '_'
+            if (!is_scalar($field_key) || strpos($field_key, '_') === 0) {
+                continue;
+            }
+
+            // Get label if available, otherwise use field key
+            $label = isset($field_labels[$field_key]) ? $field_labels[$field_key] : $field_key;
+
+            // Format value
+            if (is_array($field_value)) {
+                $field_value = implode(', ', $field_value);
+            } elseif (!is_scalar($field_value)) {
+                // Skip non-scalar values
+                continue;
+            }
+
+            // Add to output
+            $form_data_html .= '<div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee;">';
+            $form_data_html .= '<strong>' . esc_html($label) . ':</strong> ' . esc_html($field_value);
+            $form_data_html .= '</div>';
+        }
+
+        // Get provider name for display
+        $provider_name = ($provider === 'gemini') ? 'Google Gemini' : 'ChatGPT';
+
+        // Prepare email content
+        $email_content = '
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+                .header {
+                    background-color: #f5f5f5;
+                    padding: 10px 20px;
+                    border-radius: 5px 5px 0 0;
+                    border-bottom: 1px solid #ddd;
+                }
+                .content {
+                    padding: 20px;
+                }
+                .response {
+                    background-color: #f9f9f9;
+                    padding: 15px;
+                    border-left: 4px solid #0073aa;
+                    margin-bottom: 20px;
+                }
+                .form-data {
+                    margin-top: 20px;
+                    padding: 15px;
+                    background-color: #f5f5f5;
+                    border-radius: 5px;
+                }
+                .form-data-title {
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .footer {
+                    font-size: 12px;
+                    color: #777;
+                    border-top: 1px solid #ddd;
+                    padding-top: 15px;
+                    margin-top: 20px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h2>' . sprintf(__('%s Response', 'chatgpt-fluent-connector'), $provider_name) . '</h2>
+                </div>
+                <div class="content">
+                    <p>' . __('Thank you for your submission. Here\'s the response from our AI assistant:', 'chatgpt-fluent-connector') . '</p>
+                    
+                    <div class="response">
+                        ' . wp_kses_post(nl2br($ai_response)) . '
+                    </div>
+                    
+                    <div class="form-data">
+                        <div class="form-data-title">' . __('Submitted Form Data', 'chatgpt-fluent-connector') . '</div>
+                        ' . $form_data_html . '
+                    </div>
+                </div>
+                <div class="footer">
+                    ' . __('This is an automated email sent in response to your form submission.', 'chatgpt-fluent-connector') . '
+                </div>
+            </div>
+        </body>
+        </html>';
+
+        // Set email headers
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+
+        // Send the email
+        $sent = wp_mail($recipient_email, $email_subject, $email_content, $headers);
+
+        return $sent;
     }
 }
