@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: ChatGPT Fluent Forms Connector
  * Plugin URI: https://aromapro.com/
@@ -11,7 +12,6 @@
  * Requires at least: 5.0
  * Requires PHP: 7.2
  */
-
 // Exit if accessed directly
 if (!defined('ABSPATH')) {
     exit;
@@ -26,37 +26,37 @@ define('CGPTFC_VERSION', '1.0.0');
  * Main plugin class
  */
 class CGPTFC_Main {
-    
+
     /**
      * Plugin instance
      */
     private static $instance = null;
-    
+
     /**
      * Settings class instance
      */
     public $settings;
-    
+
     /**
      * API class instance
      */
     public $api;
-    
+
     /**
      * Prompt CPT class instance
      */
     public $prompt_cpt;
-    
+
     /**
      * Fluent Forms integration class instance
      */
     public $fluent_integration;
-    
+
     /**
      * Response logger class instance
      */
     public $response_logger;
-    
+
     /**
      * Get the singleton instance
      */
@@ -66,7 +66,7 @@ class CGPTFC_Main {
         }
         return self::$instance;
     }
-    
+
     /**
      * Constructor
      */
@@ -74,6 +74,13 @@ class CGPTFC_Main {
         // Include required files - moved to init to avoid timing issues
         add_action('plugins_loaded', array($this, 'include_files'));
     }
+
+    /**
+     * Update to main plugin file
+     * 
+     * Add this to your chatgpt-integration.php file
+     */
+// In the CGPTFC_Main class's include_files method, add the following line after the other class includes:
 
     /**
      * Include the required files
@@ -84,24 +91,24 @@ class CGPTFC_Main {
         require_once __DIR__ . '/includes/class-chatgpt-custom-prompt-cpt.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-fluent-integration.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-response-logger.php';
-        
+        require_once __DIR__ . '/includes/class-chatgpt-html-template-uploader.php'; // Add this line
         // Instantiate classes
         $this->settings = new CGPTFC_Settings();
         $this->api = new CGPTFC_API();
         $this->prompt_cpt = new CGPTFC_Prompt_CPT();
         $this->response_logger = new CGPTFC_Response_Logger();
-        
-        // Create the Fluent integration and ALSO explicitly register the hook outside the class
         $this->fluent_integration = new CGPTFC_Fluent_Integration();
+        $this->html_template_uploader = new CGPTFC_HTML_Template_Uploader(); // Add this line
+        // Register hooks
         add_action('fluentform/submission_inserted', array($this->fluent_integration, 'handle_form_submission'), 20, 3);
-        
+
         // Register activation hook
         register_activation_hook(__FILE__, array($this, 'plugin_activation'));
-        
+
         // Load text domain
         add_action('init', array($this, 'load_textdomain'));
     }
-    
+
     /**
      * Plugin activation
      */
@@ -110,25 +117,25 @@ class CGPTFC_Main {
         if (!isset($this->response_logger)) {
             $this->include_files();
         }
-        
+
         // Create logs table
         if (isset($this->response_logger)) {
             $this->response_logger->create_logs_table();
         }
-        
+
         // Set default options
         if (!get_option('cgptfc_api_endpoint')) {
             update_option('cgptfc_api_endpoint', 'https://api.openai.com/v1/chat/completions');
         }
-        
+
         if (!get_option('cgptfc_model')) {
             update_option('cgptfc_model', 'gpt-3.5-turbo');
         }
-        
+
         // Flush rewrite rules after creating custom post type
         flush_rewrite_rules();
     }
-    
+
     /**
      * Load plugin text domain
      */

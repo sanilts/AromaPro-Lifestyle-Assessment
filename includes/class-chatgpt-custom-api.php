@@ -50,11 +50,11 @@ class CGPTFC_API {
             'gpt-4-0613' => 8000,
             'gpt-4-0125-preview' => 4000
         ];
-        
+
         // Set default max token limit
         $default_limit = 4000;
         $model_limit = isset($token_limits[$model]) ? $token_limits[$model] : $default_limit;
-        
+
         // Ensure max_tokens is within model limits
         $max_tokens = min(intval($max_tokens), $model_limit);
 
@@ -88,7 +88,6 @@ class CGPTFC_API {
         if (strpos($model, 'gpt-4') === 0) {
             // Add specific parameters for GPT-4 models if needed
             $body['top_p'] = 0.95; // Higher top_p for more diverse outputs with advanced models
-            
             // You can uncomment this if needed for the model
             // $body['frequency_penalty'] = 0.1; 
             // $body['presence_penalty'] = 0.1;
@@ -149,7 +148,14 @@ class CGPTFC_API {
     }
 
     /**
-     * Process a form submission with a prompt - Updated with better token handling
+     * API Class Update for HTML Template Integration
+     * 
+     * Add this to your existing class-chatgpt-custom-api.php file
+     */
+// To integrate with the existing API class, modify the process_form_with_prompt method:
+
+    /**
+     * Process a form submission with a prompt - Updated to integrate HTML templates
      *
      * @param int $prompt_id The prompt post ID
      * @param array $form_data The form submission data
@@ -183,11 +189,11 @@ class CGPTFC_API {
             'gpt-4-0613' => 8000,
             'gpt-4-0125-preview' => 4000
         ];
-        
+
         // Set default max token limit
         $default_limit = 4000;
         $model_limit = isset($token_limits[$model]) ? $token_limits[$model] : $default_limit;
-        
+
         // Ensure max_tokens is within model limits
         if (intval($max_tokens) > $model_limit) {
             $max_tokens = $model_limit;
@@ -243,6 +249,9 @@ class CGPTFC_API {
             $system_prompt = "You are a helpful assistant. You can use HTML formatting in your response if needed for better presentation, such as <h3>, <p>, <ul>, <li>, <strong>, <em>, etc.";
         }
 
+        // Apply HTML template filter - this will add the template if enabled
+        $user_prompt = apply_filters('cgptfc_process_form_with_prompt', $user_prompt, $prompt_id, $form_data);
+
         // Prepare the messages
         $messages = array();
 
@@ -260,14 +269,15 @@ class CGPTFC_API {
 
         if ($debug_mode === '1') {
             error_log('CGPTFC: Sending prompt with ' . count($messages) . ' messages');
+            error_log('CGPTFC: User prompt: ' . substr($user_prompt, 0, 200) . '...');
         }
 
         // Make the API request
         $response = $this->make_request(
-            $messages,
-            $model,
-            !empty($max_tokens) ? intval($max_tokens) : 1000,
-            !empty($temperature) ? floatval($temperature) : 0.7
+                $messages,
+                $model,
+                !empty($max_tokens) ? intval($max_tokens) : 1000,
+                !empty($temperature) ? floatval($temperature) : 0.7
         );
 
         if (is_wp_error($response)) {
@@ -279,7 +289,7 @@ class CGPTFC_API {
         if ($debug_mode === '1') {
             error_log('CGPTFC: Got response of length: ' . strlen($content));
         }
-        
+
         return $content;
     }
 

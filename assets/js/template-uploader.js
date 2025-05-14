@@ -1,9 +1,3 @@
-/* 
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Other/javascript.js to edit this template
- */
-
-
 /**
  * JavaScript for the HTML template uploader
  */
@@ -40,8 +34,13 @@ jQuery(document).ready(function($) {
     
     // Function to generate HTML preview
     function generatePreview(html) {
-        // Create a safe iframe or container to show the preview
-        // This is optional and could be implemented if needed
+        var preview = $('.cgptfc-preview-container');
+        var iframe = $('<iframe>').attr({
+            srcdoc: html,
+            style: 'width:100%; height:200px; border:none;'
+        });
+        
+        preview.empty().append(iframe);
     }
     
     // Handle removing the template
@@ -49,7 +48,7 @@ jQuery(document).ready(function($) {
         $('#cgptfc_html_template_file').val('');
         $('#cgptfc_html_template').val('').hide();
         $('.cgptfc-template-filename').text(cgptfc_uploader.strings.no_file);
-        $('.cgptfc-template-preview').remove();
+        $('.cgptfc-preview-container').empty().append('<p>' + cgptfc_uploader.strings.no_file + '</p>');
         $(this).remove();
     });
     
@@ -63,5 +62,10 @@ jQuery(document).ready(function($) {
         } else {
             $('#html_template_row, #template_instruction_row').hide();
         }
+    });
+    
+    // Preview changes when editing directly in textarea
+    $('#cgptfc_html_template').on('change keyup', function() {
+        generatePreview($(this).val());
     });
 });
