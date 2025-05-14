@@ -176,8 +176,10 @@ class CGPTFC_Prompt_CPT {
             <tr>
                 <th><label for="cgptfc_max_tokens"><?php _e('Max Tokens:', 'chatgpt-fluent-connector'); ?></label></th>
                 <td>
-                    <input type="number" min="50" max="4000" step="50" name="cgptfc_max_tokens" id="cgptfc_max_tokens" value="<?php echo esc_attr($max_tokens); ?>" class="small-text">
-                    <p class="description"><?php _e('Maximum length of the response (1 token ≈ 4 characters)', 'chatgpt-fluent-connector'); ?></p>
+                    <input type="number" min="50" max="128000" step="50" name="cgptfc_max_tokens" id="cgptfc_max_tokens" value="<?php echo esc_attr($max_tokens); ?>" class="small-text">
+                    <p class="description">
+                        <?php _e('Maximum length of the response. GPT-3.5 Turbo supports up to 4096 tokens, GPT-4 supports up to 8192 tokens, and GPT-4 Turbo supports up to 128000 tokens. (1 token ≈ 4 characters)', 'chatgpt-fluent-connector'); ?>
+                    </p>
                 </td>
             </tr>
         </table>
@@ -751,8 +753,17 @@ class CGPTFC_Prompt_CPT {
             update_post_meta($post_id, '_cgptfc_temperature', floatval($_POST['cgptfc_temperature']));
         }
 
+        // Fix how max_tokens is saved
         if (isset($_POST['cgptfc_max_tokens'])) {
-            update_post_meta($post_id, '_cgptfc_max_tokens', intval($_POST['cgptfc_max_tokens']));
+            $max_tokens = intval($_POST['cgptfc_max_tokens']);
+            // Set an absolute upper limit as a failsafe
+            if ($max_tokens > 128000) {
+                $max_tokens = 128000;
+            }
+            update_post_meta($post_id, '_cgptfc_max_tokens', $max_tokens);
+
+            // Add a debug log
+            error_log("CGPTFC: Saved max_tokens value: {$max_tokens} for post ID: {$post_id}");
         }
 
         // Save form selection
@@ -1075,8 +1086,6 @@ class CGPTFC_Prompt_CPT {
         return $success;
     }
 
-    
-
     /**
      * Process a prompt with form data
      * 
@@ -1087,7 +1096,7 @@ class CGPTFC_Prompt_CPT {
      * @return void
      */
     private function process_prompt($prompt_id, $form_data, $entry_id, $form) {
-       // Get the API instance
+        // Get the API instance
         $api = cgptfc_main()->api;
 
         // Process the form with the prompt

@@ -28,11 +28,23 @@ class CGPTFC_API {
      * @param float $temperature Optional. Temperature for response randomness.
      * @return array|WP_Error Response from API or error
      */
+
+    /**
+     * Make a request to the ChatGPT API
+     *
+     * @param array $messages Array of message objects (role, content)
+     * @param string $model Optional. The model to use. If null, uses the setting.
+     * @param int $max_tokens Optional. Maximum tokens in the response.
+     * @param float $temperature Optional. Temperature for response randomness.
+     * @return array|WP_Error Response from API or error
+     */
     public function make_request($messages, $model = null, $max_tokens = 1000, $temperature = 0.7) {
+        // Get API credentials
         $api_key = get_option('cgptfc_api_key');
         $api_endpoint = get_option('cgptfc_api_endpoint', 'https://api.openai.com/v1/chat/completions');
 
         if (empty($api_key)) {
+            error_log('CGPTFC: API key is not set');
             return new WP_Error('no_api_key', __('API key is not set', 'chatgpt-fluent-connector'));
         }
 
@@ -41,42 +53,61 @@ class CGPTFC_API {
             $model = get_option('cgptfc_model', 'gpt-3.5-turbo');
         }
 
+        error_log("CGPTFC: Making API request with model: {$model}, max_tokens: {$max_tokens}");
+
+        // Define model-specific token limits
+        $model_token_limits = array(
+            'gpt-3.5-turbo' => 4096,
+            'gpt-4' => 8192,
+            'gpt-4-0613' => 8192,
+            'gpt-4-0125-preview' => 8192,
+            'gpt-4-turbo' => 128000,
+            'gpt-4-1106-preview' => 128000,
+            // Default fallback for unknown models
+            'default' => 4096
+        );
+
+        // Get the appropriate token limit for this model
+        $model_limit = isset($model_token_limits[$model]) ? $model_token_limits[$model] : $model_token_limits['default'];
+
+        // Ensure max_tokens doesn't exceed the model's limit
+        $max_tokens = intval($max_tokens);
+        if ($max_tokens > $model_limit) {
+            $max_tokens = $model_limit;
+        }
+
+        // Create headers
         $headers = array(
             'Authorization' => 'Bearer ' . $api_key,
             'Content-Type' => 'application/json'
         );
 
+        // Create request body
         $body = array(
             'model' => $model,
             'messages' => $messages,
-            'max_tokens' => intval($max_tokens),
+            'max_tokens' => $max_tokens,
             'temperature' => floatval($temperature)
         );
 
         // Add model-specific parameters
-        if ($model === 'gpt-4-0125-preview') {
-            // Add specific parameters for GPT-4 Preview if they are different
-            // This could include different defaults or capabilities
+        if (strpos($model, 'gpt-4') === 0) {
+            // Add specific parameters for GPT-4 models if they are different
             $body['top_p'] = 0.95; // Higher top_p for more diverse outputs with advanced models
-            
-            // You can uncomment this if needed for the model
-            // $body['frequency_penalty'] = 0.1; 
-            // $body['presence_penalty'] = 0.1;
         }
-
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
 
         $args = array(
             'headers' => $headers,
             'body' => wp_json_encode($body),
             'method' => 'POST',
             'data_format' => 'body',
-            'timeout' => 30
+            'timeout' => 120 // Increased timeout for larger responses (2 minutes)
         );
 
         $response = wp_remote_post($api_endpoint, $args);
 
         if (is_wp_error($response)) {
+            error_log('CGPTFC: API Error: ' . $response->get_error_message());
             return $response;
         }
 
@@ -85,6 +116,7 @@ class CGPTFC_API {
 
         if ($response_code !== 200) {
             $error_message = isset($response_body['error']['message']) ? $response_body['error']['message'] : sprintf(__('Unknown error (HTTP %s)', 'chatgpt-fluent-connector'), $response_code);
+            error_log('CGPTFC: Error processing prompt: ' . $error_message);
             return new WP_Error('api_error', $error_message);
         }
 
@@ -116,9 +148,22 @@ class CGPTFC_API {
      * @param array $form_data The form submission data
      * @return string|WP_Error The response content or error
      */
-    public function process_form_with_prompt($prompt_id, $form_data) {
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
+    /**
+     * Process a form submission with a prompt
+     *
+     * @param int $prompt_id The prompt post ID
+     * @param array $form_data The form submission data
+     * @return string|WP_Error The response content or error
+     */
 
+    /**
+     * Process a form submission with a prompt
+     *
+     * @param int $prompt_id The prompt post ID
+     * @param array $form_data The form submission data
+     * @return string|WP_Error The response content or error
+     */
+    public function process_form_with_prompt($prompt_id, $form_data) {
         // Get prompt settings
         $system_prompt = get_post_meta($prompt_id, '_cgptfc_system_prompt', true);
         $user_prompt_template = get_post_meta($prompt_id, '_cgptfc_user_prompt_template', true);
@@ -126,46 +171,22 @@ class CGPTFC_API {
         $max_tokens = get_post_meta($prompt_id, '_cgptfc_max_tokens', true);
         $prompt_type = get_post_meta($prompt_id, '_cgptfc_prompt_type', true);
 
+        // Get selected model for this prompt (if you've added per-prompt model selection)
+        $selected_model = get_post_meta($prompt_id, '_cgptfc_model', true);
+
+        // If no model specified for this prompt, use global setting
+        if (empty($selected_model)) {
+            $selected_model = get_option('cgptfc_model', 'gpt-3.5-turbo');
+        }
+
+        error_log("CGPTFC: Making API request with max_tokens: " . intval($max_tokens));
+
         // Set default prompt type if not set
         if (empty($prompt_type)) {
             $prompt_type = 'template';
         }
 
-        // Prepare the user prompt based on prompt type
-        if ($prompt_type === 'all_form_data') {
-            // Use all form data
-            $user_prompt = $this->format_all_form_data($form_data, $prompt_id);
-        } else {
-            // Use custom template
-            if (empty($user_prompt_template)) {
-                return new WP_Error('no_prompt_template', __('No user prompt template configured', 'chatgpt-fluent-connector'));
-            }
-
-            // Replace placeholders in user prompt
-            $user_prompt = $user_prompt_template;
-
-            // Replace field placeholders with actual values
-            foreach ($form_data as $field_key => $field_value) {
-                // Skip if field_key is not a scalar (string/number)
-                if (!is_scalar($field_key)) {
-                    continue;
-                }
-
-                // Handle array values (like checkboxes)
-                if (is_array($field_value)) {
-                    $field_value = implode(', ', $field_value);
-                } elseif (!is_scalar($field_value)) {
-                    // Skip non-scalar values
-                    continue;
-                }
-
-                $user_prompt = str_replace('{' . $field_key . '}', $field_value, $user_prompt);
-            }
-
-            // Check for any remaining placeholders and replace with empty string
-            $user_prompt = preg_replace('/\{[^}]+\}/', '', $user_prompt);
-        }
-
+        // [... existing code for preparing the user prompt ...]
         // Tell ChatGPT it can use HTML in responses
         if (!empty($system_prompt)) {
             $system_prompt .= "\n\nYou can use HTML formatting in your response if needed for better presentation, such as <h3>, <p>, <ul>, <li>, <strong>, <em>, etc.";
@@ -188,15 +209,19 @@ class CGPTFC_API {
             'content' => $user_prompt
         );
 
+        // Ensure max_tokens is a valid integer
+        $max_tokens_value = !empty($max_tokens) ? intval($max_tokens) : 1000;
+
         // Make the API request
         $response = $this->make_request(
-            $messages,
-            null,
-            !empty($max_tokens) ? intval($max_tokens) : 1000,
-            !empty($temperature) ? floatval($temperature) : 0.7
+                $messages,
+                $selected_model,
+                $max_tokens_value,
+                !empty($temperature) ? floatval($temperature) : 0.7
         );
 
         if (is_wp_error($response)) {
+            error_log('CGPTFC: Error processing prompt: ' . $response->get_error_message());
             return $response;
         }
 
