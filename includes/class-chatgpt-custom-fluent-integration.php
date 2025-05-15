@@ -209,14 +209,14 @@ class CGPTFC_Fluent_Integration {
         
         // Display the response - IMPORTANT: Allow HTML to render properly by using wp_kses_post instead of esc_html
         $html .= '<div class="cgptfc-response">';
-        $html .= '<div class="cgptfc-response-header">' . sprintf(__('%s Response', 'chatgpt-fluent-connector'), $provider_name) . '</div>';
+        //$html .= '<div class="cgptfc-response-header">' . sprintf(__('%s Response', 'chatgpt-fluent-connector'), $provider_name) . '</div>';
         $html .= '<div class="cgptfc-response-content">';
         $html .= wp_kses_post(nl2br($result->ai_response)); // Allow HTML but still sanitize with wp_kses_post
         $html .= '</div>';
         $html .= '</div>';
         
         // Format the full form data to include at the bottom
-        $html .= $this->get_formatted_form_data_html($form_id, $entry_id);
+        //$html .= $this->get_formatted_form_data_html($form_id, $entry_id);
         
         $html .= '</div>';
 
@@ -232,14 +232,7 @@ class CGPTFC_Fluent_Integration {
             border-radius: 5px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        .cgptfc-prompt {
-            background-color: #f3f4f6;
-            border-left: 5px solid #6b7280;
-        }
-        .cgptfc-response {
-            background-color: #f9f9f9;
-            border-left: 5px solid #0073aa;
-        }
+
         .cgptfc-response-header {
             margin-top: 0;
             font-size: 1.3em;
@@ -445,7 +438,11 @@ class CGPTFC_Fluent_Integration {
         $complete_prompt .= $user_prompt;
 
         // Process the form with the prompt
-        $ai_response = $api->process_form_with_prompt($prompt_id, $form_data);
+        $ai_response_raw = $api->process_form_with_prompt($prompt_id, $form_data);
+        $ai_response= $this->clean_html_response($ai_response_raw);
+
+        $ai_response=str_replace('<br>', '', $ai_response);
+
 
         // Check if we got a valid response or an error
         if (is_wp_error($ai_response)) {
@@ -527,7 +524,7 @@ class CGPTFC_Fluent_Integration {
     private function format_all_form_data($form_data, $prompt_id) {
         $output = __('Here is the submitted form data:', 'chatgpt-fluent-connector') . "\n\n";
 
-        // Get field labels if possible
+        // Get field labels if possi$ai_responsee
         $field_labels = $this->get_form_field_labels($prompt_id);
 
         // Format each form field
@@ -665,7 +662,7 @@ class CGPTFC_Fluent_Integration {
 
         // Set default subject if empty
         if (empty($email_subject)) {
-            $email_subject = __('AI Response for Your Form Submission', 'chatgpt-fluent-connector');
+            $email_subject = __('Response for Your Form Submission', 'chatgpt-fluent-connector');
         }
 
         // Format all form data for the email
@@ -704,16 +701,12 @@ class CGPTFC_Fluent_Integration {
         <head>
             <style>
                 body {
-                    font-family: Arial, sans-serif;
                     line-height: 1.6;
                     color: #333;
                 }
                 .container {
-                    max-width: 600px;
+                    max-width: 100%;
                     margin: 0 auto;
-                    padding: 20px;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
                 }
                 .header {
                     background-color: #f5f5f5;
@@ -724,12 +717,7 @@ class CGPTFC_Fluent_Integration {
                 .content {
                     padding: 20px;
                 }
-                .response {
-                    background-color: #f9f9f9;
-                    padding: 15px;
-                    border-left: 4px solid #0073aa;
-                    margin-bottom: 20px;
-                }
+
                 .form-data {
                     margin-top: 20px;
                     padding: 15px;
@@ -751,23 +739,10 @@ class CGPTFC_Fluent_Integration {
         </head>
         <body>
             <div class="container">
-                <div class="header">
-                    <h2>' . sprintf(__('%s Response', 'chatgpt-fluent-connector'), $provider_name) . '</h2>
-                </div>
-                <div class="content">
-                    <p>' . __('Thank you for your submission. Here\'s the response from our AI assistant:', 'chatgpt-fluent-connector') . '</p>
-                    
+                <div class="content">                    
                     <div class="response">
                         ' . wp_kses_post(nl2br($ai_response)) . '
                     </div>
-                    
-                    <div class="form-data">
-                        <div class="form-data-title">' . __('Submitted Form Data', 'chatgpt-fluent-connector') . '</div>
-                        ' . $form_data_html . '
-                    </div>
-                </div>
-                <div class="footer">
-                    ' . __('This is an automated email sent in response to your form submission.', 'chatgpt-fluent-connector') . '
                 </div>
             </div>
         </body>
@@ -780,5 +755,43 @@ class CGPTFC_Fluent_Integration {
         $sent = wp_mail($recipient_email, $email_subject, $email_content, $headers);
 
         return $sent;
+    }
+    
+    
+    private function clean_html_response($response) {
+        // Debug
+        error_log("Original response length: " . strlen($response));
+        error_log("First 100 chars: " . substr($response, 0, 100));
+        
+        // First, check if the response contains HTML code blocks
+        if (preg_match('/```html\s*([\s\S]*?)\s*```/i', $response, $matches)) {
+            // Extract the HTML from the code block
+            $html = $matches[1];
+            error_log("Extracted HTML from code block, length: " . strlen($html));
+        } else {
+            // If no code block found, use the entire response
+            $html = $response;
+            error_log("No code block found, using entire response");
+        }
+        
+        // Remove <br> tags that might have been added
+        $html = str_replace('<br>', '', $html);
+        $html = str_replace('\n', '', $html);
+        
+        // Clean up other potential issues
+        $html = trim($html);
+        
+        // Verify content is valid HTML - use a permissive approach
+        if (strpos($html, '<') === false) {
+            // If no HTML tags are found, wrap the content in a paragraph
+            $html = '<p>' . nl2br($html) . '</p>';
+            error_log("No HTML tags found, wrapped in paragraph");
+        }
+        
+        // Add debug info for final result
+        error_log("Final cleaned HTML length: " . strlen($html));
+        error_log("First 100 chars of cleaned HTML: " . substr($html, 0, 100));
+        
+        return $html;
     }
 }
