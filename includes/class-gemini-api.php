@@ -1,14 +1,7 @@
 <?php
 /**
- * Gemini API Class - Fixed for 404 Error with additional debugging
- * 
- * Handles API requests to the Google Gemini API
+ * Modified for Gemini API Class to fix provider identification
  */
-// Exit if accessed directly
-if (!defined('ABSPATH')) {
-    exit;
-}
-
 class CGPTFC_Gemini_API {
 
     /**
@@ -234,7 +227,7 @@ class CGPTFC_Gemini_API {
     }
 
     /**
-     * Process a form submission with a prompt
+     * Process a form submission with a prompt - Enhanced with proper provider detection
      *
      * @param int $prompt_id The prompt post ID
      * @param array $form_data The form submission data
@@ -281,7 +274,7 @@ class CGPTFC_Gemini_API {
         // Prepare the user prompt based on prompt type
         $user_prompt = '';
         if ($prompt_type === 'all_form_data') {
-            // Use all form data - this function should be implemented similarly to OpenAI version
+            // Use all form data 
             $user_prompt = $this->format_all_form_data($form_data, $prompt_id);
         } else {
             // Use custom template
