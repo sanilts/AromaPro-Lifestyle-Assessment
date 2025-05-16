@@ -1,7 +1,13 @@
 <?php
 /**
- * Modified for Gemini API Class to fix provider identification
+ * Final Gemini API Class Update with Working Model Names
  */
+
+// Exit if accessed directly
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class CGPTFC_Gemini_API {
 
     /**
@@ -33,7 +39,20 @@ class CGPTFC_Gemini_API {
 
         // Use specified model or fall back to settings
         if ($model === null) {
-            $model = get_option('cgptfc_gemini_model', 'gemini-pro');
+            $model = get_option('cgptfc_gemini_model', 'gemini-2.5-pro-preview-05-06');
+        }
+        
+        // FIXED: Always use the specific preview version that works
+        // Based on our testing, only gemini-2.5-pro-preview-05-06 works
+        if ($model === 'gemini-pro' || $model === 'gemini-2.5-pro' || 
+            $model === 'gemini-2.5-flash' || $model === 'gemini-2.5-flash-preview') {
+            // Default to the working version
+            $model = 'gemini-2.5-pro-preview-05-06';
+        }
+        
+        // Remove the "models/" prefix if present
+        if (strpos($model, 'models/') === 0) {
+            $model = substr($model, 7);
         }
         
         // If using debug mode, log the model value for verification
@@ -41,11 +60,9 @@ class CGPTFC_Gemini_API {
             error_log('CGPTFC: Using Gemini model: ' . $model);
         }
 
-        // Token limits for Gemini models
+        // Token limits for Gemini models - update based on the working model
         $token_limits = [
-            'gemini-pro' => 32000,
-            'gemini-1.5-pro' => 1000000, // 1M token context
-            'gemini-1.5-flash' => 1000000
+            'gemini-2.5-pro-preview-05-06' => 1000000, // 1M token context
         ];
 
         // Set default max token limit
@@ -133,7 +150,7 @@ class CGPTFC_Gemini_API {
             // For 404 specifically, add more information as this is likely a model not found issue
             if ($response_code === 404) {
                 error_log('CGPTFC: 404 Error - Model "' . $model . '" not found. Please check the model name and API version.');
-                return new WP_Error('api_error', $error_message . ' - Model "' . $model . '" not found. Available models may include: "gemini-pro", "gemini-1.5-pro".');
+                return new WP_Error('api_error', $error_message . ' - Please use the model "gemini-2.5-pro-preview-05-06" which is confirmed to be working.');
             }
             
             return new WP_Error('api_error', $error_message);
@@ -227,7 +244,7 @@ class CGPTFC_Gemini_API {
     }
 
     /**
-     * Process a form submission with a prompt - Enhanced with proper provider detection
+     * Process a form submission with a prompt
      *
      * @param int $prompt_id The prompt post ID
      * @param array $form_data The form submission data
@@ -245,29 +262,23 @@ class CGPTFC_Gemini_API {
         $temperature = get_post_meta($prompt_id, '_cgptfc_temperature', true);
         $max_tokens = get_post_meta($prompt_id, '_cgptfc_max_tokens', true);
         $prompt_type = get_post_meta($prompt_id, '_cgptfc_prompt_type', true);
-        $model = get_option('cgptfc_gemini_model', 'gemini-pro');
+        
+        // Always use the working model
+        $model = 'gemini-2.5-pro-preview-05-06';
 
         // Set default prompt type if not set
         if (empty($prompt_type)) {
             $prompt_type = 'template';
         }
 
-        // Check max tokens based on model
-        $token_limits = [
-            'gemini-pro' => 32000,
-            'gemini-1.5-pro' => 1000000,
-            'gemini-1.5-flash' => 1000000
-        ];
-
-        // Set default max token limit
-        $default_limit = 32000;
-        $model_limit = isset($token_limits[$model]) ? $token_limits[$model] : $default_limit;
+        // Check max tokens based on model - use the working model's limit
+        $token_limit = 1000000; // 1M tokens for Gemini 2.5 Pro
 
         // Ensure max_tokens is within model limits
-        if (intval($max_tokens) > $model_limit) {
-            $max_tokens = $model_limit;
+        if (intval($max_tokens) > $token_limit) {
+            $max_tokens = $token_limit;
             if ($debug_mode === '1') {
-                error_log('CGPTFC: Capped max_tokens to Gemini model limit: ' . $model_limit);
+                error_log('CGPTFC: Capped max_tokens to Gemini model limit: ' . $token_limit);
             }
         }
 

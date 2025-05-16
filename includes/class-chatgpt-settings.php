@@ -279,25 +279,24 @@ class CGPTFC_Settings {
     }
 
     /**
-     * Gemini Model field with correct options
+     * Simplified Settings with Working Model Options
      */
     public function gemini_model_field_callback() {
-        $model = get_option('cgptfc_gemini_model', 'gemini-pro');
-        $models = array(
-            'gemini-pro' => __('Gemini Pro (default)', 'chatgpt-fluent-connector'),
-            'models/gemini-pro' => __('Gemini Pro with "models/" prefix', 'chatgpt-fluent-connector'),
-            'gemini-1.5-pro' => __('Gemini 1.5 Pro', 'chatgpt-fluent-connector'),
-            'models/gemini-1.5-pro' => __('Gemini 1.5 Pro with "models/" prefix', 'chatgpt-fluent-connector'),
-        );
+        $model = get_option('cgptfc_gemini_model', 'gemini-2.5-pro-preview-05-06');
         ?>
         <select name="cgptfc_gemini_model">
-            <?php foreach ($models as $model_id => $model_name) : ?>
-                <option value="<?php echo esc_attr($model_id); ?>" <?php selected($model, $model_id); ?>><?php echo esc_html($model_name); ?></option>
-            <?php endforeach; ?>
+            <option value="gemini-2.5-pro-preview-05-06" <?php selected($model, 'gemini-2.5-pro-preview-05-06'); ?>>
+                <?php echo esc_html__('Gemini 2.5 Pro (I/O edition - Recommended)', 'chatgpt-fluent-connector'); ?>
+            </option>
         </select>
+
         <p class="description">
-            <?php echo esc_html__('Select which Gemini model to use. Some Google AI Studio implementations require the "models/" prefix, while others don\'t.', 'chatgpt-fluent-connector'); ?>
+            <?php echo esc_html__('Using Gemini 2.5 Pro I/O Edition - our testing shows this is currently the only working model with your API key.', 'chatgpt-fluent-connector'); ?>
         </p>
+
+        <div class="notice notice-info inline" style="margin-top: 10px;">
+            <p><?php _e('Note: Based on testing, only the Gemini 2.5 Pro Preview 05-06 version is available with your API key. Other model versions may become available in the future.', 'chatgpt-fluent-connector'); ?></p>
+        </div>
         <?php
     }
 
