@@ -95,7 +95,6 @@ class CGPTFC_Main {
         require_once __DIR__ . '/includes/class-chatgpt-custom-fluent-integration.php';
         require_once __DIR__ . '/includes/class-chatgpt-custom-response-logger.php';
         require_once __DIR__ . '/includes/class-chatgpt-html-template-uploader.php';
-        require_once __DIR__ . '/includes/enhanced-logging/enhanced-logging.php';
 
         // Instantiate classes
         $this->settings = new CGPTFC_Settings();
