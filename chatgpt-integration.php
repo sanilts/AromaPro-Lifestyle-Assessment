@@ -3,7 +3,7 @@
  * Plugin Name: ChatGPT and Gemini Fluent Forms Connector
  * Plugin URI: https://aromapro.com/
  * Description: Connect Fluent Forms with ChatGPT or Google Gemini to generate AI responses for form submissions
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Sanil T S
  * Author URI: https://www.fb.com/sanilts
  * License: GPL-2.0+
