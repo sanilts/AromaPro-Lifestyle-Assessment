@@ -110,7 +110,7 @@ class CGPTFC_Gemini_API {
             'body' => wp_json_encode($body),
             'method' => 'POST',
             'data_format' => 'body',
-            'timeout' => 60 // Increase timeout for larger responses
+            'timeout' => 180 // Increase timeout for larger responses
         );
 
         // Make the API request
@@ -446,5 +446,15 @@ class CGPTFC_Gemini_API {
         }
 
         return $field_labels;
+    }
+}
+
+
+// In your main plugin file
+register_activation_hook(__FILE__, 'cgptfc_register_cron_events');
+
+function cgptfc_register_cron_events() {
+    if (!wp_next_scheduled('cgptfc_process_form_async')) {
+        wp_schedule_event(time(), 'hourly', 'cgptfc_process_form_async');
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ChatGPT Fluent Forms Integration Class
  * 
@@ -17,13 +18,16 @@ class CGPTFC_Fluent_Integration {
     public function __construct() {
         // Hook into Fluent Forms submission
         add_action('fluentform/submission_inserted', array($this, 'handle_form_submission'), 20, 3);
-        
+
         // Use the correct filter with the proper parameters
         add_filter('fluentform/submission_confirmation', array($this, 'modify_confirmation_message'), 10, 5);
+
+        // Initialize async hooks
+        $this->initialize_async_hooks();
     }
 
     /**
-     * Handle form submission
+     * Handle form submission with asynchronous processing
      * 
      * @param int $entry_id The submission entry ID
      * @param array $form_data The submitted form data
@@ -32,7 +36,7 @@ class CGPTFC_Fluent_Integration {
     public function handle_form_submission($entry_id, $form_data, $form) {
         $form_id = $form->id;
         $debug_mode = get_option('cgptfc_debug_mode', '0');
-        
+
         if ($debug_mode === '1') {
             error_log('CGPTFC: handle_form_submission called for form ' . $form_id . ', entry ' . $entry_id);
         }
@@ -63,13 +67,73 @@ class CGPTFC_Fluent_Integration {
             error_log('CGPTFC: Found ' . count($prompts) . ' prompts for form ' . $form_id);
         }
 
-        // Process each prompt
+        // Process each prompt asynchronously
         foreach ($prompts as $prompt) {
             if ($debug_mode === '1') {
-                error_log('CGPTFC: Processing prompt: ' . $prompt->ID . ' - ' . $prompt->post_title);
+                error_log('CGPTFC: Scheduling async processing for prompt: ' . $prompt->ID . ' - ' . $prompt->post_title);
             }
-            $this->process_prompt($prompt->ID, $form_data, $entry_id, $form);
+
+            // Schedule the async processing using WordPress cron
+            wp_schedule_single_event(
+                    time(),
+                    'cgptfc_process_form_async',
+                    array(
+                        'prompt_id' => $prompt->ID,
+                        'form_data' => $form_data,
+                        'entry_id' => $entry_id,
+                        'form_id' => $form_id
+                    )
+            );
         }
+
+        // Trigger the cron event immediately
+        if (function_exists('spawn_cron')) {
+            spawn_cron();
+        }
+    }
+
+    /**
+     * Process a form submission asynchronously
+     * 
+     * @param int $prompt_id The prompt ID
+     * @param array $form_data The form data
+     * @param int $entry_id The entry ID
+     * @param int $form_id The form ID
+     */
+    public function process_form_async($prompt_id, $form_data, $entry_id, $form_id) {
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Running async process for prompt_id ' . $prompt_id . ', entry_id ' . $entry_id);
+        }
+
+        // Get the form object
+        if (function_exists('wpFluent')) {
+            $form = wpFluent()->table('fluentform_forms')
+                    ->where('id', $form_id)
+                    ->first();
+
+            if ($form) {
+                // Process the prompt normally
+                $this->process_prompt($prompt_id, $form_data, $entry_id, $form);
+            } else {
+                if ($debug_mode === '1') {
+                    error_log('CGPTFC: Form not found for ID: ' . $form_id);
+                }
+            }
+        } else {
+            if ($debug_mode === '1') {
+                error_log('CGPTFC: wpFluent function not available');
+            }
+        }
+    }
+
+    /**
+     * Hook initialization function - Add this to your constructor
+     */
+    public function initialize_async_hooks() {
+        // Register the cron event
+        add_action('cgptfc_process_form_async', array($this, 'process_form_async'), 10, 4);
     }
 
     /**
@@ -84,14 +148,14 @@ class CGPTFC_Fluent_Integration {
      */
     public function modify_confirmation_message($returnData, $form, $confirmation, $insertId, $formData) {
         $debug_mode = get_option('cgptfc_debug_mode', '0');
-        
+
         if ($debug_mode === '1') {
             error_log('CGPTFC: modify_confirmation_message called');
             error_log('CGPTFC: Form ID: ' . $form->id);
             error_log('CGPTFC: Entry ID: ' . $insertId);
             error_log('CGPTFC: returnData: ' . print_r($returnData, true));
         }
-        
+
         // Check if we should show the response for this form
         $args = array(
             'post_type' => 'cgptfc_prompt',
@@ -112,7 +176,7 @@ class CGPTFC_Fluent_Integration {
         );
 
         $show_prompts = get_posts($args);
-        
+
         if ($debug_mode === '1') {
             error_log('CGPTFC: Found ' . count($show_prompts) . ' prompts configured to show response');
         }
@@ -120,12 +184,12 @@ class CGPTFC_Fluent_Integration {
         if (!empty($show_prompts)) {
             // Get the AI response from the database
             $ai_response_html = $this->get_ai_response_html($form->id, $insertId);
-            
+
             if (!empty($ai_response_html)) {
                 if ($debug_mode === '1') {
                     error_log('CGPTFC: Adding AI response to confirmation message');
                 }
-                
+
                 // Modify the message based on the return type
                 if (isset($returnData['message'])) {
                     $returnData['message'] .= $ai_response_html;
@@ -138,7 +202,7 @@ class CGPTFC_Fluent_Integration {
                 }
             }
         }
-        
+
         return $returnData;
     }
 
@@ -151,7 +215,7 @@ class CGPTFC_Fluent_Integration {
      */
     private function get_ai_response_html($form_id, $entry_id) {
         $debug_mode = get_option('cgptfc_debug_mode', '0');
-        
+
         if ($debug_mode === '1') {
             error_log('CGPTFC: Looking for AI response for form_id: ' . $form_id . ', entry_id: ' . $entry_id);
         }
@@ -169,24 +233,23 @@ class CGPTFC_Fluent_Integration {
 
         // Get the most recent response for this form entry, including the prompt and provider
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT user_prompt, ai_response, provider FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
-            $form_id, $entry_id
+                        "SELECT user_prompt, ai_response, provider FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
+                        $form_id, $entry_id
         ));
-        
+
         if (empty($result)) {
             if ($debug_mode === '1') {
                 error_log('CGPTFC: No response found in database');
             }
-            
+
             // Wait a bit for the response to be generated
             usleep(500000); // Wait 0.5 seconds
-            
             // Try again
             $result = $wpdb->get_row($wpdb->prepare(
-                "SELECT user_prompt, ai_response, provider FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
-                $form_id, $entry_id
+                            "SELECT user_prompt, ai_response, provider FROM {$table_name} WHERE form_id = %d AND entry_id = %d ORDER BY created_at DESC LIMIT 1",
+                            $form_id, $entry_id
             ));
-            
+
             if (empty($result)) {
                 if ($debug_mode === '1') {
                     error_log('CGPTFC: Still no response after waiting');
@@ -206,7 +269,7 @@ class CGPTFC_Fluent_Integration {
 
         // Build the HTML to show both prompt and response
         $html = '<div class="cgptfc-response-wrapper">';
-        
+
         // Display the response - IMPORTANT: Allow HTML to render properly by using wp_kses_post instead of esc_html
         $html .= '<div class="cgptfc-response">';
         //$html .= '<div class="cgptfc-response-header">' . sprintf(__('%s Response', 'chatgpt-fluent-connector'), $provider_name) . '</div>';
@@ -214,10 +277,10 @@ class CGPTFC_Fluent_Integration {
         $html .= wp_kses_post(nl2br($result->ai_response)); // Allow HTML but still sanitize with wp_kses_post
         $html .= '</div>';
         $html .= '</div>';
-        
+
         // Format the full form data to include at the bottom
         //$html .= $this->get_formatted_form_data_html($form_id, $entry_id);
-        
+
         $html .= '</div>';
 
         // Add enhanced styling
@@ -298,37 +361,37 @@ class CGPTFC_Fluent_Integration {
         if (!function_exists('wpFluent')) {
             return '';
         }
-        
+
         $entry = wpFluent()->table('fluentform_submissions')
                 ->where('form_id', $form_id)
                 ->where('id', $entry_id)
                 ->first();
-                
+
         if (!$entry || empty($entry->response)) {
             return '';
         }
-        
+
         $form_data = json_decode($entry->response, true);
         if (empty($form_data) || !is_array($form_data)) {
             return '';
         }
-        
+
         // Get field labels
         $field_labels = $this->get_form_field_labels($form_id);
-        
+
         // Create the HTML
         $html = '<div class="cgptfc-form-data">';
         $html .= '<div class="cgptfc-form-data-title">' . __('Submitted Form Data', 'chatgpt-fluent-connector') . '</div>';
-        
+
         foreach ($form_data as $field_key => $field_value) {
             // Skip if field_key is not a scalar or starts with '_'
             if (!is_scalar($field_key) || strpos($field_key, '_') === 0) {
                 continue;
             }
-            
+
             // Get label if available, otherwise use field key
             $label = isset($field_labels[$field_key]) ? $field_labels[$field_key] : $field_key;
-            
+
             // Format value
             if (is_array($field_value)) {
                 $field_value = implode(', ', $field_value);
@@ -336,15 +399,15 @@ class CGPTFC_Fluent_Integration {
                 // Skip non-scalar values
                 continue;
             }
-            
+
             $html .= '<div class="cgptfc-form-data-item">';
             $html .= '<span class="cgptfc-form-data-label">' . esc_html($label) . ':</span> ';
             $html .= '<span class="cgptfc-form-data-value">' . esc_html($field_value) . '</span>';
             $html .= '</div>';
         }
-        
+
         $html .= '</div>';
-        
+
         return $html;
     }
 
@@ -359,21 +422,21 @@ class CGPTFC_Fluent_Integration {
      */
     private function process_prompt($prompt_id, $form_data, $entry_id, $form) {
         $debug_mode = get_option('cgptfc_debug_mode', '0');
-        
+
         if ($debug_mode === '1') {
             error_log('CGPTFC: Inside process_prompt for prompt_id ' . $prompt_id);
         }
 
         // Get the active provider setting
         $provider = get_option('cgptfc_api_provider', 'openai');
-        
+
         if ($debug_mode === '1') {
             error_log('CGPTFC: Using ' . $provider . ' API provider');
         }
 
         // Get the API instance based on the provider
         $api = cgptfc_main()->get_active_api();
-        
+
         if (!$api) {
             if ($debug_mode === '1') {
                 error_log('CGPTFC: API instance not available');
@@ -439,10 +502,9 @@ class CGPTFC_Fluent_Integration {
 
         // Process the form with the prompt
         $ai_response_raw = $api->process_form_with_prompt($prompt_id, $form_data);
-        $ai_response= $this->clean_html_response($ai_response_raw);
+        $ai_response = $this->clean_html_response($ai_response_raw);
 
-        $ai_response=str_replace('<br>', '', $ai_response);
-
+        $ai_response = str_replace('<br>', '', $ai_response);
 
         // Check if we got a valid response or an error
         if (is_wp_error($ai_response)) {
@@ -463,25 +525,25 @@ class CGPTFC_Fluent_Integration {
         } else {
             $model = get_option('cgptfc_model', 'gpt-3.5-turbo');
         }
-        
+
         // Save the response if logging is enabled
         $log_responses = get_post_meta($prompt_id, '_cgptfc_log_responses', true);
         if ($log_responses == '1') {
             if ($debug_mode === '1') {
                 error_log('CGPTFC: Logging response to database');
             }
-            
+
             // Use the enhanced response logger with proper provider and model information
             $result = cgptfc_main()->response_logger->log_response(
-                $prompt_id,
-                $entry_id,
-                $form->id,
-                $complete_prompt, // Save the actual prompt sent
-                $ai_response,
-                $provider, // Pass the correct provider
-                $model     // Pass the correct model
+                    $prompt_id,
+                    $entry_id,
+                    $form->id,
+                    $complete_prompt, // Save the actual prompt sent
+                    $ai_response,
+                    $provider, // Pass the correct provider
+                    $model     // Pass the correct model
             );
-            
+
             if ($result) {
                 if ($debug_mode === '1') {
                     error_log('CGPTFC: Response logged successfully, ID: ' . $result);
@@ -668,7 +730,7 @@ class CGPTFC_Fluent_Integration {
         // Format all form data for the email
         $form_data_html = '';
         $field_labels = $this->get_form_field_labels($prompt_id);
-        
+
         foreach ($form_data as $field_key => $field_value) {
             // Skip if field_key is not a scalar or starts with '_'
             if (!is_scalar($field_key) || strpos($field_key, '_') === 0) {
@@ -756,13 +818,27 @@ class CGPTFC_Fluent_Integration {
 
         return $sent;
     }
-    
-    
+
+    /**
+     * Clean and prepare HTML response for display
+     * 
+     * @param string|WP_Error $response The response from the API
+     * @return string The cleaned HTML response or error message
+     */
     private function clean_html_response($response) {
+        // First check if the response is an error
+        if (is_wp_error($response)) {
+            error_log("CGPTFC: Error in response: " . $response->get_error_message());
+            return '<div class="cgptfc-error-message">' .
+                    esc_html__('There was an error processing your request: ', 'chatgpt-fluent-connector') .
+                    esc_html($response->get_error_message()) .
+                    '</div>';
+        }
+
         // Debug
         error_log("Original response length: " . strlen($response));
         error_log("First 100 chars: " . substr($response, 0, 100));
-        
+
         // First, check if the response contains HTML code blocks
         if (preg_match('/```html\s*([\s\S]*?)\s*```/i', $response, $matches)) {
             // Extract the HTML from the code block
@@ -773,25 +849,25 @@ class CGPTFC_Fluent_Integration {
             $html = $response;
             error_log("No code block found, using entire response");
         }
-        
+
         // Remove <br> tags that might have been added
         $html = str_replace('<br>', '', $html);
         $html = str_replace('\n', '', $html);
-        
+
         // Clean up other potential issues
         $html = trim($html);
-        
+
         // Verify content is valid HTML - use a permissive approach
         if (strpos($html, '<') === false) {
             // If no HTML tags are found, wrap the content in a paragraph
             $html = '<p>' . nl2br($html) . '</p>';
             error_log("No HTML tags found, wrapped in paragraph");
         }
-        
+
         // Add debug info for final result
         error_log("Final cleaned HTML length: " . strlen($html));
         error_log("First 100 chars of cleaned HTML: " . substr($html, 0, 100));
-        
+
         return $html;
     }
 }

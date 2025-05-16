@@ -20,7 +20,7 @@ class CGPTFC_API {
     }
 
     /**
-     * Make a request to the ChatGPT API with improved token handling
+     * Make a request to the Gemini API with increased timeout
      *
      * @param array $messages Array of message objects (role, content)
      * @param string $model Optional. The model to use. If null, uses the setting.
@@ -29,73 +29,82 @@ class CGPTFC_API {
      * @return array|WP_Error Response from API or error
      */
     public function make_request($messages, $model = null, $max_tokens = 1000, $temperature = 0.7) {
-        $api_key = get_option('cgptfc_api_key');
-        $api_endpoint = get_option('cgptfc_api_endpoint', 'https://api.openai.com/v1/chat/completions');
+        $api_key = get_option('cgptfc_gemini_api_key');
+        $debug_mode = get_option('cgptfc_debug_mode', '0');
+
+        // Use the direct, explicit endpoint for Gemini API
+        $api_base = 'https://generativelanguage.googleapis.com/v1beta/models/';
 
         if (empty($api_key)) {
-            return new WP_Error('no_api_key', __('API key is not set', 'chatgpt-fluent-connector'));
+            return new WP_Error('no_api_key', __('Gemini API key is not set', 'chatgpt-fluent-connector'));
         }
 
         // Use specified model or fall back to settings
         if ($model === null) {
-            $model = get_option('cgptfc_model', 'gpt-3.5-turbo');
+            $model = get_option('cgptfc_gemini_model', 'gemini-2.5-pro-preview-05-06');
         }
 
-        // Safe max token limits based on model
+        // FIXED: Always use the specific preview version that works
+        // Based on our testing, only gemini-2.5-pro-preview-05-06 works
+        if ($model === 'gemini-pro' || $model === 'gemini-2.5-pro' ||
+                $model === 'gemini-2.5-flash' || $model === 'gemini-2.5-flash-preview') {
+            // Default to the working version
+            $model = 'gemini-2.5-pro-preview-05-06';
+        }
+
+        // Remove the "models/" prefix if present
+        if (strpos($model, 'models/') === 0) {
+            $model = substr($model, 7);
+        }
+
+        // If using debug mode, log the model value for verification
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Using Gemini model: ' . $model);
+        }
+
+        // Token limits for Gemini models - update based on the working model
         $token_limits = [
-            'gpt-3.5-turbo' => 4000,
-            'gpt-4' => 8000,
-            'gpt-4-turbo' => 8000,
-            'gpt-4-1106-preview' => 4000,
-            'gpt-4-0613' => 8000,
-            'gpt-4-0125-preview' => 4000
+            'gemini-2.5-pro-preview-05-06' => 1000000, // 1M token context
         ];
 
         // Set default max token limit
-        $default_limit = 4000;
+        $default_limit = 32000;
         $model_limit = isset($token_limits[$model]) ? $token_limits[$model] : $default_limit;
 
         // Ensure max_tokens is within model limits
         $max_tokens = min(intval($max_tokens), $model_limit);
 
         // Log the model and max tokens for debugging
-        error_log('CGPTFC: Making API request with model: ' . $model . ', max_tokens: ' . $max_tokens);
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Making Gemini API request with model: ' . $model . ', max_tokens: ' . $max_tokens);
+        }
+
+        // Convert OpenAI message format to Gemini format
+        $gemini_messages = $this->convert_messages_to_gemini_format($messages);
+
+        // Build full endpoint URL with hardcoded structure to ensure correctness
+        $full_endpoint = $api_base . $model . ':generateContent' . '?key=' . $api_key;
+
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Full Gemini API endpoint: ' . $full_endpoint);
+        }
 
         $headers = array(
-            'Authorization' => 'Bearer ' . $api_key,
             'Content-Type' => 'application/json'
         );
 
-        // Validate messages array to ensure no null content values
-        foreach ($messages as $key => $message) {
-            if (!isset($message['content']) || $message['content'] === null) {
-                return new WP_Error('invalid_message', __('Message content cannot be null', 'chatgpt-fluent-connector'));
-            }
-            // Ensure content is a string
-            if (!is_string($message['content'])) {
-                $messages[$key]['content'] = strval($message['content']);
-            }
-        }
-
         $body = array(
-            'model' => $model,
-            'messages' => $messages,
-            'max_tokens' => intval($max_tokens),
-            'temperature' => floatval($temperature)
+            'contents' => $gemini_messages,
+            'generationConfig' => array(
+                'maxOutputTokens' => intval($max_tokens),
+                'temperature' => floatval($temperature),
+                'topP' => 0.95,
+                'topK' => 40
+            )
         );
 
-        // Add model-specific parameters
-        if (strpos($model, 'gpt-4') === 0) {
-            // Add specific parameters for GPT-4 models if needed
-            $body['top_p'] = 0.95; // Higher top_p for more diverse outputs with advanced models
-            // You can uncomment this if needed for the model
-            // $body['frequency_penalty'] = 0.1; 
-            // $body['presence_penalty'] = 0.1;
-        }
-
-        $debug_mode = get_option('cgptfc_debug_mode', '0');
         if ($debug_mode === '1') {
-            error_log('CGPTFC: API Request body: ' . wp_json_encode($body));
+            error_log('CGPTFC: Gemini API Request body: ' . wp_json_encode($body));
         }
 
         $args = array(
@@ -103,27 +112,55 @@ class CGPTFC_API {
             'body' => wp_json_encode($body),
             'method' => 'POST',
             'data_format' => 'body',
-            'timeout' => 60 // Increase timeout for larger responses
+            'timeout' => 180 // INCREASED from 60 to 180 seconds (3 minutes)
         );
 
-        $response = wp_remote_post($api_endpoint, $args);
+        // Make the API request
+        $response = wp_remote_post($full_endpoint, $args);
 
+        // Check for WordPress request errors
         if (is_wp_error($response)) {
-            error_log('CGPTFC: API Request Error: ' . $response->get_error_message());
+            $error_message = $response->get_error_message();
+            error_log('CGPTFC: Gemini API WordPress Request Error: ' . $error_message);
             return $response;
         }
 
+        // Get response code and body
         $response_code = wp_remote_retrieve_response_code($response);
-        $response_body = json_decode(wp_remote_retrieve_body($response), true);
+        $response_body_raw = wp_remote_retrieve_body($response);
+        $response_body = json_decode($response_body_raw, true);
 
+        // Always log the full response in debug mode
+        if ($debug_mode === '1') {
+            error_log('CGPTFC: Gemini API Response Code: ' . $response_code);
+            error_log('CGPTFC: Gemini API Raw Response: ' . $response_body_raw);
+        }
+
+        // Handle HTTP errors
         if ($response_code !== 200) {
-            $error_message = isset($response_body['error']['message']) ? $response_body['error']['message'] : sprintf(__('Unknown error (HTTP %s)', 'chatgpt-fluent-connector'), $response_code);
-            error_log('CGPTFC: API Error: ' . $error_message);
+            // Try to extract error message from response if possible
+            $error_message = '';
+            if (isset($response_body['error']['message'])) {
+                $error_message = $response_body['error']['message'];
+            } else {
+                $error_message = sprintf(__('Unknown error (HTTP %s)', 'chatgpt-fluent-connector'), $response_code);
+            }
+
+            // Log error details
+            error_log('CGPTFC: Gemini API Error: ' . $error_message);
+
+            // For 404 specifically, add more information as this is likely a model not found issue
+            if ($response_code === 404) {
+                error_log('CGPTFC: 404 Error - Model "' . $model . '" not found. Please check the model name and API version.');
+                return new WP_Error('api_error', $error_message . ' - Please use the model "gemini-2.5-pro-preview-05-06" which is confirmed to be working.');
+            }
+
             return new WP_Error('api_error', $error_message);
         }
 
+        // Success case
         if ($debug_mode === '1') {
-            error_log('CGPTFC: API Response: ' . wp_json_encode($response_body));
+            error_log('CGPTFC: Gemini API Response: ' . wp_json_encode($response_body));
         }
 
         return $response_body;
