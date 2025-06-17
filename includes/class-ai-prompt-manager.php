@@ -122,7 +122,7 @@ class SFAIC_Prompt_Manager{
             <tr>
                 <th><label for="sfaic_system_prompt"><?php _e('System Prompt:', 'chatgpt-fluent-connector'); ?></label></th>
                 <td>
-                    <textarea name="sfaic_system_prompt" id="sfaic_system_prompt" class="large-text code" rows="10"><?php echo esc_textarea($system_prompt); ?></textarea>
+                    <textarea name="sfaic_system_prompt" id="sfaic_system_prompt" class="large-text code" rows="20"><?php echo esc_textarea($system_prompt); ?></textarea>
                     <p class="description"><?php _e('Instructions that define how ChatGPT should behave (e.g., "You are a helpful assistant that specializes in...")', 'chatgpt-fluent-connector'); ?></p>
                 </td>
             </tr>
@@ -689,7 +689,7 @@ class SFAIC_Prompt_Manager{
 
         // Save the prompt settings
         if (isset($_POST['sfaic_system_prompt'])) {
-            update_post_meta($post_id, '_sfaic_system_prompt', sanitize_textarea_field($_POST['sfaic_system_prompt']));
+            update_post_meta($post_id, '_sfaic_system_prompt', $_POST['sfaic_system_prompt']);
         }
 
         if (isset($_POST['sfaic_user_prompt_template'])) {

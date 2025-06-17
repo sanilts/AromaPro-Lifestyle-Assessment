@@ -102,7 +102,7 @@ class SFAIC_OpenAI_API {
             'body' => wp_json_encode($body),
             'method' => 'POST',
             'data_format' => 'body',
-            'timeout' => 600
+            'timeout' => 3000
         );
 
         // Make the API request

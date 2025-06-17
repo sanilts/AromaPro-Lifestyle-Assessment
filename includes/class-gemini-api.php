@@ -299,7 +299,7 @@ class SFAIC_Gemini_API {
             'body' => $json_body,
             'method' => 'POST',
             'data_format' => 'body',
-            'timeout' => 600,
+            'timeout' => 3000,
             'httpversion' => '1.1',
             'sslverify' => true
         );
