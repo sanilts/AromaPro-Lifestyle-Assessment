@@ -179,6 +179,7 @@ class SFAIC_Prompt_Manager{
                     </p>
                 </td>
             </tr>
+            <?php $enable_chunking=get_post_meta($post->ID, '_sfaic_enable_chunking', true); ?>
             <tr>
                 <th><label for="sfaic_enable_chunking"><?php _e('Enable Response Chunking:', 'chatgpt-fluent-connector'); ?></label></th>
                 <td>
@@ -191,6 +192,46 @@ class SFAIC_Prompt_Manager{
                     </p>
                 </td>
             </tr>
+            <tr id="chunking-settings-row" <?php echo ($enable_chunking != '1') ? 'style="display:none;"' : ''; ?>>
+                <th><label for="sfaic_chunking_strategy"><?php _e('Chunking Strategy:', 'chatgpt-fluent-connector'); ?></label></th>
+                <td>
+                    <?php $chunking_strategy = get_post_meta($post->ID, '_sfaic_chunking_strategy', true); ?>
+                    <select name="sfaic_chunking_strategy" id="sfaic_chunking_strategy">
+                        <option value="balanced" <?php selected($chunking_strategy, 'balanced'); ?>><?php _e('Balanced (Recommended)', 'chatgpt-fluent-connector'); ?></option>
+                        <option value="aggressive" <?php selected($chunking_strategy, 'aggressive'); ?>><?php _e('Aggressive (Maximum Length)', 'chatgpt-fluent-connector'); ?></option>
+                        <option value="conservative" <?php selected($chunking_strategy, 'conservative'); ?>><?php _e('Conservative (Safe & Fast)', 'chatgpt-fluent-connector'); ?></option>
+                    </select>
+                    <p class="description">
+                        <?php _e('Balanced: Good for most use cases. Aggressive: Maximizes response length but may take longer. Conservative: Faster processing, shorter responses.', 'chatgpt-fluent-connector'); ?>
+                    </p>
+                </td>
+            </tr>
+
+            <tr id="chunking-quality-row" <?php echo ($enable_chunking != '1') ? 'style="display:none;"' : ''; ?>>
+                <th><label for="sfaic_require_completion"><?php _e('Completion Requirements:', 'chatgpt-fluent-connector'); ?></label></th>
+                <td>
+                    <?php $require_completion = get_post_meta($post->ID, '_sfaic_require_completion', true); ?>
+                    <label>
+                        <input type="checkbox" name="sfaic_require_completion" id="sfaic_require_completion" value="1" <?php checked($require_completion, '1'); ?>>
+                        <?php _e('Require natural completion (may use more tokens)', 'chatgpt-fluent-connector'); ?>
+                    </label>
+                    <p class="description"><?php _e('When enabled, the system will try harder to generate complete responses, even if it means using more tokens.', 'chatgpt-fluent-connector'); ?></p>
+                </td>
+            </tr>
+
+            <script>
+jQuery(document).ready(function($) {
+    // Show/hide chunking settings
+    $('#sfaic_enable_chunking').change(function() {
+        if ($(this).is(':checked')) {
+            $('#chunking-settings-row, #chunking-quality-row').show();
+        } else {
+            $('#chunking-settings-row, #chunking-quality-row').hide();
+        }
+    });
+});
+</script>
+            
         </table>
         <script>
             jQuery(document).ready(function ($) {
@@ -773,6 +814,13 @@ class SFAIC_Prompt_Manager{
         // Save the enable chunking option
         $enable_chunking = isset($_POST['sfaic_enable_chunking']) ? '1' : '0';
         update_post_meta($post_id, '_sfaic_enable_chunking', $enable_chunking);
+        
+        if (isset($_POST['sfaic_chunking_strategy'])) {
+            update_post_meta($post_id, '_sfaic_chunking_strategy', sanitize_text_field($_POST['sfaic_chunking_strategy']));
+        }
+
+        $require_completion = isset($_POST['sfaic_require_completion']) ? '1' : '0';
+        update_post_meta($post_id, '_sfaic_require_completion', $require_completion);
     }
 
     /**

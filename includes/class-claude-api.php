@@ -111,7 +111,7 @@ class SFAIC_Claude_API {
             'body' => wp_json_encode($body),
             'method' => 'POST',
             'data_format' => 'body',
-            'timeout' => 3000
+            'timeout' => 240
         );
 
         // Make the API request
@@ -424,16 +424,21 @@ class SFAIC_Claude_API {
     /**
      * Process a form submission with chunked responses for long content - FIXED IMPLEMENTATION
      */
+    /**
+     * Process a form submission with chunked responses for long content - FIXED IMPLEMENTATION
+     */
     public function process_form_with_prompt_chunked($prompt_id, $form_data, $entry_id = null) {
-        error_log('SFAIC Claude: Starting chunked processing');
-        
+        error_log('SFAIC: Starting enhanced chunked processing');
+
         // Get prompt settings
         $system_prompt = get_post_meta($prompt_id, '_sfaic_system_prompt', true);
         $user_prompt_template = get_post_meta($prompt_id, '_sfaic_user_prompt_template', true);
         $temperature = get_post_meta($prompt_id, '_sfaic_temperature', true);
         $max_tokens = get_post_meta($prompt_id, '_sfaic_max_tokens', true);
         $prompt_type = get_post_meta($prompt_id, '_sfaic_prompt_type', true);
-        $model = get_option('sfaic_claude_model', 'claude-opus-4-20250514');
+
+        // Get model based on provider
+        $model = $this->get_current_model();
 
         // Prepare the initial user prompt
         $user_prompt = $this->prepare_user_prompt($prompt_id, $form_data, $prompt_type, $user_prompt_template);
@@ -442,51 +447,65 @@ class SFAIC_Claude_API {
             return $user_prompt;
         }
 
-        // Enhanced system prompt for chunking - optimized for Claude
+        // Enhanced system prompt for chunking with specific completion instructions
         $chunked_system_prompt = $system_prompt . "\n\n" .
-                "IMPORTANT: You are generating a comprehensive, detailed response. " .
-                "Write naturally and in great detail. If you reach your output limit, stop at a complete thought or sentence. " .
-                "Do not add any continuation markers, \"(continued)\" text, or special indicators. " .
-                "Just write your content naturally and stop when you reach the limit. " .
-                "Continue naturally from where you left off if the conversation continues.";
+                "IMPORTANT CHUNKING INSTRUCTIONS:\n" .
+                "1. You are generating a comprehensive, detailed response that may require multiple parts\n" .
+                "2. Write naturally and thoroughly - do not rush to conclude\n" .
+                "3. If you reach your output limit, stop at a complete sentence or paragraph\n" .
+                "4. Do NOT add continuation markers like '(continued)', '...', or '[Part X]'\n" .
+                "5. Do NOT add premature conclusions or summaries unless specifically asked\n" .
+                "6. Continue naturally from where you left off if prompted to continue\n" .
+                "7. Only conclude when you have fully addressed all aspects of the request\n" .
+                "8. Use clear section headers and proper formatting for readability";
 
-        // Calculate target and chunk parameters
+        // Calculate target and chunk parameters with better sizing
         $target_tokens = intval($max_tokens);
-        $max_chunks = min(ceil($target_tokens / 3500), 40); // Reasonable chunk limit for Claude
+        $max_chunks = min(ceil($target_tokens / 2500), 50); // Allow more chunks for thorough responses
         $total_tokens_used = 0;
         $full_response = '';
         $conversation = array();
-
+        $consecutive_short_chunks = 0; // Track short responses
+        $forced_completion_attempts = 0; // Track attempts to force completion
         // Initialize conversation
         if (!empty($chunked_system_prompt)) {
             $conversation[] = array('role' => 'system', 'content' => $chunked_system_prompt);
         }
         $conversation[] = array('role' => 'user', 'content' => $user_prompt);
 
-        error_log("SFAIC Claude: Starting chunked generation - target: {$target_tokens} tokens, max chunks: {$max_chunks}");
+        error_log("SFAIC: Starting enhanced chunked generation - target: {$target_tokens} tokens, max chunks: {$max_chunks}");
 
         for ($chunk_num = 0; $chunk_num < $max_chunks; $chunk_num++) {
-            // Calculate chunk size based on model and remaining tokens
+            // Calculate chunk size with better strategy
             $remaining_tokens = $target_tokens - $total_tokens_used;
-            $chunk_tokens = $this->calculate_chunk_size($model, $remaining_tokens, $chunk_num);
+            $chunk_tokens = $this->calculate_enhanced_chunk_size($model, $remaining_tokens, $chunk_num, $target_tokens);
 
             if ($chunk_tokens < 100) {
-                error_log("SFAIC Claude: Stopping - chunk size too small: {$chunk_tokens}");
+                error_log("SFAIC: Stopping - chunk size too small: {$chunk_tokens}");
                 break;
             }
 
-            error_log("SFAIC Claude: Generating chunk " . ($chunk_num + 1) . " with {$chunk_tokens} tokens");
+            error_log("SFAIC: Generating chunk " . ($chunk_num + 1) . " with {$chunk_tokens} tokens");
 
-            // Make API request
-            $response = $this->make_request($conversation, $model, $chunk_tokens, floatval($temperature));
+            // Make API request with retry logic
+            $response = $this->make_request_with_retry($conversation, $model, $chunk_tokens, floatval($temperature));
 
             if (is_wp_error($response)) {
                 if ($chunk_num === 0) {
-                    error_log("SFAIC Claude: First chunk failed: " . $response->get_error_message());
+                    error_log("SFAIC: First chunk failed: " . $response->get_error_message());
                     return $response;
                 }
-                error_log("SFAIC Claude: Chunk {$chunk_num} failed, stopping with partial response");
-                break;
+
+                error_log("SFAIC: Chunk {$chunk_num} failed, attempting recovery");
+
+                // Try with smaller chunk size
+                $recovery_tokens = min($chunk_tokens / 2, 1000);
+                $response = $this->make_request_with_retry($conversation, $model, $recovery_tokens, floatval($temperature));
+
+                if (is_wp_error($response)) {
+                    error_log("SFAIC: Recovery failed, stopping with partial response");
+                    break;
+                }
             }
 
             $chunk_content = $this->get_response_content($response);
@@ -502,57 +521,407 @@ class SFAIC_Claude_API {
             $chunk_tokens_used = isset($token_usage['completion_tokens']) ? $token_usage['completion_tokens'] : 0;
             $total_tokens_used += $chunk_tokens_used;
 
-            error_log("SFAIC Claude: Chunk " . ($chunk_num + 1) . " generated {$chunk_tokens_used} tokens. Total: {$total_tokens_used}");
+            error_log("SFAIC: Chunk " . ($chunk_num + 1) . " generated {$chunk_tokens_used} tokens. Total: {$total_tokens_used}");
 
             // Add chunk to full response
             $full_response .= $chunk_content;
 
-            // Check stopping conditions
+            // Enhanced completion detection
+            $is_complete = $this->is_response_complete_enhanced($chunk_content, $chunk_num, $full_response, $user_prompt);
+
+            // Track consecutive short chunks
+            if ($chunk_tokens_used < $chunk_tokens * 0.4) {
+                $consecutive_short_chunks++;
+            } else {
+                $consecutive_short_chunks = 0;
+            }
+
+            // Check stopping conditions with enhanced logic
             if ($total_tokens_used >= $target_tokens * 0.95) {
-                error_log("SFAIC Claude: Reached target token limit ({$total_tokens_used}/{$target_tokens})");
+                error_log("SFAIC: Reached target token limit ({$total_tokens_used}/{$target_tokens})");
                 break;
             }
 
-            if ($this->is_response_complete($chunk_content, $chunk_num)) {
-                error_log("SFAIC Claude: Response appears complete after chunk " . ($chunk_num + 1));
+            if ($is_complete) {
+                error_log("SFAIC: Response appears complete after chunk " . ($chunk_num + 1));
                 break;
             }
 
-            if ($chunk_tokens_used < $chunk_tokens * 0.5) {
-                error_log("SFAIC Claude: Chunk significantly shorter than requested, likely complete");
+            // Stop if we have too many consecutive short chunks (likely complete)
+            if ($consecutive_short_chunks >= 2 && $chunk_num >= 3) {
+                error_log("SFAIC: Multiple short chunks detected, likely complete");
                 break;
+            }
+
+            // If we have a substantial response and recent chunks are getting shorter, try to force completion
+            if (strlen($full_response) > 2000 && $chunk_num >= 5 && $consecutive_short_chunks >= 1) {
+                $forced_completion_attempts++;
+                if ($forced_completion_attempts >= 2) {
+                    error_log("SFAIC: Forcing completion after multiple short chunks");
+                    break;
+                }
             }
 
             // Manage conversation length to prevent context overflow
-            if (count($conversation) > 8) {
-                // Keep system prompt, original request, and last 4 exchanges
+            if (count($conversation) > 10) {
+                // Keep system prompt, original request, and last 6 exchanges
                 $conversation = array_merge(
-                    array_slice($conversation, 0, 2), // System + original user message
-                    array_slice($conversation, -4)    // Last 4 messages
+                        array_slice($conversation, 0, 2), // System + original user message
+                        array_slice($conversation, -6)    // Last 6 messages
                 );
             }
 
             // Add response and continuation prompt
-            $conversation[] = array('role' => 'assistant', 'content' => $chunk_content);
-            
-            $continuation_prompt = $this->generate_continuation_prompt($chunk_num, $chunk_content, strlen($full_response));
+            $conversation[] = array('role' => $this->get_assistant_role(), 'content' => $chunk_content);
+
+            $continuation_prompt = $this->generate_enhanced_continuation_prompt($chunk_num, $chunk_content, $full_response, $user_prompt, $consecutive_short_chunks);
             $conversation[] = array('role' => 'user', 'content' => $continuation_prompt);
 
-            error_log("SFAIC Claude: Added continuation prompt: " . substr($continuation_prompt, 0, 100) . "...");
+            error_log("SFAIC: Added continuation prompt: " . substr($continuation_prompt, 0, 100) . "...");
         }
+
+        // Post-process the response
+        $full_response = $this->post_process_chunked_response($full_response);
 
         // Store chunking metadata
         if (!empty($entry_id)) {
-            update_post_meta($entry_id, '_claude_chunked_response', true);
-            update_post_meta($entry_id, '_claude_chunks_count', $chunk_num + 1);
-            update_post_meta($entry_id, '_claude_total_tokens_generated', $total_tokens_used);
-            update_post_meta($entry_id, '_claude_response_length', strlen($full_response));
+            update_post_meta($entry_id, '_' . $this->get_provider_name() . '_chunked_response', true);
+            update_post_meta($entry_id, '_' . $this->get_provider_name() . '_chunks_count', $chunk_num + 1);
+            update_post_meta($entry_id, '_' . $this->get_provider_name() . '_total_tokens_generated', $total_tokens_used);
+            update_post_meta($entry_id, '_' . $this->get_provider_name() . '_response_length', strlen($full_response));
+            update_post_meta($entry_id, '_' . $this->get_provider_name() . '_completion_reason', $this->get_completion_reason($chunk_num, $max_chunks, $total_tokens_used, $target_tokens));
         }
 
-        error_log("SFAIC Claude: Chunked generation complete. " . ($chunk_num + 1) . " chunks, {$total_tokens_used} tokens, " . strlen($full_response) . " characters");
+        error_log("SFAIC: Enhanced chunked generation complete. " . ($chunk_num + 1) . " chunks, {$total_tokens_used} tokens, " . strlen($full_response) . " characters");
 
         return $full_response;
     }
+
+    /**
+     * Enhanced chunk size calculation
+     */
+    private function calculate_enhanced_chunk_size($model, $remaining_tokens, $chunk_num, $target_tokens) {
+        // Base chunk sizes for different models
+        $base_chunk_sizes = $this->get_model_chunk_sizes($model);
+        $base_chunk = $base_chunk_sizes['default'];
+
+        // Adaptive sizing based on progress
+        $progress_ratio = $chunk_num > 0 ? ($target_tokens - $remaining_tokens) / $target_tokens : 0;
+
+        if ($chunk_num === 0) {
+            // First chunk can be larger to establish context
+            $chunk_size = min($base_chunk * 1.2, $remaining_tokens);
+        } elseif ($progress_ratio < 0.3) {
+            // Early chunks - use standard size
+            $chunk_size = $base_chunk;
+        } elseif ($progress_ratio < 0.7) {
+            // Middle chunks - slightly smaller to leave room for conclusion
+            $chunk_size = $base_chunk * 0.9;
+        } else {
+            // Later chunks - smaller to allow for proper conclusion
+            $chunk_size = $base_chunk * 0.8;
+        }
+
+        // Don't exceed remaining tokens or model limits
+        return min($chunk_size, $remaining_tokens, $base_chunk_sizes['max']);
+    }
+    
+    /**
+     * Enhanced completion detection
+     */
+    private function is_response_complete_enhanced($content, $chunk_num, $full_response, $original_prompt) {
+        // Don't check completion on first chunk
+        if ($chunk_num === 0) return false;
+
+        // Very short responses might indicate completion
+        if (strlen(trim($content)) < 100) return true;
+
+        // Check for explicit completion markers
+        $completion_patterns = array(
+            '/\b(conclusion|summary|in summary|to conclude|finally|in conclusion)\b.*[.!]\s*$/im',
+            '/\b(that completes|this concludes|this ends|hope this helps)\b.*[.!]\s*$/im',
+            '/\b(thank you|best regards|sincerely)\b.*[.!]\s*$/im',
+            '/<\/(div|section|article|report|document)>\s*$/i',
+            '/---+\s*end\s*---+/i',
+            '/\[end\s+of\s+response\]/i',
+        );
+
+        foreach ($completion_patterns as $pattern) {
+            if (preg_match($pattern, $content)) {
+                return true;
+            }
+        }
+
+        // Check if the response appears to have covered the main topics from the prompt
+        if (strlen($full_response) > 1500) {
+            $topic_coverage = $this->assess_topic_coverage($full_response, $original_prompt);
+            if ($topic_coverage > 0.8) {
+                // High topic coverage + natural ending = likely complete
+                if (preg_match('/[.!?]\s*$/', trim($content))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }    
+    
+    
+    /**
+        * Generate enhanced continuation prompts
+        */
+       private function generate_enhanced_continuation_prompt($chunk_num, $last_chunk, $full_response, $original_prompt, $consecutive_short_chunks) {
+           $last_chunk_trimmed = trim($last_chunk);
+           $ends_mid_sentence = !preg_match('/[.!?]\s*$/', $last_chunk_trimmed);
+
+           if ($ends_mid_sentence) {
+               return "Please complete the current sentence and then continue with more detailed information.";
+           }
+
+           // If we've had short chunks, try to encourage more content
+           if ($consecutive_short_chunks > 0) {
+               $encouraging_prompts = array(
+                   "Please continue with much more detailed information and expand on the key points.",
+                   "Continue providing comprehensive details and elaborate further on this topic.",
+                   "Please add significantly more depth and detail to your response.",
+                   "Continue with extensive additional information and thorough analysis.",
+               );
+               return $encouraging_prompts[$chunk_num % count($encouraging_prompts)];
+           }
+
+           // Analyze what might be missing based on the original prompt
+           $missing_aspects = $this->identify_missing_aspects($full_response, $original_prompt);
+
+           if (!empty($missing_aspects)) {
+               return "Please continue by addressing: " . implode(', ', array_slice($missing_aspects, 0, 3)) . ". Provide detailed information on these aspects.";
+           }
+
+           // Standard continuation prompts
+           $prompts = array(
+               "Please continue with the next section of your comprehensive response.",
+               "Continue providing more detailed information and in-depth analysis.",
+               "Please proceed with additional insights and thorough elaboration.",
+               "Continue developing your response with much more specific details.",
+               "Please add more comprehensive information and detailed examples.",
+               "Continue with the next part of your detailed explanation.",
+               "Please provide further elaboration with extensive details on this topic.",
+               "Continue expanding on this subject with comprehensive additional information."
+           );
+
+           return $prompts[$chunk_num % count($prompts)];
+       }
+    
+    
+    
+    /**
+ * Make API request with retry logic
+ */
+private function make_request_with_retry($conversation, $model, $chunk_tokens, $temperature, $max_retries = 2) {
+    $retry_count = 0;
+    
+    while ($retry_count <= $max_retries) {
+        $response = $this->make_request($conversation, $model, $chunk_tokens, $temperature);
+        
+        if (!is_wp_error($response)) {
+            return $response;
+        }
+        
+        $error_message = $response->get_error_message();
+        
+        // Check if it's a retryable error
+        if (strpos($error_message, 'rate limit') !== false || 
+            strpos($error_message, 'timeout') !== false ||
+            strpos($error_message, 'server error') !== false) {
+            
+            $retry_count++;
+            if ($retry_count <= $max_retries) {
+                // Wait with exponential backoff
+                $wait_time = pow(2, $retry_count);
+                error_log("SFAIC: Retrying request in {$wait_time} seconds (attempt {$retry_count})");
+                sleep($wait_time);
+                continue;
+            }
+        }
+        
+        // Non-retryable error or max retries reached
+        return $response;
+    }
+    
+    return $response;
+}
+
+/**
+ * Post-process the chunked response
+ */
+private function post_process_chunked_response($response) {
+    // Remove any accidental continuation markers that might have slipped through
+    $response = preg_replace('/\[(continued|part \d+|end of part)\]/i', '', $response);
+    $response = preg_replace('/\.\.\.\s*$/', '.', $response);
+    
+    // Fix any broken HTML tags if this is an HTML response
+    if (strpos($response, '<') !== false) {
+        // Basic HTML tag fixing
+        $response = preg_replace('/<([^>]+)>([^<]*?)(?=<[^\/]|\s*$)/', '<$1>$2', $response);
+    }
+    
+    // Ensure proper spacing between sections
+    $response = preg_replace('/\n{3,}/', "\n\n", $response);
+    
+    return trim($response);
+}
+
+/**
+ * Assess topic coverage (basic implementation)
+ */
+private function assess_topic_coverage($response, $prompt) {
+    // Extract key terms from the prompt
+    $prompt_words = preg_split('/\W+/', strtolower($prompt));
+    $prompt_words = array_filter($prompt_words, function($word) {
+        return strlen($word) > 3 && !in_array($word, array('the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'man', 'new', 'now', 'old', 'see', 'two', 'way', 'who', 'boy', 'did', 'its', 'let', 'put', 'say', 'she', 'too', 'use'));
+    });
+    
+    $response_lower = strtolower($response);
+    $covered_words = 0;
+    
+    foreach ($prompt_words as $word) {
+        if (strpos($response_lower, $word) !== false) {
+            $covered_words++;
+        }
+    }
+    
+    return count($prompt_words) > 0 ? $covered_words / count($prompt_words) : 0;
+}
+
+/**
+ * Identify missing aspects (basic implementation)
+ */
+private function identify_missing_aspects($response, $prompt) {
+    $common_aspects = array(
+        'examples', 'analysis', 'recommendations', 'conclusion', 
+        'benefits', 'challenges', 'solutions', 'implementation',
+        'timeline', 'costs', 'risks', 'alternatives'
+    );
+    
+    $missing = array();
+    $response_lower = strtolower($response);
+    $prompt_lower = strtolower($prompt);
+    
+    foreach ($common_aspects as $aspect) {
+        if (strpos($prompt_lower, $aspect) !== false && strpos($response_lower, $aspect) === false) {
+            $missing[] = $aspect;
+        }
+    }
+    
+    return $missing;
+}
+
+/**
+ * Get completion reason for logging
+ */
+private function get_completion_reason($chunks_used, $max_chunks, $tokens_used, $target_tokens) {
+    if ($chunks_used >= $max_chunks - 1) {
+        return 'max_chunks_reached';
+    } elseif ($tokens_used >= $target_tokens * 0.95) {
+        return 'token_limit_reached';
+    } else {
+        return 'natural_completion';
+    }
+}
+
+
+
+
+
+protected function get_model_chunk_sizes($model) {
+    $chunk_sizes = array(
+        'claude-opus-4-20250514' => array('default' => 3800, 'max' => 4096),
+        'claude-sonnet-4-20250514' => array('default' => 3800, 'max' => 4096),
+        'claude-3-opus-20240229' => array('default' => 3800, 'max' => 4096),
+        'claude-3-sonnet-20240229' => array('default' => 3800, 'max' => 4096),
+        'claude-3-haiku-20240307' => array('default' => 3800, 'max' => 4096),
+        'claude-2.1' => array('default' => 3800, 'max' => 4096),
+        'claude-2.0' => array('default' => 3800, 'max' => 4096),
+        'claude-instant-1.2' => array('default' => 3800, 'max' => 4096)
+    );
+    
+    return isset($chunk_sizes[$model]) ? $chunk_sizes[$model] : array('default' => 3500, 'max' => 4096);
+}
+
+protected function get_assistant_role() {
+    return 'assistant';
+}
+
+protected function get_provider_name() {
+    return 'claude';
+}
+
+protected function get_current_model() {
+    return get_option('sfaic_claude_model', 'claude-opus-4-20250514');
+}
+
+
+
+/**
+ * Add this method to all three API classes for better debugging
+ */
+public function debug_chunking_process($prompt_id, $form_data, $entry_id = null) {
+    $debug_info = array(
+        'timestamp' => current_time('mysql'),
+        'prompt_id' => $prompt_id,
+        'entry_id' => $entry_id,
+        'provider' => $this->get_provider_name(),
+        'model' => $this->get_current_model(),
+        'max_tokens_setting' => get_post_meta($prompt_id, '_sfaic_max_tokens', true),
+        'chunking_enabled' => get_post_meta($prompt_id, '_sfaic_enable_chunking', true),
+        'form_data_size' => strlen(serialize($form_data)),
+    );
+    
+    // Log debug info
+    error_log('SFAIC Debug Info: ' . json_encode($debug_info, JSON_PRETTY_PRINT));
+    
+    // Store debug info in post meta for troubleshooting
+    if ($entry_id) {
+        update_post_meta($entry_id, '_sfaic_debug_info', $debug_info);
+    }
+    
+    return $debug_info;
+}
+
+/**
+ * Add this method to track chunking performance
+ */
+public function track_chunking_performance($entry_id, $chunks_used, $total_tokens, $response_length, $completion_reason) {
+    $performance_data = array(
+        'chunks_used' => $chunks_used,
+        'total_tokens' => $total_tokens,
+        'response_length' => $response_length,
+        'completion_reason' => $completion_reason,
+        'tokens_per_chunk' => $chunks_used > 0 ? round($total_tokens / $chunks_used) : 0,
+        'characters_per_token' => $total_tokens > 0 ? round($response_length / $total_tokens) : 0,
+        'efficiency_score' => $this->calculate_efficiency_score($chunks_used, $total_tokens, $response_length)
+    );
+    
+    update_post_meta($entry_id, '_sfaic_chunking_performance', $performance_data);
+    
+    // Log performance for analysis
+    error_log('SFAIC Chunking Performance: ' . json_encode($performance_data));
+    
+    return $performance_data;
+}
+
+private function calculate_efficiency_score($chunks, $tokens, $length) {
+    // Simple efficiency score: higher is better
+    // Considers response length vs tokens used vs chunks needed
+    if ($chunks === 0 || $tokens === 0) return 0;
+    
+    $length_efficiency = $length / $tokens; // Characters per token
+    $chunk_efficiency = $tokens / $chunks; // Tokens per chunk
+    
+    // Normalize and combine (ideal: long response, few chunks, good token usage)
+    $score = ($length_efficiency * 2) + ($chunk_efficiency / 100) + (100 / max($chunks, 1));
+    
+    return round($score, 2);
+}
 
     /**
      * Calculate appropriate chunk size based on model, remaining tokens, and chunk number
