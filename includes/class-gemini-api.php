@@ -600,11 +600,11 @@ class SFAIC_Gemini_API {
         }
 
         // Tell Gemini it can use HTML in responses
-        if (!empty($system_prompt)) {
-            $system_prompt .= "\n\nYou can use HTML formatting in your response if needed for better presentation, such as <h3>, <p>, <ul>, <li>, <strong>, <em>, etc.";
-        } else {
-            $system_prompt = "You are a helpful assistant. You can use HTML formatting in your response if needed for better presentation, such as <h3>, <p>, <ul>, <li>, <strong>, <em>, etc.";
-        }
+        //if (!empty($system_prompt)) {
+            //$system_prompt .= "\n\nYou can use HTML formatting in your response if needed for better presentation, such as <h3>, <p>, <ul>, <li>, <strong>, <em>, etc.";
+        //} else {
+            //$system_prompt = "You are a helpful assistant. You can use HTML formatting in your response if needed for better presentation, such as <h3>, <p>, <ul>, <li>, <strong>, <em>, etc.";
+        //}
 
         // Apply HTML template filter - this will add the template if enabled
         $user_prompt = apply_filters('sfaic_process_form_with_prompt', $user_prompt, $prompt_id, $form_data);
@@ -696,7 +696,7 @@ class SFAIC_Gemini_API {
             $output .= $label . ': ' . $field_value . "\n";
         }
 
-        $output .= "\n" . __('Please analyze this information and provide a response. You can use HTML formatting in your response for better presentation.', 'chatgpt-fluent-connector');
+        $output .= "\n" . __('Please analyze this information and provide a response.', 'chatgpt-fluent-connector');
         return $output;
     }
 
