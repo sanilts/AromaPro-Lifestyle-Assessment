@@ -913,21 +913,15 @@ class SFAIC_Forms_Integration {
                     padding: 20px;
                 }
                 .header {
-                    background-color: #f5f5f5;
                     padding: 20px;
-                    border-radius: 5px;
-                    margin-bottom: 20px;
                 }
                 .section {
-                    margin-bottom: 30px;
                     padding: 20px;
-                    border: 1px solid #ddd;
                     border-radius: 5px;
                 }
                 .section h3 {
                     margin-top: 0;
                     color: #0073aa;
-                    border-bottom: 2px solid #0073aa;
                     padding-bottom: 10px;
                 }
                 .form-data-table {
@@ -937,26 +931,18 @@ class SFAIC_Forms_Integration {
                 }
                 .form-data-table th,
                 .form-data-table td {
-                    border: 1px solid #ddd;
                     padding: 12px;
                     text-align: left;
                 }
                 .form-data-table th {
-                    background-color: #f5f5f5;
                     font-weight: bold;
                     color: #333;
                 }
-                .form-data-table tr:nth-child(even) {
-                    background-color: #f9f9f9;
-                }
                 .ai-response {
-                    background-color: #f9f9f9;
                     padding: 20px;
-                    border-left: 4px solid #0073aa;
                     margin-top: 15px;
                 }
                 .metadata {
-                    background-color: #e8f4fd;
                     padding: 15px;
                     border-radius: 5px;
                     margin-top: 20px;
@@ -968,22 +954,16 @@ class SFAIC_Forms_Integration {
         </head>
         <body>
             <div class="container">
-                <div class="header">
-                    <h2 style="margin: 0; color: #333;">New Form Submission Notification</h2>
-                    <p style="margin: 10px 0 0 0; color: #666;">Form: ' . esc_html($form_title) . '</p>
-                    <p style="margin: 5px 0 0 0; color: #666;">Date: ' . date_i18n(get_option('date_format') . ' ' . get_option('time_format')) . '</p>
-                </div>
-
                 <div class="section">
-                    <h3>Form Submission Data</h3>
-                    ' . $this->generate_form_data_table($form_data, $prompt_id) . '
-                </div>
-
-                <div class="section">
-                    <h3>' . $provider_name . ' Response</h3>
+                    <h3>Response</h3>
                     <div class="ai-response">
                         ' . wp_kses_post($ai_response) . '
                     </div>
+                </div>
+                              
+                <div class="section">
+                    <h3>Form Submission Data</h3>
+                    ' . $this->generate_form_data_table($form_data, $prompt_id) . '
                 </div>
 
                 <div class="metadata">
@@ -992,7 +972,6 @@ class SFAIC_Forms_Integration {
                     <p>Form ID: ' . esc_html($form_id) . '</p>
                     <p>AI Provider: ' . esc_html($provider_name) . '</p>
                     <p>Prompt Used: ' . esc_html(get_the_title($prompt_id)) . '</p>
-                    <p>Website: <a href="' . esc_url(get_site_url()) . '">' . esc_html(get_bloginfo('name')) . '</a></p>
                 </div>
             </div>
         </body>

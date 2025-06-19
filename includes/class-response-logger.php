@@ -164,7 +164,7 @@ class SFAIC_Response_Logger{
 
     /**
      * Update table structure to the latest version
-     */
+    */
     public function update_table_structure() {
         global $wpdb;
 
@@ -232,14 +232,19 @@ class SFAIC_Response_Logger{
     }
 
     /**
-     * Create logs table with enhanced fields including token tracking
-     */
-    public function create_logs_table() {
+        * Create logs table with enhanced fields including token tracking
+    */
+    public function create_logs_table(){
         global $wpdb;
 
-        $charset_collate = $wpdb->get_charset_collate();
+           // Include WordPress upgrade functions for dbDelta
+           if (!function_exists('dbDelta')) {
+               require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+           }
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->table_name} (
+           $charset_collate = $wpdb->get_charset_collate();
+
+           $sql = "CREATE TABLE IF NOT EXISTS {$this->table_name} (
             id bigint(20) NOT NULL AUTO_INCREMENT,
             prompt_id bigint(20) NOT NULL,
             prompt_title varchar(255) DEFAULT NULL,
@@ -269,7 +274,7 @@ class SFAIC_Response_Logger{
 
         dbDelta($sql);
 
-        // Set the table version
+           // Set the table version
         update_option('sfaic_logs_table_version', $this->table_version);
     }
 
