@@ -296,12 +296,22 @@ class SFAIC_Forms_Integration {
                 }
             }
 
-            // Handle email sending if configured
+            // Handle user email sending if configured
             $response_action = get_post_meta($prompt_id, '_sfaic_response_action', true);
+            $admin_email_enabled = get_post_meta($prompt_id, '_sfaic_admin_email_enabled', true);
+
+            $user_email_sent = false;
+            $admin_email_sent = false;
+
             if ($response_action === 'email') {
-                error_log('SFAIC: Sending email response');
-                $email_sent = $this->send_email_response($prompt_id, $entry_id, $form_data, $ai_response, $provider);
-                error_log('SFAIC: Email sent: ' . ($email_sent ? 'Yes' : 'No'));
+                error_log('SFAIC: Sending user email response');
+                $user_email_sent = $this->send_email_response($prompt_id, $entry_id, $form_data, $ai_response, $provider);
+                error_log('SFAIC: User email sent: ' . ($user_email_sent ? 'Yes' : 'No'));
+            } elseif ($admin_email_enabled == '1') {
+                // If only admin email is enabled, still call the method but it will only send admin email
+                error_log('SFAIC: Sending admin-only email');
+                $admin_email_sent = $this->send_admin_email($prompt_id, $entry_id, $form_data, $ai_response, $provider);
+                error_log('SFAIC: Admin email sent: ' . ($admin_email_sent ? 'Yes' : 'No'));
             }
 
             return true;
@@ -608,132 +618,132 @@ class SFAIC_Forms_Integration {
 
         // Wrap email content in HTML structure with improved styling
         $final_email_content = '<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>' . esc_html($email_subject) . '</title>
-    <style type="text/css">
-        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-        table { border-collapse: collapse !important; }
-        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
-        
-        @media screen and (max-width: 600px) {
-            .container { width: 100% !important; max-width: 100% !important; }
-        }
-        
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #333333;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        .wrapper {
-            width: 100%;
-            table-layout: fixed;
-            background-color: #f4f4f4;
-            padding: 40px 0;
-        }
-        
-        .container {
-            background-color: #ffffff;
-            max-width: 100%;
-            margin: 0 auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .content {
-            padding: 30px;
-        }
-        
-        h1, h2, h3, h4, h5, h6 {
-            margin: 0 0 15px 0;
-            padding: 0;
-            font-weight: bold;
-            line-height: 1.4;
-        }
-        
-        h2 {
-            font-size: 24px;
-            color: #333333;
-        }
-        
-        p {
-            margin: 0 0 15px 0;
-            padding: 0;
-        }
-        
-        .ai-response {
-            background-color: #f5f5f5;
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
-            border-left: 4px solid #0073aa;
-        }
-        
-        .form-data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-        }
-        
-        .form-data-table th,
-        .form-data-table td {
-            border: 1px solid #dddddd;
-            padding: 12px;
-            text-align: left;
-        }
-        
-        .form-data-table th {
-            background-color: #f5f5f5;
-            font-weight: bold;
-        }
-        
-        .form-data-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .pdf-notice {
-            background-color: #f0f8ff;
-            border-left: 4px solid #007cba;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 3px 3px 0;
-        }
-        
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #666666;
-        }
-    </style>
-</head>
-<body>
-    <div class="wrapper">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" class="container">
-            <tr>
-                <td>
-                    <div class="content">
-                        ' . $email_content . '
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
-</body>
-</html>';
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>' . esc_html($email_subject) . '</title>
+            <style type="text/css">
+                body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+                table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+                img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+                table { border-collapse: collapse !important; }
+                body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+                @media screen and (max-width: 600px) {
+                    .container { width: 100% !important; max-width: 100% !important; }
+                }
+
+                body {
+                    font-family: Arial, Helvetica, sans-serif;
+                    font-size: 16px;
+                    line-height: 1.6;
+                    color: #333333;
+                    background-color: #f4f4f4;
+                    margin: 0;
+                    padding: 0;
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                }
+
+                .wrapper {
+                    width: 100%;
+                    table-layout: fixed;
+                    background-color: #f4f4f4;
+                    padding: 40px 0;
+                }
+
+                .container {
+                    background-color: #ffffff;
+                    max-width: 100%;
+                    margin: 0 auto;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    overflow: hidden;
+                }
+
+                .content {
+                    padding: 30px;
+                }
+
+                h1, h2, h3, h4, h5, h6 {
+                    margin: 0 0 15px 0;
+                    padding: 0;
+                    font-weight: bold;
+                    line-height: 1.4;
+                }
+
+                h2 {
+                    font-size: 24px;
+                    color: #333333;
+                }
+
+                p {
+                    margin: 0 0 15px 0;
+                    padding: 0;
+                }
+
+                .ai-response {
+                    background-color: #f5f5f5;
+                    padding: 20px;
+                    border-radius: 5px;
+                    margin: 20px 0;
+                    border-left: 4px solid #0073aa;
+                }
+
+                .form-data-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 30px;
+                }
+
+                .form-data-table th,
+                .form-data-table td {
+                    border: 1px solid #dddddd;
+                    padding: 12px;
+                    text-align: left;
+                }
+
+                .form-data-table th {
+                    background-color: #f5f5f5;
+                    font-weight: bold;
+                }
+
+                .form-data-table tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                }
+
+                .pdf-notice {
+                    background-color: #f0f8ff;
+                    border-left: 4px solid #007cba;
+                    padding: 15px;
+                    margin: 20px 0;
+                    border-radius: 0 3px 3px 0;
+                }
+
+                .footer {
+                    background-color: #f8f9fa;
+                    padding: 20px;
+                    text-align: center;
+                    font-size: 14px;
+                    color: #666666;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="wrapper">
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" class="container">
+                    <tr>
+                        <td>
+                            <div class="content">
+                                ' . $email_content . '
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </body>
+        </html>';
 
         // Set email headers
         $headers = array(
